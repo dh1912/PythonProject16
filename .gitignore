@@ -1,0 +1,23 @@
+# Python/runtime
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.venv-*/
+venv/
+.env
+
+# Build/log/test artifacts
+build/
+dist/
+*.log
+error.txt
+output.txt
+result.txt
+
+# Dữ liệu thử/cục bộ, giữ source JSON lịch sử có sẵn
+data/api_progress_db.json
+data/game.log
+data/_tmp_review_test.json
+data/review_progress.json
+data/reviews/*.json
