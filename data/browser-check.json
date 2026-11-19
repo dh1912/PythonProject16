@@ -20,7 +20,7 @@
     },
     {
       "type": "log",
-      "text": "AUTOSTART https://pygame-web.github.io/cdn/0.9.3/pythons.js http://127.0.0.1:64174/web/ undefined"
+      "text": "AUTOSTART https://pygame-web.github.io/cdn/0.9.3/pythons.js http://127.0.0.1:65376/web/ undefined"
     },
     {
       "type": "log",
@@ -144,7 +144,7 @@
     },
     {
       "type": "log",
-      "text": "docurl= http://127.0.0.1:64174/web/"
+      "text": "docurl= http://127.0.0.1:65376/web/"
     },
     {
       "type": "log",
@@ -260,7 +260,7 @@
     },
     {
       "type": "log",
-      "text": "End.cross_file.fetch /tmp/tmp-13-1 r/w= 795401"
+      "text": "End.cross_file.fetch /tmp/tmp-22-1 r/w= 796272"
     },
     {
       "type": "log",
@@ -272,12 +272,16 @@
     },
     {
       "type": "log",
-      "text": "End.cross_file.fetch /tmp/tmp-19-2 r/w= 1527290"
+      "text": "End.cross_file.fetch /tmp/tmp-29-2 r/w= 1527290"
     },
     {
       "type": "warning",
       "text": "The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)"
     }
   ],
-  "scope": "Chỉ first-frame; không chứng minh auth, quiz hoặc DB."
+  "auth_requests": [
+    "login",
+    "review"
+  ],
+  "scope": "First-frame và tùy chọn UI login/fetch giả; không chứng minh DB."
 }

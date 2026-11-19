@@ -21,6 +21,7 @@
 
 - Transport browser vẫn dùng urllib đồng bộ: cần chuyển toàn bộ call-site sang async browser fetch, không chỉ thêm một hàm async rồi bỏ mặc caller.
 - Đã thêm `task5/browser_client.py` async có timeout và kiểm thử giải mã; adapter hiện tại chưa chuyển sang dùng lớp này, không công bố là transport đã hoàn tất.
+- Cập nhật: adapter và LoginScene đã nối fetch cho auth browser, cache review/progress phục vụ áp dụng phiên; Edge UI login với HTTP giả đã vào bản đồ thành công. Quiz/retry/save/leaderboard chưa chuyển xong, không coi toàn bộ transport hoàn tất.
 - Luồng deduction chưa nộp toàn bộ câu hỏi qua API; không thể công bố tất cả điểm game đã authoritative.
 - Quest mới xác minh quiz, chưa chứng thực thu nhặt manh mối/thứ tự mở khóa bằng hành động server-side.
 - Tiến độ client gửi vẫn là dữ liệu tham khảo; cần chính sách xác minh địa điểm/manh mối đầy đủ trước production.

@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 from services.game_data_service import game_data_service
 
 # Màu sắc giao diện (Đồng bộ với chủ đề trò chơi lịch sử)
@@ -87,6 +88,7 @@ class LoginScene:
         self.mode = "login"  # "login" hoặc "register"
         self.message = ""
         self.message_color = RED
+        self.auth_task = None
 
         # Card chứa Form ở trung tâm (1100 x 700)
         self.card_rect = pygame.Rect(310, 110, 480, 500)
@@ -111,6 +113,28 @@ class LoginScene:
         self.btn_submit = pygame.Rect(350, 410, 400, 46)
         self.btn_guest = pygame.Rect(350, 470, 400, 40)
 
+    def poll_auth_result(self):
+        """Nhận kết quả async trong game loop, không chặn frame đang vẽ."""
+        if self.auth_task is None or not self.auth_task.done():
+            return None
+        task, self.auth_task = self.auth_task, None
+        try:
+            success, user, result = task.result()
+        except Exception as exc:
+            self.message = f"Không đăng nhập được: {exc}"
+            return None
+        if success:
+            self.message = "Đã đăng nhập."
+            return {"action": "login_success", "user": user, "progress": result}
+        self.message = str(result)
+        return None
+
+    def _start_async_auth(self, username, password, fullname=None):
+        if self.auth_task is None:
+            self.message = "Đang kết nối máy chủ…"
+            self.auth_task = asyncio.create_task(self.data_service.authenticate_async(username, password, fullname))
+        return None
+
     def switch_mode(self, new_mode):
         self.mode = new_mode
         self.message = ""
@@ -133,6 +157,8 @@ class LoginScene:
             self.message_color = RED
             return None
 
+        if getattr(self.data_service, "async_auth_enabled", False):
+            return self._start_async_auth(username, password)
         success, user, progress_or_msg = self.data_service.login(username, password)
         if success:
             self.message = f"Xin chào {user.get('ho_va_ten', username)}!"
@@ -157,6 +183,8 @@ class LoginScene:
             self.message_color = RED
             return None
 
+        if getattr(self.data_service, "async_auth_enabled", False):
+            return self._start_async_auth(username, password, fullname)
         success, user, progress_or_msg = self.data_service.register(username, password, fullname)
         if success:
             self.message = "Đăng ký thành công! Đang vào trò chơi..."
@@ -192,7 +220,7 @@ class LoginScene:
         }
 
     def handle_event(self, event):
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos = getattr(event, "pos", pygame.mouse.get_pos())
 
         # Xử lý Click chuột
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

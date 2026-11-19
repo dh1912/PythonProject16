@@ -2,6 +2,15 @@
 
 ## Cập nhật sau kiểm tra browser thật
 
+### Cập nhật transport đăng nhập browser
+
+- Đăng nhập/đăng ký trong LoginScene đã chọn coroutine fetch khi chạy Emscripten; game loop poll kết quả, không chặn vẽ.
+- Cache review/progress được nạp qua fetch trước khi áp dụng phiên, tránh gọi urllib đồng bộ trong apply_user_session.
+- Sửa scale/render và click theo kích thước Surface SDL thực, không kích thước cửa sổ yêu cầu bị browser ép.
+- Edge headless đã thao tác bàn phím/chuột bình thường, gửi `/auth/login` và `/review/me` qua fetch (HTTP response giả), vào bản đồ với người chơi Browser Test, điểm 30; không có pageerror. Ảnh `data/browser-auth.png`, kết quả `data/browser-auth-result.json`.
+- Đây là E2E UI + browser transport với HTTP giả, không phải chứng nhận đăng nhập MySQL thật.
+- Các thao tác quiz/retry/save/leaderboard browser còn dùng call-site đồng bộ; chưa nghiệm thu chúng.
+
 - Đã cài Playwright và sử dụng Microsoft Edge headless có sẵn trên máy.
 - `python -m task5.check_web_runtime --seconds 65`: mã thoát 0, `first_frame_ready=true`, `page_errors=[]`.
 - Dấu ready chỉ đặt sau khi `Game.step()` đã chạy một frame; không dựa vào HTTP 200 hay sự tồn tại của canvas loader.

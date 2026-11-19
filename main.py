@@ -75,6 +75,9 @@ class Game:
         self.window_size = parse_window_size()
         self.fullscreen = False
         self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
+        if sys.platform == "emscripten":
+            # SDL browser có thể ép kích thước khác yêu cầu; scale theo Surface thật.
+            self.window_size = self.display.get_size()
         # Keep a fixed logical canvas so existing scene coordinates/layout remain valid.
         self.screen = pygame.Surface((WIDTH, HEIGHT)).convert()
         pygame.display.set_caption("Game Lịch Sử Việt Nam")
@@ -734,9 +737,10 @@ class Game:
                 self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
             return
         if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION):
-            scale = min(self.window_size[0] / WIDTH, self.window_size[1] / HEIGHT)
-            offset_x = (self.window_size[0] - WIDTH * scale) / 2
-            offset_y = (self.window_size[1] - HEIGHT * scale) / 2
+            display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
+            scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
+            offset_x = (display_size[0] - WIDTH * scale) / 2
+            offset_y = (display_size[1] - HEIGHT * scale) / 2
             logical_pos = (
                 max(0, min(WIDTH - 1, int((event.pos[0] - offset_x) / scale))),
                 max(0, min(HEIGHT - 1, int((event.pos[1] - offset_y) / scale))),
@@ -1048,12 +1052,13 @@ class Game:
             )
 
         # Preserve the scene's aspect ratio; letterbox instead of stretching text.
-        scale = min(self.window_size[0] / WIDTH, self.window_size[1] / HEIGHT)
+        display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
+        scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
         scaled_size = (max(1, round(WIDTH * scale)), max(1, round(HEIGHT * scale)))
         scaled = pygame.transform.smoothscale(self.screen, scaled_size)
         self.display.fill((20, 18, 16))
-        offset = ((self.window_size[0] - scaled_size[0]) // 2,
-                  (self.window_size[1] - scaled_size[1]) // 2)
+        offset = ((display_size[0] - scaled_size[0]) // 2,
+                  (display_size[1] - scaled_size[1]) // 2)
         self.display.blit(scaled, offset)
         pygame.display.flip()
 
@@ -1061,6 +1066,10 @@ class Game:
     # VONG LAP CHINH
     # =================================================================
     def step(self):
+        if self.scene == "login":
+            authentication = self.login_scene.poll_auth_result()
+            if authentication:
+                self.apply_user_session(authentication["user"], authentication["progress"])
         # Đồng hồ bắt đầu lại khi chuyển câu, không gán thời gian cố định cho đáp án.
         if self.scene == "task4_quiz":
             key = (self.scene, self.task4_quiz_index)

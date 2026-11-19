@@ -20,6 +20,7 @@ def main() -> int:
     from playwright.sync_api import sync_playwright
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seconds", type=int, default=60)
+    parser.add_argument("--mock-login", action="store_true", help="Kiểm tra UI login/fetch với HTTP giả, không dùng DB.")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     build = root / "build" / "web-source" / "build" / "web"
@@ -50,19 +51,48 @@ def main() -> int:
                 browser = browser_api.chromium.launch(channel="msedge", headless=True)
                 try:
                     page = browser.new_page(viewport={"width": 1280, "height": 800})
+                    auth_requests = []
+                    if args.mock_login:
+                        def login_response(route):
+                            auth_requests.append("login")
+                            route.fulfill(status=200, content_type="application/json", body=json.dumps({
+                                "access_token": "browser-test-token", "user": {"ma_nguoi_dung": 123, "ho_va_ten": "Browser Test"},
+                                "progress": {"score": 30, "current_loc_id": 1, "max_year": 1914, "completed": [], "task4": {}}}))
+                        def review_response(route):
+                            auth_requests.append("review")
+                            route.fulfill(status=200, content_type="application/json", body='{"items":[]}')
+                        page.route("**/auth/login", login_response)
+                        page.route("**/review/me", review_response)
                     page.on("console", lambda msg: messages.append({"type": msg.type, "text": msg.text}))
                     page.on("pageerror", lambda exc: messages.append({"type": "pageerror", "text": str(exc)}))
                     page.goto(url + "/web/", wait_until="domcontentloaded", timeout=30000)
                     page.wait_for_timeout(args.seconds * 1000)
+                    if args.mock_login:
+                        canvas = page.locator("#canvas")
+                        box = canvas.bounding_box()
+                        width, height = canvas.evaluate("c=>[c.width,c.height]")
+                        scale = min(width/1080, height/720)
+                        ox, oy = (width-1080*scale)/2, (height-720*scale)/2
+                        def click(x, y):
+                            canvas.click(position={"x": (ox+x*scale)*box["width"]/width,
+                                                   "y": (oy+y*scale)*box["height"]/height})
+                        click(500, 280)
+                        page.keyboard.type("student", delay=100)
+                        click(500, 355)
+                        page.keyboard.type("test-password", delay=100)
+                        click(500, 432)
+                        page.wait_for_timeout(5000)
                     page.screenshot(path=str(data / "browser-check.png"))
                     # Chứng minh Game đã chạy, không chỉ có canvas loader dựng sẵn.
                     ready = page.evaluate("Boolean(window.task5GameReady)")
                     errors = [m for m in messages if m["type"] == "pageerror"]
                     result = {"first_frame_ready": ready, "page_errors": errors, "messages": messages,
-                              "scope": "Chỉ first-frame; không chứng minh auth, quiz hoặc DB."}
+                              "auth_requests": auth_requests,
+                              "scope": "First-frame và tùy chọn UI login/fetch giả; không chứng minh DB."}
                     (data / "browser-check.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-                    print(json.dumps({"first_frame_ready": ready, "page_errors": errors}))
-                    return 0 if ready and not errors else 1
+                    login_ok = not args.mock_login or auth_requests == ["login", "review"]
+                    print(json.dumps({"first_frame_ready": ready, "mock_login_pass": login_ok, "page_errors": errors}))
+                    return 0 if ready and login_ok and not errors else 1
                 finally:
                     browser.close()
         finally:
