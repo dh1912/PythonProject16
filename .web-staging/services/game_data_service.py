@@ -420,9 +420,13 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
         ev_id = cl.get("ma_su_kien")
         if ev_id not in clues_by_event:
             clues_by_event[ev_id] = []
+        # Dùng tên manh mối thật từ DB; nếu rỗng thì dùng nội dung tóm tắt hoặc ID
+        raw_name = (cl.get("tieu_de_manh_moi") or "").strip()
+        if not raw_name:
+            raw_name = (cl.get("noi_dung_chi_tiet") or "")[:40].strip() or f"Manh mối #{cl.get('ma_manh_moi', len(clues_by_event[ev_id]) + 1)}"
         clues_by_event[ev_id].append({
             "id": str(cl.get("ma_manh_moi", len(clues_by_event[ev_id]) + 1)),
-            "name": cl.get("tieu_de_manh_moi", "Manh mối"),
+            "name": raw_name,
             "detail": cl.get("noi_dung_chi_tiet", "")
         })
 
@@ -449,7 +453,12 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
             "witness": nv.get("ten_nhan_vat", "Nhân chứng lịch sử"),
             "dialogue": nv.get("loi_thoai", "Hãy tìm thêm manh mối để sáng tỏ sự kiện này."),
             "clues": clues_list if clues_list else [
-                {"id": f"clue_{loc_id}_1", "name": "Tư liệu sự kiện", "detail": ev.get("tom_tat_dien_bien", "")}
+                {
+                    "id": f"clue_{loc_id}_1",
+                    "name": (ev.get("ngay_thang_chi_tiet") or ev.get("tom_tat_dien_bien") or "")[:50].strip()
+                           or f"Tư liệu mốc {ev.get('nam_dien_ra', loc_id)}",
+                    "detail": ev.get("tom_tat_dien_bien", "")
+                }
             ]
         }
 

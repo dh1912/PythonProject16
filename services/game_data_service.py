@@ -28,8 +28,8 @@ from data.db_queries import (
 # 1. BẢNG CẤU HÌNH BỔ TRỢ TỌA ĐỘ VÀ GIAI ĐOẠN CHO MÀN HÌNH BẢN ĐỒ (MAP METADATA)
 # ------------------------------------------------------------------------------
 LOCATION_MAP_CONFIG = {
-    1: {"key": "Ben Nha Rong", "side": "r", "dy": 0, "start": 1914, "end": 1930, "x": 365, "y": 500},
-    2: {"key": "Hong Kong", "side": "l", "dy": 0, "start": 1930, "end": 1931, "x": 525, "y": 203},
+    1: {"key": "Ben Nha Rong", "side": "r", "dy": 0, "start": 1858, "end": 1930, "x": 365, "y": 500},
+    2: {"key": "Kinh Thanh Hue", "side": "r", "dy": 0, "start": 1862, "end": 1945, "x": 350, "y": 310},
     3: {"key": "Vinh - Ben Thuy", "side": "r", "dy": 0, "start": 1930, "end": 1931, "x": 336, "y": 277},
     4: {"key": "Pac Bo", "side": "r", "dy": -8, "start": 1941, "end": 1945, "x": 325, "y": 180},
     5: {"key": "Tan Trao", "side": "l", "dy": -6, "start": 1941, "end": 1945, "x": 300, "y": 201},
@@ -56,12 +56,12 @@ FALLBACK_LOCATIONS = [
     },
     {
         "id": 2,
-        "name": "Hong Kong",
-        "display_name": "Hương Cảng (Hong Kong)",
-        "x": 525, "y": 203, "side": "l", "dy": 0,
-        "start": 1930, "end": 1931,
-        "event_time": "03/02/1930",
-        "description": "Ngày 3/2/1930 tại Hương Cảng (Hong Kong), Nguyễn Ái Quốc chủ trì Hội nghị thành lập Đảng Cộng sản Việt Nam."
+        "name": "Kinh Thanh Hue",
+        "display_name": "Huế - Kinh thành Huế",
+        "x": 350, "y": 310, "side": "r", "dy": 0,
+        "start": 1862, "end": 1945,
+        "event_time": "1858 - 1945",
+        "description": "Kinh đô triều Nguyễn, nơi diễn ra các hòa ước thời kỳ đầu và trung tâm phong trào yêu nước miền Trung."
     },
     {
         "id": 3,
@@ -157,14 +157,14 @@ FALLBACK_INVESTIGATION_DATA = {
             {"id": "ben_2", "name": "Lòng yêu nước thương dân sâu sắc", "detail": "Động lực quyết định thôi thúc người thanh niên yêu nước ra đi tìm con đường cứu nước mới."}
         ]
     },
-    "Hong Kong": {
-        "event": "Thành lập Đảng Cộng sản Việt Nam",
-        "year": "1930",
-        "witness": "Cán bộ liên lạc quốc tế",
-        "dialogue": "Nhiều tổ chức cộng sản đã được hợp nhất dưới sự chủ trì của đồng chí Nguyễn Ái Quốc tại Hương Cảng vào đầu năm 1930.",
+    "Kinh Thanh Hue": {
+        "event": "Phong trào yêu nước và hòa ước thời kỳ đầu",
+        "year": "1858-1945",
+        "witness": "Nhân chứng lịch sử Cố đô",
+        "dialogue": "Kinh thành Huế là trung tâm chính trị triều Nguyễn, nơi chứng kiến các hòa ước lịch sử và phong trào Cần Vương cứu nước kiên cường.",
         "clues": [
-            {"id": "hk_1", "name": "Mốc thời gian 3/2/1930", "detail": "Hội nghị hợp nhất các tổ chức cộng sản quyết định thành lập Đảng."},
-            {"id": "hk_2", "name": "Chánh cương vắn tắt của Đảng", "detail": "Văn kiện thông qua tại Hội nghị vạch ra đường lối giải phóng dân tộc đúng đắn."}
+            {"id": "hue_1", "name": "Chiếu Cần Vương", "detail": "Lời kêu gọi phò vua cứu nước dấy lên phong trào vũ trang chống Pháp sôi nổi."},
+            {"id": "hue_2", "name": "Hiệp ước Patenôtre 1884", "detail": "Hiệp ước đánh dấu thời kỳ thực dân Pháp áp đặt hoàn toàn ách đô hộ lên Việt Nam."}
         ]
     },
     "Vinh - Ben Thuy": {
@@ -265,12 +265,12 @@ FALLBACK_QUESTIONS = {
             "explanation": "Ngày 5/6/1911, người thanh niên yêu nước Nguyễn Tất Thành lấy tên Văn Ba rời bến cảng Nhà Rồng ra đi cứu nước."
         }
     ],
-    "Hong Kong": [
+    "Kinh Thanh Hue": [
         {
-            "question": "Đảng Cộng sản Việt Nam được thành lập vào ngày tháng năm nào?",
-            "options": ["03/02/1930", "02/09/1945", "19/08/1945", "28/01/1941"],
-            "answer": 0,
-            "explanation": "Ngày 3/2/1930 tại Hương Cảng, Hội nghị hợp nhất các tổ chức cộng sản do Nguyễn Ái Quốc chủ trì đã quyết định thành lập Đảng."
+            "question": "Vua Hàm Nghi hạ chiếu Cần Vương phát động phò vua cứu nước vào năm nào?",
+            "options": ["1858", "1885", "1911", "1945"],
+            "answer": 1,
+            "explanation": "Ngày 13/7/1885 tại căn cứ Tân Sở, vua Hàm Nghi hạ chiếu Cần Vương kêu gọi văn thân, sĩ phu và nhân dân cả nước đứng lên chống Pháp."
         }
     ],
     "Vinh - Ben Thuy": [
@@ -407,7 +407,8 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
     Thuật toán:
     1. Nhóm nhân vật theo ma_dia_diem.
     2. Nhóm manh mối theo ma_su_kien.
-    3. Liên kết sự kiện theo ma_dia_diem -> Tạo dictionary phân cấp cho InvestigationScene.
+    3. Liên kết sự kiện theo ma_dia_diem (ưu tiên sự kiện có nam_dien_ra gần nhất với mốc start của địa điểm hoặc khớp năm).
+    4. Tạo dictionary phân cấp cho InvestigationScene.
     """
     npcs_by_loc = {}
     for nv in nhan_vat_rows:
@@ -420,25 +421,36 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
         ev_id = cl.get("ma_su_kien")
         if ev_id not in clues_by_event:
             clues_by_event[ev_id] = []
+        raw_name = (cl.get("tieu_de_manh_moi") or "").strip()
+        if not raw_name:
+            raw_name = (cl.get("noi_dung_chi_tiet") or "")[:40].strip() or f"Manh mối #{cl.get('ma_manh_moi', len(clues_by_event[ev_id]) + 1)}"
         clues_by_event[ev_id].append({
             "id": str(cl.get("ma_manh_moi", len(clues_by_event[ev_id]) + 1)),
-            "name": cl.get("tieu_de_manh_moi", "Manh mối"),
+            "name": raw_name,
             "detail": cl.get("noi_dung_chi_tiet", "")
         })
 
+    # Nhóm danh sách sự kiện theo ma_dia_diem
     events_by_loc = {}
     for ev in su_kien_rows:
         loc_id = ev.get("ma_dia_diem")
-        if loc_id not in events_by_loc:
-            events_by_loc[loc_id] = ev
+        if loc_id is not None:
+            events_by_loc.setdefault(loc_id, []).append(ev)
 
     investigation_dict = {}
     for row in dia_diem_rows:
         loc_id = row.get("ma_dia_diem")
         cfg = LOCATION_MAP_CONFIG.get(loc_id)
         key_name = cfg["key"] if cfg else row.get("ten_dia_diem", "")
+        loc_start = cfg.get("start", 1900) if cfg else 1900
 
-        ev = events_by_loc.get(loc_id, {})
+        loc_events = events_by_loc.get(loc_id, [])
+        # Chọn sự kiện có năm gần nhất với loc_start của địa điểm
+        ev = {}
+        if loc_events:
+            loc_events.sort(key=lambda e: abs(int(e.get("nam_dien_ra", loc_start)) - loc_start))
+            ev = loc_events[0]
+
         nv = npcs_by_loc.get(loc_id, {})
         ev_id = ev.get("ma_su_kien")
         clues_list = clues_by_event.get(ev_id, [])
@@ -449,11 +461,16 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
             "witness": nv.get("ten_nhan_vat", "Nhân chứng lịch sử"),
             "dialogue": nv.get("loi_thoai", "Hãy tìm thêm manh mối để sáng tỏ sự kiện này."),
             "clues": clues_list if clues_list else [
-                {"id": f"clue_{loc_id}_1", "name": "Tư liệu sự kiện", "detail": ev.get("tom_tat_dien_bien", "")}
+                {
+                    "id": f"clue_{loc_id}_1",
+                    "name": (ev.get("ngay_thang_chi_tiet") or ev.get("tom_tat_dien_bien") or "")[:50].strip()
+                           or f"Tư liệu mốc {ev.get('nam_dien_ra', loc_id)}",
+                    "detail": ev.get("tom_tat_dien_bien", "")
+                }
             ]
         }
 
-    # Bổ sung dữ liệu điều tra cho các địa danh 1954 - 1975 nếu thiếu
+    # Bổ sung dữ liệu điều tra cho các địa danh nếu thiếu
     for k, v in FALLBACK_INVESTIGATION_DATA.items():
         if k not in investigation_dict:
             investigation_dict[k] = v

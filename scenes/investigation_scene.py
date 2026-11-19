@@ -12,6 +12,8 @@ GRAY = (210, 205, 195)
 
 class InvestigationScene:
     def __init__(self, investigation_data=None):
+        if not pygame.font.get_init():
+            pygame.font.init()
         self.font = pygame.font.SysFont("segoeui,arial,timesnewroman", 21)
         self.small_font = pygame.font.SysFont("segoeui,arial,timesnewroman", 16)
         self.title_font = pygame.font.SysFont("segoeui,arial,timesnewroman", 28, bold=True)
@@ -196,22 +198,41 @@ class InvestigationScene:
         self.dialogue_page = 0
         clues = data.get("clues", [])
         for index, clue in enumerate(clues):
+            # Đảm bảo tên clue đúng không bị trùng hoặc quá chung chung
+            correct_name = (clue.get("name") or "").strip()
+            # Nếu tên clue rỗng hoặc quá ngắn (≤5 ký tự), dùng 40 ký tự đầu của detail
+            if len(correct_name) <= 5:
+                detail_fallback = (clue.get("detail") or "")[:45].strip()
+                correct_name = detail_fallback if detail_fallback else f"Tư liệu #{index + 1}"
+
             # Use evidence from other locations as plausible distractors.
             distractors = []
             for other_location, other_data in self.investigation_data.items():
                 if other_location == location["name"]:
                     continue
                 for other_clue in other_data.get("clues", []):
-                    candidate = other_clue.get("name", "")
-                    if candidate and candidate != clue.get("name") and candidate not in distractors:
+                    candidate = (other_clue.get("name") or "").strip()
+                    # Bỏ qua distractor quá ngắn hoặc trùng tên clue đúng
+                    if candidate and len(candidate) > 5 and candidate != correct_name and candidate not in distractors:
                         distractors.append(candidate)
                     if len(distractors) == 2:
                         break
                 if len(distractors) == 2:
                     break
+            # Tên nhiễu dự phòng cụ thể, không tiết lộ đáp án
+            backup_distractors = [
+                "Bản Hiệp ước Harmand và Patenôtre",
+                "Chiếu Cần Vương khắc gỗ tại Tân Sở",
+                "Nhật ký hành quân của đội quân viễn chinh",
+                "Thư tịch thương mại thời thuộc địa",
+            ]
+            bi = 0
             while len(distractors) < 2:
-                distractors.append("Tài liệu không trùng khớp với sự kiện này")
-            options = [clue["name"], *distractors]
+                backup = backup_distractors[bi % len(backup_distractors)]
+                bi += 1
+                if backup != correct_name and backup not in distractors:
+                    distractors.append(backup)
+            options = [correct_name, *distractors]
             # Stable deterministic shuffle to avoid always placing the correct item first.
             correct_index = (index + len(location.get("name", ""))) % len(options)
             options[0], options[correct_index] = options[correct_index], options[0]
@@ -538,7 +559,6 @@ class InvestigationScene:
                 pygame.draw.rect(screen, WHITE, rect, border_radius=7)
                 pygame.draw.rect(screen, GRAY, rect, 1, border_radius=7)
                 self.draw_wrapped(screen, f"{option_index + 1}. {option}", rect.inflate(-16, -6), self.small_font, DARK, max_lines=2)
-            self.draw_wrapped(screen, "Sự kiện: " + data["event"], pygame.Rect(365, 418, 370, 48), self.small_font, GREEN, max_lines=2)
             self.draw_text(screen, "ESC: đóng | Chọn 1-3", 365, 474, self.small_font)
 
         # Khung thong bao

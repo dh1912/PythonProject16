@@ -52,7 +52,7 @@ def test_task3():
     print("[3/5] Kiểm thử Task 3: Bản đồ lịch sử & Thuật toán Đồ thị...")
     from task3.map_graph import HistoryMapGraph
     graph = HistoryMapGraph()
-    path = graph.find_path("Bến Nhà Rồng (Sài Gòn)", "Quảng Châu (Trung Quốc)")
+    path = graph.find_path("Bến Nhà Rồng (Sài Gòn)", "Hang Pác Bó (Cao Bằng)")
     assert len(path) >= 2
     assert path[0] == "Bến Nhà Rồng (Sài Gòn)"
     print(f"  ✓ Task 3: Thuật toán Dijkstra tìm đường thành công: {' -> '.join(path[:3])}...")
