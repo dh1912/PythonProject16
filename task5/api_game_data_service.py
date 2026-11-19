@@ -64,11 +64,16 @@ class ApiGameDataService:
         except ApiClientError as exc: return False, str(exc)
 
     def load_game_data(self):
-        if self.fallback_service: return self.fallback_service.load_game_data()
+        # Chỉ đọc cache đã có; API client không tự mở kết nối MySQL desktop.
         return {"locations": self.locations, "investigation_data": self.investigation_data, "questions": self.questions, "is_connected": False, "status_message": self.status_message}
 
     def get_locations_from_db(self): return self.locations
-    def logout(self): self.client.token = None; self.current_user = None; return True
+    def logout(self):
+        self.client.token = None
+        self.current_user = None
+        self.is_connected = False
+        self._progress = {"score": 0, "current_loc_id": 1, "max_year": 1914, "completed": set(), "task4": {}}
+        return True
     def submit_answer(self, question_id, choice_index, elapsed_seconds):
         return self.client.post("/quiz/submit", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)})
 

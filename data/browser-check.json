@@ -1,0 +1,283 @@
+{
+  "first_frame_ready": true,
+  "page_errors": [],
+  "messages": [
+    {
+      "type": "warning",
+      "text": "Unrecognized feature: 'monetization'."
+    },
+    {
+      "type": "warning",
+      "text": "Unrecognized feature: 'xr'."
+    },
+    {
+      "type": "warning",
+      "text": "Allow attribute will take precedence over 'allowfullscreen'."
+    },
+    {
+      "type": "warning",
+      "text": "Connection: Wired"
+    },
+    {
+      "type": "log",
+      "text": "AUTOSTART https://pygame-web.github.io/cdn/0.9.3/pythons.js http://127.0.0.1:64174/web/ undefined"
+    },
+    {
+      "type": "log",
+      "text": "Location of pythons.js overrides script https://pygame-web.github.io/cdn/0.9.3/pythons.js => https://pygame-web.github.io/cdn/0.9.3/pythons.js?#"
+    },
+    {
+      "type": "log",
+      "text": "{\"xtermjs\":\"1\",\"_sdl2\":\"canvas\",\"user_canvas\":0,\"user_canvas_managed\":0,\"gui_divider\":2,\"ume_block\":0,\"can_close\":0,\"archive\":\"web-source\",\"gui_debug\":2,\"cdn\":\"https://pygame-web.github.io/cdn/0.9.3/\",\"autorun\":0,\"PYBUILD\":\"3.12\",\"fb_ar\":1.77,\"fb_width\":\"1280\",\"fb_height\":\"720\",\"pydigits\":\"312\",\"executable\":\"https://pygame-web.github.io/cdn/0.9.3/cpython312/main.js\",\"debug\":false,\"interactive\":false,\"columns\":132,\"lines\":\"42\",\"console\":10,\"fbdev\":false,\"quiet\":false,\"features\":[\"vtx\",\"snd\",\"gui\"]}"
+    },
+    {
+      "type": "log",
+      "text": "config.xtermjs = 1"
+    },
+    {
+      "type": "log",
+      "text": "config._sdl2 = canvas"
+    },
+    {
+      "type": "log",
+      "text": "config.user_canvas = 0"
+    },
+    {
+      "type": "log",
+      "text": "config.user_canvas_managed = 0"
+    },
+    {
+      "type": "log",
+      "text": "config.gui_divider = 2"
+    },
+    {
+      "type": "log",
+      "text": "config.ume_block = 0"
+    },
+    {
+      "type": "log",
+      "text": "config.can_close = 0"
+    },
+    {
+      "type": "log",
+      "text": "config.archive = web-source"
+    },
+    {
+      "type": "log",
+      "text": "config.gui_debug = 2"
+    },
+    {
+      "type": "log",
+      "text": "config.cdn = https://pygame-web.github.io/cdn/0.9.3/"
+    },
+    {
+      "type": "log",
+      "text": "config.autorun = 0"
+    },
+    {
+      "type": "log",
+      "text": "config.PYBUILD = 3.12"
+    },
+    {
+      "type": "log",
+      "text": "config.fb_ar = 1.77"
+    },
+    {
+      "type": "log",
+      "text": "config.fb_width = 1280"
+    },
+    {
+      "type": "log",
+      "text": "config.fb_height = 720"
+    },
+    {
+      "type": "log",
+      "text": "config.pydigits = 312"
+    },
+    {
+      "type": "log",
+      "text": "config.executable = https://pygame-web.github.io/cdn/0.9.3/cpython312/main.js"
+    },
+    {
+      "type": "log",
+      "text": "config.debug = false"
+    },
+    {
+      "type": "log",
+      "text": "config.interactive = false"
+    },
+    {
+      "type": "log",
+      "text": "config.columns = 132"
+    },
+    {
+      "type": "log",
+      "text": "config.lines = 42"
+    },
+    {
+      "type": "log",
+      "text": "config.console = 10"
+    },
+    {
+      "type": "log",
+      "text": "config.fbdev = false"
+    },
+    {
+      "type": "log",
+      "text": "config.quiet = false"
+    },
+    {
+      "type": "log",
+      "text": "config.features = [vtx, snd, gui]"
+    },
+    {
+      "type": "log",
+      "text": "interpreter= cpython"
+    },
+    {
+      "type": "log",
+      "text": "orig_argv []"
+    },
+    {
+      "type": "log",
+      "text": "sys.argv:  []"
+    },
+    {
+      "type": "log",
+      "text": "docurl= http://127.0.0.1:64174/web/"
+    },
+    {
+      "type": "log",
+      "text": "srcurl= https://pygame-web.github.io/cdn/0.9.3/pythons.js"
+    },
+    {
+      "type": "log",
+      "text": "data-os= vtx,snd,gui"
+    },
+    {
+      "type": "log",
+      "text": "data-python= python3.12"
+    },
+    {
+      "type": "log",
+      "text": "script: id= site"
+    },
+    {
+      "type": "log",
+      "text": "code :  3683  as site.py"
+    },
+    {
+      "type": "warning",
+      "text": "\n\n\n== FLAGS : is_mobile(false) dev=false debug_user=false debug_mobile=false ==\n\n\n\n"
+    },
+    {
+      "type": "log",
+      "text": "Terminal+ImageAddon importing from CDN : https://pygame-web.github.io/cdn/0.9.3/../vt/"
+    },
+    {
+      "type": "log",
+      "text": "vtx font: -5%"
+    },
+    {
+      "type": "warning",
+      "text": "vtx font: 800 / 52 = 11  Cols: 132 Cons: 10"
+    },
+    {
+      "type": "warning",
+      "text": "terminal 132 52 {url: https://pygame-web.github.io/cdn/0.9.3/xtermjsixel/xterm-addon-image-worker.js, sixelSupport: true}"
+    },
+    {
+      "type": "warning",
+      "text": "NO ume unlocker, safari == false"
+    },
+    {
+      "type": "warning",
+      "text": "TODO: user defined canvas"
+    },
+    {
+      "type": "log",
+      "text": "pythons.js:  custom_onload"
+    },
+    {
+      "type": "warning",
+      "text": "Loading python interpreter from https://pygame-web.github.io/cdn/0.9.3/cpython312/main.js"
+    },
+    {
+      "type": "log",
+      "text": "main.js:  locateData: main.data  -> https://pygame-web.github.io/cdn/0.9.3/cpython312/main.data"
+    },
+    {
+      "type": "log",
+      "text": "main.js:  locateFile: main.wasm https://pygame-web.github.io/cdn/0.9.3/cpython312/"
+    },
+    {
+      "type": "warning",
+      "text": "VM.prerun:Begin"
+    },
+    {
+      "type": "warning",
+      "text": "VM.prerun:End"
+    },
+    {
+      "type": "log",
+      "text": "PyMain: running in main thread, faking onCustomMessage"
+    },
+    {
+      "type": "error",
+      "text": "PyMain: BrowserFS not found"
+    },
+    {
+      "type": "warning",
+      "text": "VM.postrun Begin"
+    },
+    {
+      "type": "log",
+      "text": "Maybe RC https://pygame-web.github.io/cdn/0.9.3/cpythonrc.py"
+    },
+    {
+      "type": "warning",
+      "text": "VM.postrun End"
+    },
+    {
+      "type": "log",
+      "text": "Begin.cross_file.fetch https://pygame-web.github.io/cdn/index-0.9.3-cp312.json {redirect: follow, credentials: omit}"
+    },
+    {
+      "type": "log",
+      "text": "cross_file.fetch 200"
+    },
+    {
+      "type": "log",
+      "text": "End.cross_file.fetch /tmp/tmp-1-0 r/w= 1451"
+    },
+    {
+      "type": "log",
+      "text": "Begin.cross_file.fetch web-source.tar.gz {redirect: follow, credentials: omit}"
+    },
+    {
+      "type": "log",
+      "text": "cross_file.fetch 200"
+    },
+    {
+      "type": "log",
+      "text": "End.cross_file.fetch /tmp/tmp-13-1 r/w= 795401"
+    },
+    {
+      "type": "log",
+      "text": "Begin.cross_file.fetch https://pygame-web.github.io/cdn/cp312/pygame_ce-2.5.7-cp312-cp312-wasm32_bi_emscripten.whl# {redirect: follow, credentials: omit}"
+    },
+    {
+      "type": "log",
+      "text": "cross_file.fetch 200"
+    },
+    {
+      "type": "log",
+      "text": "End.cross_file.fetch /tmp/tmp-19-2 r/w= 1527290"
+    },
+    {
+      "type": "warning",
+      "text": "The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)"
+    }
+  ],
+  "scope": "Chỉ first-frame; không chứng minh auth, quiz hoặc DB."
+}

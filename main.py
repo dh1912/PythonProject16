@@ -6,6 +6,7 @@ import threading
 import queue
 import json
 import uuid
+import time
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
@@ -134,7 +135,7 @@ class Game:
         # Khởi tạo Hệ thống Tính điểm & Ôn tập tư liệu (Task 5)
         self.scoring_engine = ScoringEngine()
         self.guest_session_id = uuid.uuid4().hex
-        self.review_manager = ReviewManager(guest_id=self.guest_session_id)
+        self.review_manager = ReviewManager(guest_id=self.guest_session_id, persistent=not self.task5_server_enabled)
         self.review_scene = ReviewScene(
             review_manager=self.review_manager,
             scoring_engine=self.scoring_engine,
@@ -184,7 +185,7 @@ class Game:
         self.current_user = user
         self.score = progress.get("score", 0)
         self.scoring_engine = ScoringEngine(self.score)
-        self.review_manager = ReviewManager(user_id=user.get("ma_nguoi_dung", 0))
+        self.review_manager = ReviewManager(user_id=user.get("ma_nguoi_dung", 0), persistent=not self.task5_server_enabled)
         self.review_scene.review_manager = self.review_manager
         self.review_scene.scoring_engine = self.scoring_engine
         self.review_scene.retry_submitter = self.data_service.retry_review if self.task5_server_enabled else None
@@ -504,6 +505,8 @@ class Game:
         """Apply one answer and finish/save the integrated timeline quest."""
         if self.scene != "task4_quiz" or self.task4_quiz_index >= 3:
             return
+        timer_key = ("task4", self.task4_quiz_index)
+        elapsed = max(0.25, time.monotonic() - getattr(self, "_answer_started_at", time.monotonic()))
         result = self.task4_questions.answer(self.task4_quiz_index, option_index)
         location = getattr(self, "current_timeline_location", None) or self.deduction_scene.location or self.investigation_scene.location
         if not location:
@@ -514,7 +517,7 @@ class Game:
         user_id = self.current_user.get("ma_nguoi_dung", 0) if self.current_user else 0
         if self.task5_server_enabled and user_id > 0:
             try:
-                remote = self.data_service.submit_answer(f"task4:{task4_question_id}", option_index, 1.0)
+                remote = self.data_service.submit_answer(f"task4:{task4_question_id}", option_index, elapsed)
                 result["correct"] = bool(remote["correct"])
                 result["explanation"] = remote.get("explanation", result.get("explanation", ""))
                 result["source"] = remote.get("source", result.get("source", ""))
@@ -526,7 +529,7 @@ class Game:
 
         already_done = location["name"] in self.completed
         if not self.task5_server_enabled and not already_done and result["correct"]:
-            self.award_answer(True, elapsed_seconds=0.0, base_points=result["points"])
+            self.award_answer(True, elapsed_seconds=elapsed, base_points=30)
         elif not (self.task5_server_enabled and result["correct"]):
             self.last_score_delta = 0
 
@@ -773,10 +776,14 @@ class Game:
                 except Exception as exc:
                     self.notify(f"Không tải được câu ôn tập: {exc}")
             result = self.review_scene.handle_event(event)
-            if self.task5_server_enabled:
-                # ReviewScene nhận tổng điểm authoritative từ API retry.
-                self.score = int(self.scoring_engine.total_score)
-                self._sync_score_views()
+            previous_score = self.score
+            self._sync_score_views()
+            if not self.task5_server_enabled and self.current_user and self.current_user.get("ma_nguoi_dung", 0) > 0 and previous_score != self.score:
+                ok, message = self.data_service.sync_user_progress(
+                    self.current_user["ma_nguoi_dung"], self.current_user.get("current_loc_id", 1),
+                    self.current_user.get("max_year", 1914), self.score, self.completed)
+                if not ok:
+                    self.notify(f"Chưa lưu được điểm ôn tập: {message}")
             if result == "map":
                 self.scene = "map"
             return
@@ -832,9 +839,10 @@ class Game:
                 self.scoring_engine = ScoringEngine()
                 self.score = 0
                 self.guest_session_id = uuid.uuid4().hex
-                self.review_manager = ReviewManager(guest_id=self.guest_session_id)
+                self.review_manager = ReviewManager(guest_id=self.guest_session_id, persistent=not self.task5_server_enabled)
                 self.review_scene.review_manager = self.review_manager
                 self.review_scene.scoring_engine = self.scoring_engine
+                self.review_scene.retry_submitter = None
                 self._sync_score_views()
                 self.scene = "login"
                 self.login_scene.switch_mode("login")
@@ -1053,6 +1061,16 @@ class Game:
     # VONG LAP CHINH
     # =================================================================
     def step(self):
+        # Đồng hồ bắt đầu lại khi chuyển câu, không gán thời gian cố định cho đáp án.
+        if self.scene == "task4_quiz":
+            key = (self.scene, self.task4_quiz_index)
+        elif self.scene == "deduction":
+            key = (self.scene, self.deduction_scene.question_index)
+        else:
+            key = (self.scene, None)
+        if getattr(self, "_answer_timer_key", None) != key:
+            self._answer_timer_key = key
+            self._answer_started_at = time.monotonic()
         try:
             succeeded, result = self._data_queue.get_nowait()
         except queue.Empty:

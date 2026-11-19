@@ -1,0 +1,12 @@
+.venv*
+.env
+.git
+.pytest_cache
+**/__pycache__
+*.log
+game.sql
+sql_dump.docx
+data/reviews
+data/review_progress.json
+data/api_progress_db.json
+.web-staging

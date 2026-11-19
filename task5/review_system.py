@@ -5,6 +5,9 @@ import json
 from pathlib import Path
 import re
 import uuid
+import logging
+import os
+import tempfile
 
 _DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "reviews"
 
@@ -38,6 +41,7 @@ class ReviewQuestion:
     source_citation: str = ""
     status: ReviewStatus = ReviewStatus.PENDING
     retry_count: int = 0
+    reward_awarded: bool = False
 
 
 @dataclass(frozen=True)
@@ -48,10 +52,13 @@ class RetryResult:
 
 
 class ReviewManager:
-    def __init__(self, storage_path=None, user_id=None, guest_id=None):
+    def __init__(self, storage_path=None, user_id=None, guest_id=None, persistent=True):
         self.storage_path = Path(storage_path) if storage_path else review_path_for_user(user_id, guest_id)
+        self.persistent = persistent
+        self.last_save_error = None
         self.questions = {}
-        self._load()
+        if self.persistent:
+            self._load()
 
     @staticmethod
     def _to_question(question_id, data):
@@ -74,6 +81,7 @@ class ReviewManager:
             source_citation=str(data.get("source_citation", "")),
             status=status,
             retry_count=int(data.get("retry_count", 0)),
+            reward_awarded=bool(data.get("reward_awarded", False)),
         )
 
     def _load(self):
@@ -82,17 +90,48 @@ class ReviewManager:
         except (OSError, ValueError, TypeError):
             return
         if isinstance(raw, dict):
-            self.questions = {key: self._to_question(key, value) for key, value in raw.items() if isinstance(value, dict)}
+            for key, value in raw.items():
+                if isinstance(value, dict):
+                    try:
+                        self.questions[str(key)] = self._to_question(key, value)
+                    except (ValueError, TypeError):
+                        logging.getLogger(__name__).warning("Bỏ qua câu ôn tập không hợp lệ: %s", key)
 
     def _save(self):
+        if not self.persistent:
+            return
+        temporary = None
         try:
             self.storage_path.parent.mkdir(parents=True, exist_ok=True)
             payload = {}
             for key, q in self.questions.items():
-                payload[key] = {"id": q.id, "location_name": q.location_name, "question": q.question, "options": q.options, "correct_index": q.correct_index, "user_choice": q.user_choice, "explanation": q.explanation, "source_title": q.source_title, "source_author": q.source_author, "source_publisher": q.source_publisher, "source_citation": q.source_citation, "status": q.status.value, "retry_count": q.retry_count}
-            self.storage_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        except OSError:
-            pass
+                payload[key] = {"id": q.id, "location_name": q.location_name, "question": q.question, "options": q.options, "correct_index": q.correct_index, "user_choice": q.user_choice, "explanation": q.explanation, "source_title": q.source_title, "source_author": q.source_author, "source_publisher": q.source_publisher, "source_citation": q.source_citation, "status": q.status.value, "retry_count": q.retry_count, "reward_awarded": q.reward_awarded}
+            # Ghi file tạm cùng thư mục rồi thay thế nguyên tử, tránh JSON bị cắt dở.
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=self.storage_path.parent, delete=False) as stream:
+                temporary = stream.name
+                json.dump(payload, stream, ensure_ascii=False, indent=2)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, self.storage_path)
+            self.last_save_error = None
+        except OSError as exc:
+            self.last_save_error = str(exc)
+            logging.getLogger(__name__).exception("Không lưu được kho ôn tập")
+        finally:
+            if temporary and os.path.exists(temporary):
+                os.unlink(temporary)
+
+    def claim_reward(self, question_id: str) -> bool:
+        """Đánh dấu thưởng bền vững trước khi cộng điểm, không thưởng lại sau tải profile."""
+        question = self.questions[str(question_id)]
+        if question.status != ReviewStatus.MASTERED or question.reward_awarded:
+            return False
+        question.reward_awarded = True
+        self._save()
+        if self.last_save_error:
+            question.reward_awarded = False
+            raise OSError(self.last_save_error)
+        return True
 
     def record_mistake(self, question_id, location_name, question_text, options, correct_index, user_choice, explanation="", source_title="", source_author="", source_publisher="", source_citation=""):
         question_id = str(question_id)
@@ -121,7 +160,6 @@ class ReviewManager:
         question.user_choice = choice_index
         question.retry_count += 1
         correct = choice_index == question.correct_index
-        if correct:
-            question.status = ReviewStatus.MASTERED
+        question.status = ReviewStatus.MASTERED if correct else ReviewStatus.PENDING
         self._save()
         return RetryResult(correct, question.id, question.status)

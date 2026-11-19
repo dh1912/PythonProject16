@@ -8,6 +8,43 @@ from task5.scoring_system import ScoringEngine
 
 
 class TestTask5Local(unittest.TestCase):
+    def test_reward_claim_survives_reload_and_wrong_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "player.json"
+            manager = ReviewManager(storage_path=path)
+            manager.record_mistake("q", "A", "Question", ["a", "b"], 1, 0)
+            self.assertFalse(manager.claim_reward("q"))
+            manager.retry_answer("q", 1)
+            self.assertTrue(manager.claim_reward("q"))
+            loaded = ReviewManager(storage_path=path)
+            self.assertFalse(loaded.claim_reward("q"))
+            loaded.retry_answer("q", 0)
+            self.assertEqual(loaded.questions["q"].status, ReviewStatus.PENDING)
+            loaded.retry_answer("q", 1)
+            self.assertFalse(loaded.claim_reward("q"))
+
+    def test_nonpersistent_profile_does_not_touch_disk(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "remote.json"
+            manager = ReviewManager(storage_path=path, persistent=False)
+            manager.record_mistake("q", "A", "Question", ["a", "b"], 1, 0)
+            self.assertFalse(path.exists())
+
+    def test_bad_record_does_not_discard_valid_records(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "player.json"
+            path.write_text(json.dumps({"bad": {"correct_index": "invalid"}, "good": {"correct_index": 0, "options": ["a"]}}), encoding="utf-8")
+            manager = ReviewManager(storage_path=path)
+            self.assertIn("good", manager.questions)
+            self.assertNotIn("bad", manager.questions)
+
+    def test_scoring_import_does_not_import_pygame(self):
+        import subprocess
+        import sys
+        result = subprocess.run([sys.executable, "-c", "import sys; from task5.scoring_system import ScoringEngine; assert 'pygame' not in sys.modules"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_scoring_correct_wrong_clamps_and_ranks(self):
         engine = ScoringEngine()
         self.assertEqual(engine.record_answer(True, 30), 30)

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from typing import Any
 
 from config import DB_DEFAULT_CONFIG
@@ -117,7 +118,11 @@ def save_progress(user_id: int, current_loc_id: int, max_year: int, completed: l
             merged.update(completed)
             try: old_task4 = json.loads(old.get("du_lieu_nhiem_vu") or "{}")
             except (ValueError, TypeError): old_task4 = {}
-            old_task4.update(task4)
+            # Không cho client ghi đè trạng thái chấm điểm nội bộ của server.
+            for key, value in task4.items():
+                if not str(key).isdigit() or not isinstance(value, dict):
+                    raise RepositoryError("Dữ liệu nhiệm vụ không hợp lệ.")
+                old_task4[str(key)] = value
             c.execute("UPDATE tien_do_choi SET ma_dia_diem_hien_tai=%s,nam_mo_khoa_cao_nhat=%s,danh_sach_dia_diem_da_mo=%s,du_lieu_nhiem_vu=%s WHERE ma_nguoi_dung=%s", (current_loc_id, max_year, json.dumps(sorted(merged), ensure_ascii=False), json.dumps(old_task4, ensure_ascii=False), user_id))
         conn.commit()
     except Exception as exc:
@@ -125,28 +130,33 @@ def save_progress(user_id: int, current_loc_id: int, max_year: int, completed: l
     finally: conn.close()
 
 
+@lru_cache(maxsize=1)
+def _timeline_configs():
+    """Nạp dữ liệu Task 4 đúng một lần, không kéo giao diện vào server."""
+    import importlib.util
+    import sys
+    from pathlib import Path
+    from types import ModuleType
+    folder = Path(__file__).resolve().parents[2] / "task4"
+    package_name = "_task5_timeline_data"
+    package = ModuleType(package_name)
+    package.__path__ = [str(folder)]
+    sys.modules[package_name] = package
+    for child in ("quest_system", "timeline_data"):
+        fullname = f"{package_name}.{child}"
+        spec = importlib.util.spec_from_file_location(fullname, folder / f"{child}.py")
+        if spec is None or spec.loader is None:
+            raise RepositoryError("Không nạp được dữ liệu quiz Task 4.")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[fullname] = module
+        spec.loader.exec_module(module)
+        setattr(package, child, module)
+    return sys.modules[f"{package_name}.timeline_data"].TIMELINE_QUEST_CONFIGS
+
+
 def _get_question(cursor, question_id: str):
     if question_id.startswith("task4:"):
-        # Nạp file dữ liệu Task 4 trực tiếp, tránh __init__ kéo UI/Pygame vào server.
-        import importlib.util
-        import sys
-        from pathlib import Path
-        from types import ModuleType
-        folder = Path(__file__).resolve().parents[2] / "task4"
-        package_name = "_task5_timeline_data"
-        package = ModuleType(package_name)
-        package.__path__ = [str(folder)]
-        sys.modules[package_name] = package
-        for child in ("quest_system", "timeline_data"):
-            fullname = f"{package_name}.{child}"
-            spec = importlib.util.spec_from_file_location(fullname, folder / f"{child}.py")
-            if spec is None or spec.loader is None:
-                raise RepositoryError("Không nạp được dữ liệu quiz Task 4.")
-            module = importlib.util.module_from_spec(spec)
-            sys.modules[fullname] = module
-            spec.loader.exec_module(module)
-            setattr(package, child, module)
-        TIMELINE_QUEST_CONFIGS = sys.modules[f"{package_name}.timeline_data"].TIMELINE_QUEST_CONFIGS
+        TIMELINE_QUEST_CONFIGS = _timeline_configs()
         raw_id = question_id.removeprefix("task4:")
         for name, cfg in TIMELINE_QUEST_CONFIGS.items():
             for q in cfg.get("questions", []):
@@ -166,7 +176,7 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
     conn = _connect()
     try:
         with conn.cursor() as c:
-            c.execute("SELECT diem_tri_thuc FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
+            c.execute("SELECT diem_tri_thuc,du_lieu_nhiem_vu FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
             progress = c.fetchone()
             if not progress: raise RepositoryError("Không tìm thấy tiến độ người chơi.")
             q = _get_question(c, question_id)
@@ -176,11 +186,13 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
             prev = c.fetchone()
             score = int(progress.get("diem_tri_thuc") or 0)
             engine = ScoringEngine(score)
+            state = json.loads(progress.get("du_lieu_nhiem_vu") or "{}")
+            engine.correct_streak = max(0, int(state.get("_task5", {}).get("correct_streak", 0)))
             if prev:
                 old_correct = bool(prev["dung_sai"])
                 if old_correct or not correct:
                     rank = engine.calculate_rank(score); conn.commit()
-                    return {"correct": old_correct, "duplicate": True, "points_awarded": 0, "total_score": score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
+                    return {"correct": correct, "duplicate": True, "points_awarded": 0, "total_score": score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
                 # Đáp án sai trước đó đã bị phạt một lần; đúng lại nhận điểm đúng.
                 delta = engine.record_answer(True, seconds)
                 c.execute("UPDATE answer_log SET dung_sai=1,diem=%s,thoi_gian=%s WHERE ma_nguoi_dung=%s AND ma_cau_hoi=%s", (delta, seconds, user_id, question_id))
@@ -189,7 +201,8 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
                 c.execute("INSERT INTO answer_log (ma_nguoi_dung,ma_cau_hoi,dung_sai,diem,thoi_gian) VALUES (%s,%s,%s,%s,%s)", (user_id, question_id, int(correct), delta, seconds))
                 if not correct:
                     c.execute("INSERT INTO review_items (ma_nguoi_dung,ma_cau_hoi,location_name,question_text,options_json,correct_index,user_choice,explanation,source_title,source_citation) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON DUPLICATE KEY UPDATE user_choice=VALUES(user_choice),retry_count=retry_count+1,status='PENDING'", (user_id, question_id, q["location"], q["text"], json.dumps(q["options"], ensure_ascii=False), q["answer"], choice, q["explanation"], q["source"], q["source"]))
-            c.execute("UPDATE tien_do_choi SET diem_tri_thuc=%s WHERE ma_nguoi_dung=%s", (engine.total_score, user_id))
+            state["_task5"] = {"correct_streak": engine.correct_streak}
+            c.execute("UPDATE tien_do_choi SET diem_tri_thuc=%s,du_lieu_nhiem_vu=%s WHERE ma_nguoi_dung=%s", (engine.total_score, json.dumps(state, ensure_ascii=False), user_id))
         conn.commit()
         rank = engine.calculate_rank(engine.total_score)
         return {"correct": correct, "duplicate": False, "points_awarded": delta, "total_score": engine.total_score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
@@ -219,6 +232,30 @@ def complete_quest(user_id: int, location_id: int, location_name: str, max_year:
             progress = c.fetchone()
             if not progress:
                 raise RepositoryError("Không tìm thấy tiến độ người chơi.")
+            # Không tin ID/tên/năm do client gửi để cấp thưởng quest.
+            c.execute("SELECT ma_dia_diem,ten_dia_diem FROM dia_diem WHERE ma_dia_diem=%s", (location_id,))
+            location = c.fetchone()
+            if not location:
+                raise RepositoryError("Địa điểm không tồn tại.")
+            c.execute("SELECT q.ma_cau_hoi FROM cau_hoi_on_tap q JOIN su_kien_lich_su e ON e.ma_su_kien=q.ma_su_kien WHERE e.ma_dia_diem=%s", (location_id,))
+            required = {str(row["ma_cau_hoi"]) for row in c.fetchall()}
+            # Câu timeline lấy từ dữ liệu Task 4 trên server, không từ payload client.
+            from services.game_data_service import LOCATION_MAP_CONFIG
+            canonical = LOCATION_MAP_CONFIG.get(location_id, {}).get("key", "")
+            timeline = _timeline_configs().get(canonical)
+            if timeline:
+                required = {"task4:" + q["id"] for q in timeline["questions"]}
+            if not required:
+                raise RepositoryError("Địa điểm chưa có bộ câu hỏi để xác minh hoàn thành.")
+            c.execute("SELECT ma_cau_hoi FROM answer_log WHERE ma_nguoi_dung=%s AND dung_sai=1", (user_id,))
+            answered = {str(row["ma_cau_hoi"]) for row in c.fetchall()}
+            if not required.issubset(answered):
+                raise RepositoryError("Chưa trả lời đúng đủ câu hỏi của địa điểm.")
+            # Nguồn dữ liệu manh mối và quiz được kiểm tra ở server; không tin completed client.
+            location_name = canonical or location["ten_dia_diem"]
+            c.execute("SELECT MAX(nam_dien_ra) AS max_year FROM su_kien_lich_su WHERE ma_dia_diem=%s", (location_id,))
+            event = c.fetchone() or {}
+            max_year = int(event.get("max_year") or 1914)
             score = int(progress.get("diem_tri_thuc") or 0)
             try: completed = set(json.loads(progress.get("danh_sach_dia_diem_da_mo") or "[]"))
             except (TypeError, ValueError): completed = set()
@@ -262,6 +299,12 @@ def retry_review(user_id: int, question_id: str, choice: int):
     conn = _connect()
     try:
         with conn.cursor() as c:
+            # Cùng thứ tự khóa với submit_answer: tiến độ trước, review sau.
+            # Tránh deadlock khi hai request quiz/retry chạy đồng thời.
+            c.execute("SELECT diem_tri_thuc FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
+            progress = c.fetchone()
+            if not progress:
+                raise RepositoryError("Không tìm thấy tiến độ người chơi.")
             c.execute("SELECT correct_index,options_json,reward_awarded FROM review_items WHERE ma_nguoi_dung=%s AND ma_cau_hoi=%s FOR UPDATE", (user_id, question_id))
             row = c.fetchone()
             if not row: raise RepositoryError("Không tìm thấy câu hỏi ôn tập.")
@@ -269,9 +312,6 @@ def retry_review(user_id: int, question_id: str, choice: int):
             if not 0 <= choice < len(options): raise RepositoryError("Đáp án chọn không hợp lệ.")
             correct = choice == int(row["correct_index"])
             c.execute("UPDATE review_items SET user_choice=%s,retry_count=retry_count+1,status=%s WHERE ma_nguoi_dung=%s AND ma_cau_hoi=%s", (choice, "MASTERED" if correct else "PENDING", user_id, question_id))
-            c.execute("SELECT diem_tri_thuc FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
-            progress = c.fetchone()
-            if not progress: raise RepositoryError("Không tìm thấy tiến độ người chơi.")
             engine = ScoringEngine(int(progress.get("diem_tri_thuc") or 0))
             reward = 0
             if correct and not bool(row.get("reward_awarded")):
