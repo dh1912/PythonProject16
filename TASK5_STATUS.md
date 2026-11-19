@@ -1,5 +1,11 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Cập nhật mới nhất (ưu tiên hơn các ghi chú lịch sử bên dưới)
+
+Chính sách quest/tiến độ đã siết ở server: chặn tự khai completed, chặn địa điểm khóa, kiểm ID manh mối chính thức/đủ manh mối trước complete, suy ra năm server, lọc khóa scoring nội bộ. 57 test + 7 subtest đạt, Edge mock-actions và desktop smoke đạt. Chưa chứng minh hành động đọc/thu thập thật hoặc MySQL concurrency; ID cache browser còn cần đồng bộ nội dung DB. Xem biên bản chi tiết.
+
+Transport browser cho quiz/retry/save/quest/leaderboard/refresh review đã được nối fetch async qua task/poll hoặc task nền. 43 test + 7 subtest đạt; Edge thật login→review→retry→leaderboard với HTTP giả đạt, không pageerror. Save queued vẫn cần theo dõi kết quả/lỗi; quiz/save chưa E2E với DB thật. Các mục server authoritative deduction/manh mối/thứ tự mở khóa và MySQL integration vẫn còn. Xem TASK5_ACCEPTANCE.md.
+
 ## Đã sửa bằng mã và test hồi quy
 
 - Lazy import UI: server không cần Pygame chỉ để import scoring/repository.

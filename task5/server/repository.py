@@ -103,6 +103,8 @@ def load_progress(user_id: int):
     except (TypeError, ValueError): completed = []
     try: task4 = json.loads(row.get("du_lieu_nhiem_vu") or "{}")
     except (TypeError, ValueError): task4 = {}
+    # Không gửi khóa server _task5 ra client để lần lưu sau không ghi trả nhầm.
+    task4 = {str(key): value for key, value in task4.items() if str(key).isdigit() and isinstance(value, dict)} if isinstance(task4, dict) else {}
     return {"score": int(row.get("diem_tri_thuc") or 0), "current_loc_id": int(row.get("ma_dia_diem_hien_tai") or 1), "max_year": int(row.get("nam_mo_khoa_cao_nhat") or 1914), "completed": completed, "task4": task4}
 
 
@@ -115,19 +117,51 @@ def save_progress(user_id: int, current_loc_id: int, max_year: int, completed: l
             if not old: raise RepositoryError("Thiếu tiến độ người chơi.")
             try: merged = set(json.loads(old.get("danh_sach_dia_diem_da_mo") or "[]"))
             except (ValueError, TypeError): merged = set()
-            merged.update(completed)
+            from .quest_policy import validate_progress
+            catalog = _location_catalog(c)
+            try:
+                selected = validate_progress(catalog, merged, completed, current_loc_id)
+            except ValueError as exc:
+                raise RepositoryError(str(exc)) from exc
             try: old_task4 = json.loads(old.get("du_lieu_nhiem_vu") or "{}")
             except (ValueError, TypeError): old_task4 = {}
             # Không cho client ghi đè trạng thái chấm điểm nội bộ của server.
             for key, value in task4.items():
                 if not str(key).isdigit() or not isinstance(value, dict):
                     raise RepositoryError("Dữ liệu nhiệm vụ không hợp lệ.")
-                old_task4[str(key)] = value
-            c.execute("UPDATE tien_do_choi SET ma_dia_diem_hien_tai=%s,nam_mo_khoa_cao_nhat=%s,danh_sach_dia_diem_da_mo=%s,du_lieu_nhiem_vu=%s WHERE ma_nguoi_dung=%s", (current_loc_id, max_year, json.dumps(sorted(merged), ensure_ascii=False), json.dumps(old_task4, ensure_ascii=False), user_id))
+                try:
+                    validate_progress(catalog, merged, [], int(key))
+                except ValueError as exc:
+                    raise RepositoryError(str(exc)) from exc
+                allowed = _required_clues(c, int(key))
+                incoming = value.get("clue_ids", [])
+                if not isinstance(incoming, list) or not set(incoming).issubset(allowed):
+                    raise RepositoryError("Manh mối không thuộc địa điểm.")
+                previous = old_task4.get(str(key), {})
+                old_task4[str(key)] = {"clue_ids": sorted(set(previous.get("clue_ids", [])) | set(incoming)),
+                                      "quiz_attempts": int(previous.get("quiz_attempts", 0))}
+            # Năm chỉ được suy ra từ địa điểm đã mở, không lấy giá trị tự khai 1975.
+            allowed_year = max([1914, int(selected["start"])] + [int(item["start"]) for item in catalog if item["name"] in merged])
+            c.execute("UPDATE tien_do_choi SET ma_dia_diem_hien_tai=%s,nam_mo_khoa_cao_nhat=GREATEST(nam_mo_khoa_cao_nhat,%s),danh_sach_dia_diem_da_mo=%s,du_lieu_nhiem_vu=%s WHERE ma_nguoi_dung=%s", (current_loc_id, allowed_year, json.dumps(sorted(merged), ensure_ascii=False), json.dumps(old_task4, ensure_ascii=False), user_id))
         conn.commit()
     except Exception as exc:
         conn.rollback(); raise RepositoryError(str(exc)) from exc
     finally: conn.close()
+
+
+def _location_catalog(cursor):
+    from services.game_data_service import LOCATION_MAP_CONFIG
+    cursor.execute("SELECT ma_dia_diem,ten_dia_diem FROM dia_diem ORDER BY ma_dia_diem")
+    return [{"id": int(row["ma_dia_diem"]),
+             "name": LOCATION_MAP_CONFIG.get(int(row["ma_dia_diem"]), {}).get("key", row["ten_dia_diem"]),
+             "start": LOCATION_MAP_CONFIG.get(int(row["ma_dia_diem"]), {}).get("start", 1914)}
+            for row in cursor.fetchall()]
+
+
+def _required_clues(cursor, location_id: int) -> set[str]:
+    """ID chính thức cùng định dạng transform_investigation_data hiện có."""
+    cursor.execute("SELECT m.ma_manh_moi FROM manh_moi m JOIN su_kien_lich_su e ON e.ma_su_kien=m.ma_su_kien WHERE e.ma_dia_diem=%s", (location_id,))
+    return {str(row["ma_manh_moi"]) for row in cursor.fetchall()}
 
 
 @lru_cache(maxsize=1)
@@ -180,6 +214,8 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
             progress = c.fetchone()
             if not progress: raise RepositoryError("Không tìm thấy tiến độ người chơi.")
             q = _get_question(c, question_id)
+            # Chuẩn hóa ID từ nguồn server, ngăn nhận thưởng qua ID có số 0 đầu.
+            question_id = str(q.get("id", question_id))
             if not 0 <= choice < len(q["options"]): raise RepositoryError("Đáp án chọn không hợp lệ.")
             correct = choice == q["answer"]
             c.execute("SELECT dung_sai FROM answer_log WHERE ma_nguoi_dung=%s AND ma_cau_hoi=%s", (user_id, question_id))
@@ -228,7 +264,7 @@ def complete_quest(user_id: int, location_id: int, location_name: str, max_year:
     key = f"quest_bonus:{int(location_id)}"
     try:
         with conn.cursor() as c:
-            c.execute("SELECT diem_tri_thuc,danh_sach_dia_diem_da_mo FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
+            c.execute("SELECT diem_tri_thuc,danh_sach_dia_diem_da_mo,du_lieu_nhiem_vu FROM tien_do_choi WHERE ma_nguoi_dung=%s FOR UPDATE", (user_id,))
             progress = c.fetchone()
             if not progress:
                 raise RepositoryError("Không tìm thấy tiến độ người chơi.")
@@ -237,6 +273,18 @@ def complete_quest(user_id: int, location_id: int, location_name: str, max_year:
             location = c.fetchone()
             if not location:
                 raise RepositoryError("Địa điểm không tồn tại.")
+            from .quest_policy import validate_progress
+            catalog = _location_catalog(c)
+            saved_completed = set(json.loads(progress.get("danh_sach_dia_diem_da_mo") or "[]"))
+            try:
+                validate_progress(catalog, saved_completed, [], location_id)
+            except ValueError as exc:
+                raise RepositoryError(str(exc)) from exc
+            required_clues = _required_clues(c, location_id)
+            saved_tasks = json.loads(progress.get("du_lieu_nhiem_vu") or "{}")
+            collected = set(saved_tasks.get(str(location_id), {}).get("clue_ids", []))
+            if not required_clues.issubset(collected):
+                raise RepositoryError("Chưa lưu đủ manh mối chính thức của địa điểm.")
             c.execute("SELECT q.ma_cau_hoi FROM cau_hoi_on_tap q JOIN su_kien_lich_su e ON e.ma_su_kien=q.ma_su_kien WHERE e.ma_dia_diem=%s", (location_id,))
             required = {str(row["ma_cau_hoi"]) for row in c.fetchall()}
             # Câu timeline lấy từ dữ liệu Task 4 trên server, không từ payload client.
@@ -251,7 +299,7 @@ def complete_quest(user_id: int, location_id: int, location_name: str, max_year:
             answered = {str(row["ma_cau_hoi"]) for row in c.fetchall()}
             if not required.issubset(answered):
                 raise RepositoryError("Chưa trả lời đúng đủ câu hỏi của địa điểm.")
-            # Nguồn dữ liệu manh mối và quiz được kiểm tra ở server; không tin completed client.
+            # Chỉ xác minh ID và tiến độ đã lưu; chưa chứng minh người chơi đọc nội dung.
             location_name = canonical or location["ten_dia_diem"]
             c.execute("SELECT MAX(nam_dien_ra) AS max_year FROM su_kien_lich_su WHERE ma_dia_diem=%s", (location_id,))
             event = c.fetchone() or {}

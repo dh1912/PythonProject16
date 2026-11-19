@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any
 import sys
+import asyncio
 from .api_client import ApiClient, ApiClientError
 
 
@@ -18,6 +19,63 @@ class ApiGameDataService:
         self.is_connected = False
         self.status_message = "API Task 5 chưa kết nối"
         self._progress = {"score": 0, "current_loc_id": 1, "max_year": 1914, "completed": set(), "task4": {}}
+        self.pending_operations = set()
+        self.network_errors = []
+        self._session_generation = 0
+        self._write_lock = None
+
+    async def request_async(self, method, path, payload=None, authenticated=True):
+        """Transport dùng chung cho mọi hành động browser, không gọi urllib."""
+        from .browser_client import BrowserApiClient
+        if self.browser_client is None:
+            self.browser_client = BrowserApiClient(self.client.base_url, self.client.timeout)
+            self.browser_client.token = self.client.token
+        if method.upper() == "POST":
+            # Giữ thứ tự save manh mối -> hoàn thành quest trong cùng phiên browser.
+            if self._write_lock is None:
+                self._write_lock = asyncio.Lock()
+            async with self._write_lock:
+                return await self.browser_client.request(method, path, payload, authenticated)
+        return await self.browser_client.request(method, path, payload, authenticated)
+
+    def _schedule(self, coroutine):
+        task = asyncio.create_task(coroutine)
+        self.pending_operations.add(task)
+        def finished(completed):
+            self.pending_operations.discard(completed)
+            if not completed.cancelled():
+                error = completed.exception()
+                if error:
+                    self.network_errors.append(str(error))
+        task.add_done_callback(finished)
+        return task
+
+    async def submit_answer_async(self, question_id, choice_index, elapsed_seconds):
+        generation = self._session_generation
+        result = await self.request_async("POST", "/quiz/submit", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)})
+        if generation != self._session_generation:
+            raise ApiClientError("Phiên đăng nhập đã thay đổi.")
+        self._progress["score"] = int(result["total_score"])
+        return result
+
+    async def retry_review_async(self, question_id, choice_index):
+        generation = self._session_generation
+        result = await self.request_async("POST", "/review/retry", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index)})
+        if generation != self._session_generation:
+            raise ApiClientError("Phiên đăng nhập đã thay đổi.")
+        self._progress["score"] = int(result["total_score"])
+        return result
+
+    async def get_leaderboard_async(self):
+        return (await self.request_async("GET", "/leaderboard", authenticated=False)).get("leaderboard", [])
+
+    async def refresh_reviews_async(self):
+        generation = self._session_generation
+        result = await self.request_async("GET", "/review/me")
+        if generation != self._session_generation:
+            raise ApiClientError("Phiên đăng nhập đã thay đổi.")
+        self._browser_reviews = result.get("items", [])
+        return list(self._browser_reviews)
 
     @staticmethod
     def _decode_progress(data):
@@ -77,9 +135,16 @@ class ApiGameDataService:
         return self._auth("/auth/register", {"username": username, "password": password, "fullname": fullname})
 
     def load_user_progress(self, user_id):
+        if self.async_auth_enabled:
+            return dict(self._progress)
         self._progress = self._decode_progress(self.client.get("/progress/me").get("data", {})); return self._progress
 
     def sync_user_progress(self, user_id, current_loc_id, max_year, score, completed_set):
+        if self.async_auth_enabled:
+            payload = {"current_loc_id": int(current_loc_id), "max_year": int(max_year), "completed": list(completed_set)}
+            self._schedule(self.request_async("POST", "/progress/save", payload))
+            self._progress.update(current_loc_id=current_loc_id, max_year=max_year, completed=set(completed_set))
+            return True, "Đã xếp hàng lưu; chưa xác nhận máy chủ."
         try:
             response = self.client.post("/progress/save", {"current_loc_id": current_loc_id, "max_year": max_year, "completed": list(completed_set)})
             self._progress.update(current_loc_id=current_loc_id, max_year=max_year, completed=set(completed_set)); return True, response
@@ -92,6 +157,11 @@ class ApiGameDataService:
 
     def sync_task4_progress(self, user_id, location_id, clue_ids, quiz_attempts):
         task4 = dict(self._progress.get("task4", {})); task4[str(location_id)] = {"clue_ids": sorted(set(clue_ids)), "quiz_attempts": int(quiz_attempts)}
+        if self.async_auth_enabled:
+            payload = {"current_loc_id": self._progress["current_loc_id"], "max_year": self._progress["max_year"], "completed": list(self._progress["completed"]), "task4": task4}
+            self._schedule(self.request_async("POST", "/progress/save", payload))
+            self._progress["task4"] = task4
+            return True, "Đã xếp hàng lưu nhiệm vụ."
         try:
             result = self.client.post("/progress/save", {"current_loc_id": self._progress["current_loc_id"], "max_year": self._progress["max_year"], "completed": list(self._progress["completed"]), "task4": task4})
             self._progress["task4"] = task4; return True, result
@@ -103,6 +173,9 @@ class ApiGameDataService:
 
     def get_locations_from_db(self): return self.locations
     def logout(self):
+        self._session_generation += 1
+        for task in tuple(self.pending_operations):
+            task.cancel()
         self.client.token = None
         if self.browser_client:
             self.browser_client.token = None
@@ -112,9 +185,19 @@ class ApiGameDataService:
         self._progress = {"score": 0, "current_loc_id": 1, "max_year": 1914, "completed": set(), "task4": {}}
         return True
     def submit_answer(self, question_id, choice_index, elapsed_seconds):
+        if self.async_auth_enabled:
+            raise ApiClientError("Browser phải dùng submit_answer_async.")
         return self.client.post("/quiz/submit", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)})
 
     def complete_quest(self, location_id, location_name, max_year):
+        if self.async_auth_enabled:
+            async def complete():
+                generation = self._session_generation
+                result = await self.request_async("POST", "/quest/complete", {"ma_dia_diem": int(location_id), "ten_dia_diem": str(location_name), "nam_mo_khoa": int(max_year)})
+                if generation == self._session_generation:
+                    self._progress["score"] = int(result["total_score"])
+            self._schedule(complete())
+            return {"total_score": self._progress["score"], "bonus": 0, "pending": True}
         result = self.client.post("/quest/complete", {"ma_dia_diem": int(location_id), "ten_dia_diem": str(location_name), "nam_mo_khoa": int(max_year)})
         self._progress["score"] = int(result.get("total_score", self._progress["score"]))
         return result
@@ -124,5 +207,10 @@ class ApiGameDataService:
             return list(getattr(self, "_browser_reviews", []))
         return self.client.get("/review/me").get("items", [])
     def retry_review(self, question_id, choice_index):
+        if self.async_auth_enabled:
+            raise ApiClientError("Browser phải dùng retry_review_async.")
         return self.client.post("/review/retry", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index)})
-    def get_leaderboard(self): return self.client.get("/leaderboard", authenticated=False).get("leaderboard", [])
+    def get_leaderboard(self):
+        if self.async_auth_enabled:
+            raise ApiClientError("Browser phải dùng get_leaderboard_async.")
+        return self.client.get("/leaderboard", authenticated=False).get("leaderboard", [])

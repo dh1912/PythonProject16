@@ -1,5 +1,7 @@
 """Phòng ôn tập có vùng cuộn và dùng chung hình chữ nhật để vẽ/bấm."""
 import pygame
+import asyncio
+import inspect
 from task5.review_system import ReviewManager, ReviewStatus
 from task5.scoring_system import ScoringEngine
 from task5.font_utils import task5_font
@@ -21,6 +23,7 @@ class ReviewScene:
         self.detail_view = pygame.Rect(370, 105, 690, 500)
         self.back_button = pygame.Rect(910, 20, 150, 42)
         self.answer_rects = []
+        self.pending = None
 
     def get_active_questions(self):
         return self.review_manager.get_pending_questions() + self.review_manager.get_mastered_questions()
@@ -82,9 +85,15 @@ class ReviewScene:
         return None
 
     def _process_answer(self, question, choice_index: int):
+        if self.pending is not None:
+            return
         try:
             if self.retry_submitter:
                 result = self.retry_submitter(question.id, choice_index)
+                if inspect.isawaitable(result):
+                    self.pending = (asyncio.create_task(result), question, choice_index)
+                    self.feedback_message = "Đang gửi đáp án ôn tập…"
+                    return
                 correct = bool(result["is_correct"])
                 self.scoring_engine.total_score = int(result["total_score"])
                 earned = int(result.get("points_awarded", 0))
@@ -100,6 +109,22 @@ class ReviewScene:
         except Exception as exc:
             self.feedback_message = f"Chưa lưu được kết quả: {exc}"
             self.feedback_color = (180, 35, 45)
+
+    def poll_pending(self):
+        if self.pending is None or not self.pending[0].done():
+            return
+        task, question, choice = self.pending
+        self.pending = None
+        try:
+            result = task.result()
+            correct = bool(result["is_correct"])
+            self.scoring_engine.total_score = int(result["total_score"])
+            question.user_choice = choice
+            question.status = ReviewStatus.MASTERED if correct else ReviewStatus.PENDING
+            question.reward_awarded |= int(result.get("points_awarded", 0)) > 0
+            self.feedback_message = f"Chính xác! +{result.get('points_awarded', 0)} điểm." if correct else "Chưa chính xác. Hãy đọc lại nguồn."
+        except Exception as exc:
+            self.feedback_message = f"Chưa gửi được đáp án: {exc}"
 
     def draw(self, screen):
         screen.fill((245, 239, 220))

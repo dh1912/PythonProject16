@@ -98,6 +98,18 @@ def _public(user: dict[str, Any]):
 def health(): return {"status": "healthy", "service": "task5"}
 
 
+@app.get("/game/questions")
+def game_questions():
+    """Cấp bộ câu hỏi hiện hành có ID; chấm điểm vẫn luôn truy vấn DB server."""
+    from data import db_queries
+    from services.game_data_service import transform_deduction_questions
+    events, event_message = db_queries.fetch_raw_su_kien()
+    questions, question_message = db_queries.fetch_raw_cau_hoi()
+    if events is None or questions is None:
+        raise HTTPException(503, "Chưa tải được bộ câu hỏi từ CSDL.")
+    return {"questions": transform_deduction_questions(events, questions)}
+
+
 @app.get("/", include_in_schema=False)
 def root_page():
     """Chuyển vào game khi có build; nếu chưa có thì hiện hướng dẫn thay vì JSON 404."""

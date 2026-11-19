@@ -47,3 +47,13 @@ def test_save_rejects_overwriting_server_scoring_state():
     with patch.object(repo, "_connect", return_value=conn), pytest.raises(repo.RepositoryError):
         repo.save_progress(1, 1, 1914, [], {"_task5": {"correct_streak": 999}})
     conn.rollback.assert_called_once()
+
+
+def test_leading_zero_question_id_uses_canonical_log_key():
+    conn, cursor = connection([{"diem_tri_thuc": 54}, {"dung_sai": 1}])
+    question = {"id": "42", "answer": 1, "options": ["a", "b"], "explanation": "e", "source": "s"}
+    with patch.object(repo, "_connect", return_value=conn), patch.object(repo, "_get_question", return_value=question):
+        result = repo.submit_answer(1, "042", 1, 30)
+    assert result["duplicate"]
+    lookup = next(c.args for c in cursor.execute.call_args_list if "SELECT dung_sai FROM answer_log" in c.args[0])
+    assert lookup[1] == (1, "42")

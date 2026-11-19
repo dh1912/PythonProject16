@@ -30,6 +30,18 @@ async def main():
     Game = importlib.import_module(module_name).Game
     game = Game()
     if sys.platform == "emscripten":
+        # Tải trong task riêng: màn login tiếp tục vẽ khi DB/API chậm hoặc lỗi.
+        async def load_questions():
+            try:
+                response = await game.data_service.request_async("GET", "/game/questions", authenticated=False)
+                questions = response["questions"]
+                game.data_service.questions = questions
+                game.game_data["questions"] = questions
+                game.deduction_scene.questions_bank = questions
+            except Exception as exc:
+                game.notify(f"Chưa tải được câu hỏi server: {exc}")
+        asyncio.create_task(load_questions())
+    if sys.platform == "emscripten":
         # Đánh dấu sau frame game thật, không dùng canvas loader làm bằng chứng.
         game.step()
         platform.window.task5GameReady = True

@@ -38,3 +38,13 @@ def test_leaderboard_filters_private_fields_and_health_has_no_db():
             response = client.get("/leaderboard")
             assert response.status_code == 200
             assert response.json()["leaderboard"] == [{"display_name": "A", "score": 100}]
+
+
+def test_game_questions_returns_db_ids_without_database_access():
+    with patch("data.db_queries.fetch_raw_su_kien", return_value=([{"ma_su_kien": 9, "ma_dia_diem": 1, "nguon_trich_dan": "Source"}], "ok")), patch(
+        "data.db_queries.fetch_raw_cau_hoi", return_value=([{"ma_cau_hoi": 42, "ma_su_kien": 9, "dap_an_dung": "B"}], "ok")
+    ):
+        with TestClient(app) as client:
+            response = client.get("/game/questions")
+            assert response.status_code == 200
+            assert response.json()["questions"]["Ben Nha Rong"][0]["id"] == "42"

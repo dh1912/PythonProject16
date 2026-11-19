@@ -1,5 +1,63 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Lần nghiệm thu hiện tại — kết luận có điều kiện
+
+Đã chạy lại, không chỉ lấy kết quả lịch sử:
+
+| Hạng mục | Kết quả | Phạm vi bằng chứng |
+|---|---|---|
+| pytest | 57 test chính + 7 subtest đạt, mã thoát 0 | Unit, cursor giả, HTTP giả, UI surface |
+| compileall | đạt, mã thoát 0 | Task 5, tests, main/web, login/review, data service |
+| Build Pygbag sạch | đạt, mã thoát 0 | `build/web-source/build/web` |
+| Edge thật mock-actions | ready=true, mock_login_pass=true, page_errors=[] | Login/review/retry/leaderboard HTTP giả |
+| Desktop API-off | login/review step đạt, mã thoát 0 | Cache, DB connection bị chặn |
+| Docker runtime | chưa nghiệm thu | Không phát hiện lệnh Docker |
+| MySQL transaction/concurrency thật | chưa nghiệm thu | Không thực hiện ghi thử DB |
+| Quest web end-to-end | chưa đạt đủ điều kiện nghiệm thu | main_web mới tải questions, chưa tải investigation_data/manh mối DB |
+
+**Kết luận:** chấp nhận các thành phần trong phạm vi unit/mock và các smoke/E2E giả nêu trên; chưa chấp nhận toàn bộ Task 5 để public.
+
+Các điểm chặn cần giải quyết tiếp:
+
+1. Đồng bộ bộ manh mối DB về browser, không dùng ID cache khác ID server.
+2. Test browser đầy đủ deduction/quiz -> lưu manh mối -> complete quest -> logout/login -> khôi phục điểm/tiến độ trên DB thử riêng.
+3. Đối chiếu luồng complete local với server: local vẫn đánh dấu completed trước/không chờ xác nhận complete async, có thể lệch nếu server từ chối.
+4. Thử migration, khóa và rollback/concurrency bằng MySQL/MariaDB riêng; không suy ra từ mock.
+5. Docker, quyền phân phối font, khôi phục thưởng JSON/DB khi mất mạng chưa có nghiệm thu thực tế.
+
+Cảnh báo còn lại khi chạy test: Starlette TestClient cảnh báo deprecation httpx. Không làm test thất bại, nhưng nên đồng bộ dependency trước release.
+
+Kết quả browser mới được ghi tại `data/browser-check.json`; ảnh thật `data/browser-check.png`. Không cập nhật build cũ `.web-staging` và không public.
+
+## Cập nhật chính sách tiến độ/quest server
+
+- 57 test + 7 subtest đạt; compile/build sạch mã thoát 0; Edge mock-actions và desktop API-off tiếp tục đạt.
+- Chính sách mở khóa đối chiếu trực tiếp QuestManager Task 4: địa điểm đầu chưa hoàn thành theo start và ngoại lệ Ba Đình mở Điện Biên Phủ. Không sửa Task 4.
+- `/progress/save` không được tự thêm completed, chọn địa điểm khóa, ghi khóa `_task5` hoặc tăng quiz_attempts. ID manh mối phải thuộc DB địa điểm; hợp nhất dữ liệu hợp lệ, không ghi đè mất manh mối cũ.
+- Năm lưu do server suy ra từ địa điểm đã mở; không tin năm 1975 do client tự khai.
+- Complete quest kiểm tra địa điểm mở, đủ manh mối DB đã lưu và đủ quiz server trước khi thưởng. Khóa `_task5` bị lọc khỏi tiến độ trả về client.
+- Browser POST được tuần tự hóa để lưu manh mối trước complete quest.
+- Giới hạn: client vẫn tự gửi hành động thu thập ID hợp lệ, nên không chứng minh người chơi thực sự đọc/đối chiếu tư liệu. Chưa có MySQL transaction/concurrency E2E, và cache browser cần nạp đầy đủ dữ liệu manh mối DB để đồng nhất với ID server. Không gọi đây là bản public hoàn chỉnh.
+
+## Cập nhật điểm nối deduction
+
+- Game chặn/chấm đáp án deduction trước khi scene tiến câu; API lỗi không chuyển câu và không cộng local, kết quả server ưu tiên hơn cache, browser bấm lặp chỉ gửi một request.
+- Mapping câu hỏi giữ ID DB và nguồn theo sự kiện; endpoint `/game/questions` cung cấp bộ câu có ID cho browser bằng fetch task riêng.
+- Đã chuẩn hóa ID log để `042`/`42` không nhận điểm hai lần.
+- Test mới cho mapping, lỗi mạng, cache sai, async duplicate và ID chuẩn. Không sửa source scene deduction thuộc task khác.
+- Browser Edge login/review/retry/leaderboard HTTP giả tiếp tục đạt sau build. Chưa chứng minh toàn bộ deduction/quest/MySQL end-to-end.
+- Quest vẫn chưa kiểm chứng manh mối và thứ tự mở khóa server-side; đó là hạng mục tiếp theo, không được coi đã nghiệm thu chỉ vì điểm nối deduction có test.
+
+## Cập nhật mới nhất: hành động browser async
+
+- 43 test chính + 7 subtest đạt; compile đạt; desktop API-off chạy login/review với DB bị chặn.
+- Adapter đã có async quiz, retry, leaderboard, refresh review; save/quest dùng task nền fetch, có thu thập lỗi. Kết quả queued không có nghĩa server đã lưu.
+- Game trì hoãn xử lý quiz browser đến khi response về, chặn bấm lặp; ReviewScene/LeaderboardScene poll task, không chặn frame.
+- Response quiz/retry/review của phiên cũ bị từ chối sau logout; task nền bị hủy khi logout.
+- Edge thật: `python -m task5.check_web_runtime --seconds 60 --mock-actions` đạt: login, review, retry, leaderboard đúng thứ tự, first-frame ready, không pageerror. HTTP giả bằng Playwright, không kết nối DB.
+- Save và quiz có test async với transport giả; chưa nghiệm thu chuỗi chơi quiz/save với MySQL thật hoặc kiểm thử mạng đồng thời thực tế. Không công bố toàn bộ Task 5 hoàn tất.
+- Build mới tại `build/web-source/build/web`. `.web-staging` cũ không tự cập nhật.
+
 ## Cập nhật sau kiểm tra browser thật
 
 ### Cập nhật transport đăng nhập browser

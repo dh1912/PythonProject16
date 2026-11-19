@@ -21,6 +21,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seconds", type=int, default=60)
     parser.add_argument("--mock-login", action="store_true", help="Kiểm tra UI login/fetch với HTTP giả, không dùng DB.")
+    parser.add_argument("--mock-actions", action="store_true", help="Kiểm tra thêm retry và Bảng Vàng với HTTP giả.")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     build = root / "build" / "web-source" / "build" / "web"
@@ -52,7 +53,7 @@ def main() -> int:
                 try:
                     page = browser.new_page(viewport={"width": 1280, "height": 800})
                     auth_requests = []
-                    if args.mock_login:
+                    if args.mock_login or args.mock_actions:
                         def login_response(route):
                             auth_requests.append("login")
                             route.fulfill(status=200, content_type="application/json", body=json.dumps({
@@ -60,14 +61,26 @@ def main() -> int:
                                 "progress": {"score": 30, "current_loc_id": 1, "max_year": 1914, "completed": [], "task4": {}}}))
                         def review_response(route):
                             auth_requests.append("review")
-                            route.fulfill(status=200, content_type="application/json", body='{"items":[]}')
+                            items = [{"id": "task4:test", "location_name": "Test", "question": "Choose B", "options": ["A", "B"], "correct_index": 1, "user_choice": 0, "status": "PENDING"}] if args.mock_actions else []
+                            route.fulfill(status=200, content_type="application/json", body=json.dumps({"items": items}))
                         page.route("**/auth/login", login_response)
+                        # Không để browser test vô tình gọi DB qua endpoint nội dung.
+                        page.route("**/game/questions", lambda route: route.fulfill(
+                            status=200, content_type="application/json", body='{"questions":{}}'))
                         page.route("**/review/me", review_response)
+                        def retry_response(route):
+                            auth_requests.append("retry")
+                            route.fulfill(status=200, content_type="application/json", body='{"is_correct":true,"points_awarded":15,"total_score":45}')
+                        def leaderboard_response(route):
+                            auth_requests.append("leaderboard")
+                            route.fulfill(status=200, content_type="application/json", body='{"leaderboard":[{"display_name":"Browser Test","score":45}]}')
+                        page.route("**/review/retry", retry_response)
+                        page.route("**/leaderboard", leaderboard_response)
                     page.on("console", lambda msg: messages.append({"type": msg.type, "text": msg.text}))
                     page.on("pageerror", lambda exc: messages.append({"type": "pageerror", "text": str(exc)}))
                     page.goto(url + "/web/", wait_until="domcontentloaded", timeout=30000)
                     page.wait_for_timeout(args.seconds * 1000)
-                    if args.mock_login:
+                    if args.mock_login or args.mock_actions:
                         canvas = page.locator("#canvas")
                         box = canvas.bounding_box()
                         width, height = canvas.evaluate("c=>[c.width,c.height]")
@@ -82,6 +95,15 @@ def main() -> int:
                         page.keyboard.type("test-password", delay=100)
                         click(500, 432)
                         page.wait_for_timeout(5000)
+                        if args.mock_actions:
+                            page.keyboard.press("r")
+                            page.wait_for_timeout(1000)
+                            page.keyboard.press("2")
+                            page.wait_for_timeout(2000)
+                            page.keyboard.press("Escape")
+                            page.wait_for_timeout(1000)
+                            page.keyboard.press("b")
+                            page.wait_for_timeout(2000)
                     page.screenshot(path=str(data / "browser-check.png"))
                     # Chứng minh Game đã chạy, không chỉ có canvas loader dựng sẵn.
                     ready = page.evaluate("Boolean(window.task5GameReady)")
@@ -90,7 +112,8 @@ def main() -> int:
                               "auth_requests": auth_requests,
                               "scope": "First-frame và tùy chọn UI login/fetch giả; không chứng minh DB."}
                     (data / "browser-check.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-                    login_ok = not args.mock_login or auth_requests == ["login", "review"]
+                    expected = ["login", "review", "retry", "leaderboard"] if args.mock_actions else ["login", "review"]
+                    login_ok = not (args.mock_login or args.mock_actions) or auth_requests == expected
                     print(json.dumps({"first_frame_ready": ready, "mock_login_pass": login_ok, "page_errors": errors}))
                     return 0 if ready and login_ok and not errors else 1
                 finally:
