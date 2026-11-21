@@ -62,7 +62,9 @@ def main() -> int:
                                 body = request.post_data_json
                                 diagnostic['credentials_received'] = {
                                     'username_matches': body.get('username') == username,
-                                    'password_matches': body.get('password') == password}
+                                    'password_matches': body.get('password') == password,
+                                    'username_lowercase_matches': body.get('username') == username.lower(),
+                                    'password_lowercase_matches': body.get('password') == password.lower()}
                         def request_failed(request):
                             network('failed', request)
                             diagnostic['requestfailed'].append({'path': urlsplit(request.url).path,
