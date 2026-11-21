@@ -520,7 +520,7 @@ def transform_deduction_questions(su_kien_rows, cau_hoi_rows):
         ev_id = ev.get("ma_su_kien")
 
         if ev_id in questions_by_event and questions_by_event[ev_id]:
-            deduction_dict[key_name] = questions_by_event[ev_id]
+            deduction_dict.setdefault(key_name, []).extend(questions_by_event[ev_id])
 
     return deduction_dict
 

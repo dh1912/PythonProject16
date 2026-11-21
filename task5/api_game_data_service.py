@@ -168,7 +168,14 @@ class ApiGameDataService:
         except ApiClientError as exc: return False, str(exc)
 
     def load_game_data(self):
-        # Chỉ đọc cache đã có; API client không tự mở kết nối MySQL desktop.
+        if not self.async_auth_enabled:
+            result = self.client.get('/game/content', authenticated=False)
+            self.locations = result['locations']
+            self.investigation_data = result['investigation_data']
+            self.questions = result['questions']
+            self.notebook_items = result['notebook']
+            return result
+        # Browser nạp bằng fetch từ main_web; không bao giờ mở DB local.
         return {"locations": self.locations, "investigation_data": self.investigation_data, "questions": self.questions, "is_connected": False, "status_message": self.status_message}
 
     def get_locations_from_db(self): return self.locations
@@ -191,15 +198,20 @@ class ApiGameDataService:
 
     def complete_quest(self, location_id, location_name, max_year):
         if self.async_auth_enabled:
-            async def complete():
-                generation = self._session_generation
-                result = await self.request_async("POST", "/quest/complete", {"ma_dia_diem": int(location_id), "ten_dia_diem": str(location_name), "nam_mo_khoa": int(max_year)})
-                if generation == self._session_generation:
-                    self._progress["score"] = int(result["total_score"])
-            self._schedule(complete())
-            return {"total_score": self._progress["score"], "bonus": 0, "pending": True}
+            raise ApiClientError('Browser cần chờ complete_quest_async.')
         result = self.client.post("/quest/complete", {"ma_dia_diem": int(location_id), "ten_dia_diem": str(location_name), "nam_mo_khoa": int(max_year)})
         self._progress["score"] = int(result.get("total_score", self._progress["score"]))
+        return result
+
+    async def complete_quest_async(self, location_id, location_name, max_year):
+        generation = self._session_generation
+        if self.pending_operations:
+            await asyncio.gather(*tuple(self.pending_operations))
+        result = await self.request_async('POST', '/quest/complete', {'ma_dia_diem':int(location_id), 'ten_dia_diem':str(location_name), 'nam_mo_khoa':int(max_year)})
+        if generation != self._session_generation:
+            raise ApiClientError('Phiên đăng nhập đã thay đổi.')
+        self._progress['score'] = int(result['total_score'])
+        self._progress['completed'].add(str(location_name))
         return result
 
     def get_review_items(self):

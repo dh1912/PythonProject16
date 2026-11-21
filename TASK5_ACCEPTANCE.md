@@ -1,5 +1,54 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## SQLite web — kết quả hiện hành (thay thế ghi chú lịch sử bên dưới)
+
+### Git
+- Workspace ban đầu sạch, feature/clue-notebook-system ở 71d7b66.
+- Fetch origin; main mới nhất 5f65cec đã merge Notebook và cải tiến Task 5.
+- Tạo fix/sqlite-web-deploy từ origin/main, không reset/force push/merge main.
+
+### Lỗi và sửa
+- authenticate_user bỏ qua password: xác minh bcrypt bắt buộc, hash thiếu/legacy rõ từ chối yêu cầu reset.
+- INSERT OR REPLACE làm mất state: UPSERT + BEGIN IMMEDIATE, giữ _task5 và clue_ids.
+- Repository MySQL xung đột SQLite: thay placeholders, khóa ghi, UPSERT/MAX, cursor thường và dictionary row.
+- Thiếu game.db/schema: migration SQLite 005 tự khởi tạo, WAL/busy_timeout/foreign_keys, backup trước nâng phiên bản, không seed user.
+- Browser Notebook mở DB local: data_provider API, dữ liệu JOIN từ server; phím N mở/ESC đóng, xem trước không hoàn thành quest.
+- Browser fallback thiếu/khác ID: game/content cấp toàn bộ manh mối mọi sự kiện, chặn chơi online khi chưa có nội dung chính thức.
+- Quest local completed trước response: task xác nhận, chỉ cập nhật điểm/completed sau server thành công.
+- Footer deduction chồng chữ: bỏ footer timeline vẽ thêm từ main.
+- Font Arial không có license phân phối: build dùng Noto Sans và OFL.
+
+### Kiểm thử đã chạy thật
+- pytest: 70 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS. Một cảnh báo httpx/Starlette deprecation.
+- Compile các module data/task3/task4/task5/scenes/services/main/web: PASS.
+- SQLite file tạm: DB trống/DB cũ, backup, migration lặp, rollback sau INSERT bằng trigger lỗi,
+  giữ bảng Task khác, giữ _task5, đăng nhập sai/đúng/không tồn tại, duplicate register,
+  JWT invalid, role teacher/player, quiz concurrent, retry concurrent: PASS.
+- Process mới đọc lại tiến độ SQLite: PASS.
+- Pygbag build: PASS; ZIP không DB, .env, profile, seed hoặc server; Noto/OFL có, Arial không.
+- Edge thật, không HTTP mock: register -> sai -> review +15 một lần -> quiz -> clues -> quest
+  +30 một lần -> login/restore -> leaderboard PASS. Thao tác UI login/Notebook/Bảng Vàng và
+  quest đầu với SQLite thật PASS, page_errors=[]. Một phần chuỗi sử dụng page.evaluate(fetch),
+  không gọi đó là mọi thao tác UI end-to-end.
+- Desktop SQLite thật file tạm: login screen/review/Notebook draw PASS.
+- Docker: CHƯA KIỂM THỬ (không có Docker CLI), không giả PASS.
+
+Bằng chứng: data/sqlite-browser-result.json, data/sqlite-notebook.png, data/sqlite-browser.png.
+Chạy lại: python -m pytest -q tests; python -m task5.build_web;
+python -m task5.check_sqlite_browser. Các DB/API test tự dừng, không dùng DB nhóm.
+
+### Giới hạn
+- Docker build/run/restart volume cần nghiệm thu trên máy có Docker.
+- UI toàn bộ 11 địa điểm/timeline chưa chạy hết; bản seed gốc giữ 8 địa điểm/30 sự kiện/8 nhân vật/10 manh mối/8 câu hỏi, không tự bịa thêm.
+- Không chứng minh người chơi đọc tư liệu; thời gian client có thể gian lận.
+- Triển khai public cần hosting/persistent disk/HTTPS và JWT_SECRET thật. Chưa public.
+- Nhật ký review offline và DB điểm là hai nơi lưu; không cam kết transaction phân tán/multi-device cho desktop. Online SQLite transaction là nguồn chuẩn.
+
+File thay đổi chính: config.py, data/db_queries.py, data/sqlite_store.py, migration 005,
+historical_seed.json/seed_source.md, task5/server/{repository,app}.py, api_game_data_service.py,
+main.py/main_web.py, build_web.py/font_utils.py, task4/clue_notebook_scene.py (điểm nối nhỏ),
+services/game_data_service.py, requirements, Dockerfile/ignore/env và tests SQLite/Notebook/quest.
+
 ## Lần nghiệm thu hiện tại — kết luận có điều kiện
 
 Đã chạy lại, không chỉ lấy kết quả lịch sử:

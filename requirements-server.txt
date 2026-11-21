@@ -1,6 +1,5 @@
 fastapi
 uvicorn[standard]
-pymysql
 PyJWT
 bcrypt
 slowapi

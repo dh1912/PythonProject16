@@ -6,7 +6,7 @@ from task5.server import repository as repo
 
 def connection(rows):
     conn = MagicMock()
-    cursor = conn.cursor.return_value.__enter__.return_value
+    cursor = conn.cursor.return_value
     cursor.fetchone.side_effect = rows
     return conn, cursor
 
@@ -17,7 +17,7 @@ def test_streak_is_restored_from_persisted_server_state():
     with patch.object(repo, "_connect", return_value=conn), patch.object(repo, "_get_question", return_value=question):
         result = repo.submit_answer(1, "1", 1, 30)
     assert result["points_awarded"] == 33
-    updates = [call.args for call in cursor.execute.call_args_list if "SET diem_tri_thuc=%s,du_lieu_nhiem_vu" in call.args[0]]
+    updates = [call.args for call in cursor.execute.call_args_list if "SET diem_tri_thuc=?,du_lieu_nhiem_vu" in call.args[0]]
     assert json.loads(updates[0][1][1])["_task5"]["correct_streak"] == 2
     conn.commit.assert_called_once()
 

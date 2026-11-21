@@ -1,0 +1,618 @@
+{
+  "dia_diem": [
+    {
+      "ma_dia_diem": 1,
+      "ten_dia_diem": "Bến Nhà Rồng (Sài Gòn)",
+      "toa_do_x": 412,
+      "toa_do_y": 490,
+      "khu_vuc": "Nam",
+      "mo_ta": "Nơi người thanh niên yêu nước Nguyễn Tất Thành ra đi tìm đường cứu nước năm 1911.",
+      "mo_khoa_mac_dinh": 1
+    },
+    {
+      "ma_dia_diem": 2,
+      "ten_dia_diem": "Hương Cảng (Hong Kong)",
+      "toa_do_x": 525,
+      "toa_do_y": 203,
+      "khu_vuc": "Ngoại cảnh",
+      "mo_ta": "Nơi Nguyễn Ái Quốc chủ trì Hội nghị thành lập Đảng Cộng sản Việt Nam năm 1930.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 3,
+      "ten_dia_diem": "Vinh - Bến Thủy (Nghệ An)",
+      "toa_do_x": 376,
+      "toa_do_y": 286,
+      "khu_vuc": "Trung",
+      "mo_ta": "Đỉnh cao phong trào cách mạng 1930-1931 với chính quyền Xô viết Nghệ - Tĩnh.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 4,
+      "ten_dia_diem": "Hang Pác Bó (Cao Bằng)",
+      "toa_do_x": 391,
+      "toa_do_y": 183,
+      "khu_vuc": "Bắc",
+      "mo_ta": "Căn cứ địa đầu tiên khi Bác Hồ về nước đầu năm 1941 lãnh đạo cách mạng.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 5,
+      "ten_dia_diem": "Tân Trào (Tuyên Quang)",
+      "toa_do_x": 367,
+      "toa_do_y": 201,
+      "khu_vuc": "Bắc",
+      "mo_ta": "Thủ đô Khu giải phóng, nơi diễn ra Quốc dân Đại hội phát lệnh Tổng khởi nghĩa 1945.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 6,
+      "ten_dia_diem": "Quảng trường Ba Đình (Hà Nội)",
+      "toa_do_x": 387,
+      "toa_do_y": 224,
+      "khu_vuc": "Bắc",
+      "mo_ta": "Nơi Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập ngày 2/9/1945.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 7,
+      "ten_dia_diem": "Căn cứ địa Việt Bắc",
+      "toa_do_x": 389,
+      "toa_do_y": 207,
+      "khu_vuc": "Bắc",
+      "mo_ta": "Thủ đô kháng chiến chống thực dân Pháp, chiến thắng Việt Bắc 1947 & Biên giới 1950.",
+      "mo_khoa_mac_dinh": 0
+    },
+    {
+      "ma_dia_diem": 8,
+      "ten_dia_diem": "Lòng chảo Điện Biên Phủ",
+      "toa_do_x": 299,
+      "toa_do_y": 217,
+      "khu_vuc": "Bắc",
+      "mo_ta": "Tập đoàn cứ điểm mạnh nhất Đông Dương của Pháp, chiến thắng chấn động địa cầu năm 1954.",
+      "mo_khoa_mac_dinh": 0
+    }
+  ],
+  "su_kien_lich_su": [
+    {
+      "ma_su_kien": 1,
+      "ma_dia_diem": 1,
+      "ten_su_kien": "Liên quân Pháp - Tây Ban Nha nổ súng tấn công bán đảo Sơn Trà (Đà Nẵng)",
+      "nam_dien_ra": 1858,
+      "ngay_thang_chi_tiet": "01/09/1858",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Sáng 1/9/1858, liên quân Pháp và Tây Ban Nha gồm 14 chiến thuyền nổ súng tấn công bán đảo Sơn Trà, chính thức mở đầu cuộc chiến tranh xâm lược Việt Nam. Quân dân ta dưới sự chỉ huy của Tổng đốc Nguyễn Tri Phương đã anh dũng chặn đánh, thực hiện 'vườn không nhà trống', giam chân giặc suốt 5 tháng trên bán đảo.",
+      "nguon_trich_dan": "Đại cương Lịch sử Việt Nam, Tập 2, GS. Đinh Xuân Lâm (Chủ biên), NXB Giáo dục Việt Nam (2006); Chương I: Cuộc kháng chiến chống thực dân Pháp xâm lược (1858-1884), tr. 15-22."
+    },
+    {
+      "ma_su_kien": 2,
+      "ma_dia_diem": 2,
+      "ten_su_kien": "Triều đình nhà Nguyễn ký Hiệp ước Nhâm Tuất",
+      "nam_dien_ra": 1862,
+      "ngay_thang_chi_tiet": "05/06/1862",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Triều đình Huế cử Phan Thanh Giản và Lâm Duy Hiệp vào Gia Định ký với đại diện Pháp bản Hiệp ước Nhâm Tuất. Triều đình chấp thuận nhượng ba tỉnh miền Đông Nam Kỳ (Gia Định, Định Tường, Biên Hòa) và đảo Côn Lôn cho Pháp, bồi thường 4 triệu peso chiến phí.",
+      "nguon_trich_dan": "Lịch sử Việt Nam, Tập 6 (Từ 1858 đến 1896), Viện Sử học Việt Nam, NXB Khoa học Xã hội (2017); Phần II: Quá trình phân hóa và thỏa hiệp của triều đình Huế, tr. 84-95."
+    },
+    {
+      "ma_su_kien": 3,
+      "ma_dia_diem": 3,
+      "ten_su_kien": "Khởi nghĩa Trương Định giương cao cờ Bình Tây Đại nguyên soái",
+      "nam_dien_ra": 1864,
+      "ngay_thang_chi_tiet": "20/08/1864",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Bất chấp lệnh bãi binh của triều đình Huế sau Hiệp ước 1862, Trương Định tuân theo ý nguyện nhân dân nhận danh hiệu 'Bình Tây Đại nguyên soái', tiếp tục lãnh đạo nghĩa quân đánh Pháp tại Tân Hòa, Gò Công. Đêm 19 rạng ngày 20/8/1864, giặc bao vây căn cứ, ông đã rút gươm tự sát để giữ tròn khí tiết.",
+      "nguon_trich_dan": "Sách giáo khoa Lịch sử 11, Bộ Giáo dục và Đào tạo, NXB Giáo dục Việt Nam (2020); Bài 19: Nhân dân Việt Nam kháng chiến chống Pháp xâm lược (1858-1873), tr. 115-118."
+    },
+    {
+      "ma_su_kien": 4,
+      "ma_dia_diem": 4,
+      "ten_su_kien": "Triều đình Huế ký Hiệp ước Patenôtre (Giáp Thân)",
+      "nam_dien_ra": 1884,
+      "ngay_thang_chi_tiet": "06/06/1884",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Hiệp ước Patenôtre gồm 19 điều khoản được ký kết giữa đại diện triều đình Huế và đại sứ Pháp. Hiệp ước này chính thức đặt cơ sở bảo hộ lâu dài của Pháp lên toàn bộ lãnh thổ Việt Nam, chia nước ta làm ba kỳ: Bắc Kỳ, Trung Kỳ và Nam Kỳ với các quy chế cai trị khác nhau.",
+      "nguon_trich_dan": "Lịch sử bang giao Việt Nam cận đại, PGS.TS. Trần Nam Tiến, NXB Chính trị quốc gia Sự thật (2014); Chương 3: Các hòa ước giữa nhà Nguyễn và thực dân Pháp 1862-1884, tr. 145-152."
+    },
+    {
+      "ma_su_kien": 5,
+      "ma_dia_diem": 5,
+      "ten_su_kien": "Vua Hàm Nghi hạ chiếu Cần Vương phát động phong trào phò vua cứu nước",
+      "nam_dien_ra": 1885,
+      "ngay_thang_chi_tiet": "13/07/1885",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Sau cuộc tấn công đồn Mang Cá thất bại tại kinh thành Huế đêm 4 rạng 5/7/1885, Tôn Thất Thuyết phò tá vua trẻ Hàm Nghi chạy ra sơn phòng Tân Sở (Quảng Trị). Ngày 13/7/1885, vua Hàm Nghi ban Chiếu Cần Vương, kêu gọi sĩ phu, văn thân và nhân dân toàn quốc đứng lên đánh Pháp.",
+      "nguon_trich_dan": "Phong trào Cần Vương trong lịch sử Việt Nam, GS. Đinh Xuân Lâm - Đỗ Bang, NXB Thuận Hóa (2001); Chương II: Chiếu Cần Vương và sự bùng nổ các cuộc khởi nghĩa, tr. 45-60."
+    },
+    {
+      "ma_su_kien": 6,
+      "ma_dia_diem": 6,
+      "ten_su_kien": "Khởi nghĩa nông dân Yên Thế do Hoàng Hoa Thám lãnh đạo",
+      "nam_dien_ra": 1887,
+      "ngay_thang_chi_tiet": "1887 - 1913",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Khởi nghĩa nổ ra từ năm 1884 tại vùng núi rừng hiểm trở Yên Thế. Từ năm 1892, dưới sự chỉ huy mưu trí của Đề Thám, nghĩa quân đã dùng lối đánh du kích linh hoạt, buộc thực dân Pháp hai lần phải ký hòa hoãn (1894 và 1897). Phong trào duy trì kiên cường suốt gần 30 năm đến năm 1913.",
+      "nguon_trich_dan": "Khởi nghĩa Yên Thế (1884-1913), Sở Văn hóa Thể thao và Du lịch Bắc Giang, NXB Chính trị quốc gia Sự thật (2013); Phần III: Chiến thuật du kích và các căn cứ Phồn Xương, tr. 112-140."
+    },
+    {
+      "ma_su_kien": 7,
+      "ma_dia_diem": 7,
+      "ten_su_kien": "Phan Bội Châu sáng lập Hội Duy Tân và phong trào Đông Du",
+      "nam_dien_ra": 1904,
+      "ngay_thang_chi_tiet": "05/1904",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Tháng 5/1904, Phan Bội Châu cùng Cường Để thành lập Hội Duy Tân tại Quảng Nam. Năm 1905, ông sang Nhật Bản mở đầu phong trào Đông Du, đưa khoảng 200 thanh niên yêu nước Việt Nam sang Nhật học tập khoa học, kỹ thuật và quân sự nhằm mưu cầu độc lập dân tộc.",
+      "nguon_trich_dan": "Phan Bội Châu Toàn tập, Tập 3: Tự phán, Phan Bội Châu (Chương Thâu sưu tầm, khảo cứu), NXB Thuận Hóa (2001); Phần Đông Du ký và tôn chỉ Hội Duy Tân, tr. 45-78."
+    },
+    {
+      "ma_su_kien": 8,
+      "ma_dia_diem": 8,
+      "ten_su_kien": "Phong trào Đông Kinh Nghĩa Thục tại Hà Nội",
+      "nam_dien_ra": 1907,
+      "ngay_thang_chi_tiet": "03/1907 - 11/1907",
+      "thoi_ky": "1858 - 1918",
+      "tom_tat_dien_bien": "Tháng 3/1907, các sĩ phu tiến bộ như Lương Văn Can, Nguyễn Quyền lập trường Đông Kinh Nghĩa Thục dạy học miễn phí, phổ biến chữ Quốc ngữ, truyền bá tư tưởng duy tân, cải cách văn hóa và chấn hưng thực nghiệp. Trường nhanh chóng lan rộng ảnh hưởng trước khi bị Pháp cưỡng bức đóng cửa cuối năm 1907.",
+      "nguon_trich_dan": "Phong trào Đông Kinh Nghĩa Thục, Nguyễn Hiến Lê, NXB Văn hóa Thông tin (2007); Chương II: Tôn chỉ, mục đích và các hoạt động giảng dạy, tr. 32-58."
+    },
+    {
+      "ma_su_kien": 9,
+      "ma_dia_diem": 1,
+      "ten_su_kien": "Nguyễn Tất Thành ra đi tìm đường cứu nước từ Bến Nhà Rồng",
+      "nam_dien_ra": 1911,
+      "ngay_thang_chi_tiet": "05/06/1911",
+      "thoi_ky": "1858 - 1930",
+      "tom_tat_dien_bien": "Ngày 5/6/1911, người thanh niên yêu nước Nguyễn Tất Thành lấy tên Văn Ba xuống con tàu Đô đốc Latouche-Tréville rời bến cảng Nhà Rồng (Sài Gòn) sang phương Tây. Người quyết tâm tìm hiểu những gì ẩn giấu đằng sau khẩu hiệu 'Tự do - Bình đẳng - Bác ái' để trở về giúp đồng bào.",
+      "nguon_trich_dan": "Hồ Chí Minh: Biên niên tiểu sử, Tập 1 (1890 - 1929), Viện Lịch sử Đảng, Học viện Chính trị Quốc gia Hồ Chí Minh, NXB Chính trị quốc gia Sự thật (2016); Mục năm 1911: Ngày 5 tháng 6, tr. 42-45."
+    },
+    {
+      "ma_su_kien": 10,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Nguyễn Ái Quốc gửi Bản Yêu sách của nhân dân An Nam tới Hội nghị Versailles",
+      "nam_dien_ra": 1919,
+      "ngay_thang_chi_tiet": "18/06/1919",
+      "thoi_ky": "1919 - 1930",
+      "tom_tat_dien_bien": "Thay mặt 'Nhóm người Việt Nam yêu nước' tại Pháp, Nguyễn Ái Quốc gửi bản Yêu sách của nhân dân An Nam gồm 8 điểm tới Hội nghị Versailles. Bản yêu sách đòi chính phủ Pháp thừa nhận quyền tự do, bình đẳng, bãi bỏ chế độ cai trị tàn bạo ở Đông Dương.",
+      "nguon_trich_dan": "Hồ Chí Minh Toàn tập, Tập 1 (1912 - 1925), Hồ Chí Minh, NXB Chính trị quốc gia Sự thật (2011); Văn kiện: Yêu sách của nhân dân An Nam (18/6/1919), tr. 435-438."
+    },
+    {
+      "ma_su_kien": 11,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Nguyễn Ái Quốc bỏ phiếu tán thành Quốc tế Ba và sáng lập Đảng Cộng sản Pháp",
+      "nam_dien_ra": 1920,
+      "ngay_thang_chi_tiet": "12/1920",
+      "thoi_ky": "1919 - 1930",
+      "tom_tat_dien_bien": "Tại Đại hội lần thứ XVIII của Đảng Xã hội Pháp họp ở Tours từ ngày 25 đến 30/12/1920, sau khi nghiên cứu Sơ thảo Luận cương của Lênin về vấn đề dân tộc và thuộc địa, Nguyễn Ái Quốc đã bỏ phiếu tán thành gia nhập Quốc tế thứ Ba và tham gia sáng lập Đảng Cộng sản Pháp.",
+      "nguon_trich_dan": "Hồ Chí Minh: Tiểu sử, Ban Tuyên giáo Trung ương, NXB Chính trị quốc gia Sự thật (2020); Chương 2: Tìm thấy con đường cứu nước, giải phóng dân tộc (1911-1920), tr. 68-75."
+    },
+    {
+      "ma_su_kien": 12,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Thành lập Hội Việt Nam Cách mạng Thanh niên tại Quảng Châu",
+      "nam_dien_ra": 1925,
+      "ngay_thang_chi_tiet": "06/1925",
+      "thoi_ky": "1919 - 1930",
+      "tom_tat_dien_bien": "Tháng 6/1925, Nguyễn Ái Quốc thành lập Hội Việt Nam Cách mạng Thanh niên tại Quảng Châu nhằm chuẩn bị về tổ chức và cán bộ cho sự ra đời của Đảng Cộng sản. Cơ quan ngôn luận của Hội là tuần báo Thanh Niên, ra số đầu tiên ngày 21/6/1925.",
+      "nguon_trich_dan": "Lịch sử Đảng Cộng sản Việt Nam, Tập 1 (1930 - 1954), Hội đồng Trung ương chỉ đạo biên soạn Giáo trình quốc gia, NXB Chính trị quốc gia Sự thật (2018); Chương I: Sự ra đời của Đảng Cộng sản Việt Nam, tr. 55-65."
+    },
+    {
+      "ma_su_kien": 13,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Xuất bản tác phẩm Đường Kách mệnh của Nguyễn Ái Quốc",
+      "nam_dien_ra": 1927,
+      "ngay_thang_chi_tiet": "Đầu năm 1927",
+      "thoi_ky": "1919 - 1930",
+      "tom_tat_dien_bien": "Đầu năm 1927, Bộ Tuyên truyền của Hội Liên hiệp các dân tộc bị áp bức Á Đông xuất bản tác phẩm 'Đường Kách mệnh' của Nguyễn Ái Quốc. Cuốn sách tập hợp các bài giảng lý luận cách mạng, xác định rõ vai trò lãnh đạo của Đảng tiên phong, động lực cách mạng là công nông.",
+      "nguon_trich_dan": "Hồ Chí Minh Toàn tập, Tập 2 (1926 - 1930), Hồ Chí Minh, NXB Chính trị quốc gia Sự thật (2011); Tác phẩm: Đường Kách mệnh (1927), tr. 279-340."
+    },
+    {
+      "ma_su_kien": 14,
+      "ma_dia_diem": 2,
+      "ten_su_kien": "Hội nghị hợp nhất thành lập Đảng Cộng sản Việt Nam",
+      "nam_dien_ra": 1930,
+      "ngay_thang_chi_tiet": "03/02/1930",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Từ ngày 6/1 đến 7/2/1930 tại Hương Cảng, Nguyễn Ái Quốc chủ trì hội nghị hợp nhất các tổ chức cộng sản (Đông Dương Cộng sản Đảng, An Nam Cộng sản Đảng). Hội nghị quyết định thành lập một chính đảng duy nhất lấy tên Đảng Cộng sản Việt Nam, thông qua Chính cương vắn tắt, Sách lược vắn tắt.",
+      "nguon_trich_dan": "Văn kiện Đảng toàn tập, Tập 2 (1930), Ban Nghiên cứu Lịch sử Đảng Trung ương, NXB Chính trị quốc gia Sự thật (2002); Văn kiện: Chánh cương vắn tắt, Sách lược vắn tắt của Đảng, tr. 1-15."
+    },
+    {
+      "ma_su_kien": 15,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Khởi nghĩa Yên Bái của Việt Nam Quốc dân Đảng",
+      "nam_dien_ra": 1930,
+      "ngay_thang_chi_tiet": "09/02/1930",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Đêm 9/2/1930, khởi nghĩa bùng nổ tại đồn Yên Bái và nhanh chóng lan sang Phú Thọ, Hải Dương, Hà Nội với khẩu hiệu 'Không thành công cũng thành nhân'. Tuy nhiên do nổ ra thế bị động và thiếu đường lối quần chúng vững chắc, khởi nghĩa nhanh chóng bị thực dân Pháp dập tắt trong bể máu.",
+      "nguon_trich_dan": "Sách giáo khoa Lịch sử 12 (Chương trình chuẩn), Bộ Giáo dục và Đào tạo, NXB Giáo dục Việt Nam (2021); Bài 13: Phong trào dân tộc dân chủ ở Việt Nam từ năm 1925 đến năm 1930, tr. 82-84."
+    },
+    {
+      "ma_su_kien": 16,
+      "ma_dia_diem": 3,
+      "ten_su_kien": "Đỉnh cao phong trào Xô viết Nghệ - Tĩnh",
+      "nam_dien_ra": 1930,
+      "ngay_thang_chi_tiet": "12/09/1930",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Ngày 12/9/1930, khoảng 8.000 nông dân Hưng Nguyên biểu tình kéo về thành phố Vinh. Địch ném bom đàn áp làm 217 người chết, 125 người bị thương. Làn sóng căm phẫn dâng cao, quần chúng lật đổ chính quyền tay sai ở nhiều huyện, lập nên chính quyền Xô viết tự quản đầu tiên của công nông.",
+      "nguon_trich_dan": "Lịch sử giai cấp công nhân Việt Nam, Tập 1, Viện Sử học, NXB Khoa học Xã hội (2012); Chương IV: Phong trào Xô viết Nghệ Tĩnh 1930-1931, tr. 145-180."
+    },
+    {
+      "ma_su_kien": 17,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Hội nghị Trung ương lần thứ nhất thông qua Luận cương chính trị",
+      "nam_dien_ra": 1930,
+      "ngay_thang_chi_tiet": "10/1930",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Tháng 10/1930, Ban Chấp hành Trung ương Đảng họp Hội nghị lần thứ nhất tại Hương Cảng do Trần Phú chủ trì. Hội nghị quyết định đổi tên Đảng thành Đảng Cộng sản Đông Dương, thông qua Luận cương chính trị và bầu đồng chí Trần Phú làm Tổng Bí thư đầu tiên.",
+      "nguon_trich_dan": "Văn kiện Đảng toàn tập, Tập 2 (1930), Ban Chấp hành Trung ương Đảng, NXB Chính trị quốc gia Sự thật (2002); Luận cương chánh trị của Đảng Cộng sản Đông Dương (10/1930), tr. 88-114."
+    },
+    {
+      "ma_su_kien": 18,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Phong trào Dân chủ 1936 - 1939 đòi tự do, dân sinh, dân chủ",
+      "nam_dien_ra": 1936,
+      "ngay_thang_chi_tiet": "1936 - 1939",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Nắm bắt sự thay đổi của tình hình quốc tế và Mặt trận Nhân dân Pháp lên cầm quyền, Đảng ta đã chuyển hướng đấu tranh, kết hợp hợp pháp và nửa hợp pháp. Phong trào Đông Dương Đại hội nổ ra rầm rộ, bãi công, biểu tình và báo chí công khai đòi quyền tự do dân chủ, cải thiện đời sống.",
+      "nguon_trich_dan": "Lịch sử Đảng Cộng sản Việt Nam, Tập 1 (1930 - 1954), Hội đồng Trung ương chỉ đạo biên soạn Giáo trình quốc gia, NXB Chính trị quốc gia Sự thật (2018); Chương III: Phong trào dân chủ 1936-1939, tr. 210-245."
+    },
+    {
+      "ma_su_kien": 19,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Khởi nghĩa Bắc Sơn và Khởi nghĩa Nam Kỳ bùng nổ",
+      "nam_dien_ra": 1940,
+      "ngay_thang_chi_tiet": "27/09/1940 & 23/11/1940",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Khi phát xít Nhật xâm lược Đông Dương, nhân dân Bắc Sơn đã nổi dậy đánh chiếm đồn Mỏ Nhài ngày 27/9/1940, thành lập Đội du kích Bắc Sơn. Tiếp đó đêm 22 rạng 23/11/1940, Khởi nghĩa Nam Kỳ bùng nổ rung chuyển khắp Nam Bộ. Lá cờ đỏ sao vàng năm cánh lần đầu tiên xuất hiện trong các cuộc tuần hành.",
+      "nguon_trich_dan": "Lịch sử Nam Bộ kháng chiến, Tập 1 (1945 - 1954), Hội đồng chỉ đạo biên soạn Lịch sử Nam Bộ kháng chiến, NXB Chính trị quốc gia Sự thật (2011); Phần mở đầu: Khởi nghĩa Nam Kỳ và sự ra đời của lá cờ đỏ sao vàng, tr. 95-108."
+    },
+    {
+      "ma_su_kien": 20,
+      "ma_dia_diem": 4,
+      "ten_su_kien": "Lãnh tụ Nguyễn Ái Quốc về nước tại Pác Bó trực tiếp lãnh đạo cách mạng",
+      "nam_dien_ra": 1941,
+      "ngay_thang_chi_tiet": "28/01/1941",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Sau 30 năm bôn ba tìm đường cứu nước, ngày 28/1/1941 (mùng 2 Tết Tân Tỵ), lãnh tụ Nguyễn Ái Quốc vượt qua mốc 108 biên giới Việt - Trung về đến hang Pác Bó. Tại đây, Người đã trực tiếp chỉ đạo xây dựng căn cứ địa, mở lớp huấn luyện chính trị, dịch cuốn Lịch sử Đảng Cộng sản Liên Xô làm tài liệu học tập.",
+      "nguon_trich_dan": "Bác Hồ ở Pác Bó, Ban Tuyên giáo Tỉnh ủy Cao Bằng, NXB Kim Đồng (2015); Chương I: Bước chân qua mốc 108 và căn lán Pác Bó, tr. 18-35."
+    },
+    {
+      "ma_su_kien": 21,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Hội nghị Trung ương 8 và thành lập Mặt trận Việt Minh",
+      "nam_dien_ra": 1941,
+      "ngay_thang_chi_tiet": "19/05/1941",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Từ ngày 10 đến 19/5/1941, Hội nghị lần thứ 8 Ban Chấp hành Trung ương Đảng họp tại Pác Bó dưới sự chủ trì của Nguyễn Ái Quốc. Hội nghị quyết định đặt nhiệm vụ giải phóng dân tộc lên hàng đầu trên hết, thành lập Việt Nam Độc lập Đồng minh (Mặt trận Việt Minh) ngày 19/5/1941 và chuẩn bị khởi nghĩa vũ trang.",
+      "nguon_trich_dan": "Văn kiện Đảng toàn tập, Tập 7 (1940 - 1945), Ban Chấp hành Trung ương Đảng, NXB Chính trị quốc gia Sự thật (2000); Nghị quyết của Hội nghị Ban Chấp hành Trung ương Đảng lần thứ 8, tr. 99-135."
+    },
+    {
+      "ma_su_kien": 22,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Thành lập Đội Việt Nam Tuyên truyền Giải phóng quân",
+      "nam_dien_ra": 1944,
+      "ngay_thang_chi_tiet": "22/12/1944",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Thực hiện chỉ thị của Lãnh tụ Hồ Chí Minh, ngày 22/12/1944, Đội Việt Nam Tuyên truyền Giải phóng quân gồm 34 chiến sĩ được thành lập tại khu rừng giữa hai tổng Hoàng Hoa Thám và Trần Hưng Đạo. Đồng chí Võ Nguyên Giáp trực tiếp chỉ huy, ngay sau đó đánh thắng giòn giã hai trận Phai Khắt và Nà Ngần.",
+      "nguon_trich_dan": "Lịch sử Quân đội nhân dân Việt Nam, Tập 1, Viện Lịch sử Quân sự Việt Nam, NXB Quân đội Nhân dân (2014); Chương II: Đội Việt Nam Tuyên truyền Giải phóng quân ra đời và những chiến công đầu tiên, tr. 75-92."
+    },
+    {
+      "ma_su_kien": 23,
+      "ma_dia_diem": 5,
+      "ten_su_kien": "Quốc dân Đại hội Tân Trào phát lệnh Tổng khởi nghĩa",
+      "nam_dien_ra": 1945,
+      "ngay_thang_chi_tiet": "16/08/1945",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Chiều 16/8/1945, Đại hội Quốc dân khai mạc tại đình Tân Trào với sự tham dự của hơn 60 đại biểu đại diện cho ba kỳ và các đoàn thể kiều bào. Đại hội nhất trí thông qua lệnh Tổng khởi nghĩa giành chính quyền, 10 chính sách lớn của Việt Minh và bầu Ủy ban Dân tộc giải phóng do Hồ Chí Minh làm Chủ tịch.",
+      "nguon_trich_dan": "Cách mạng Tháng Tám 1945 - Thắng lợi của ý chí độc lập tự do, Viện Lịch sử Quân sự Việt Nam, NXB Quân đội Nhân dân (2015); Chương IV: Quốc dân Đại hội Tân Trào và Lệnh Tổng khởi nghĩa, tr. 140-162."
+    },
+    {
+      "ma_su_kien": 24,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Khởi nghĩa giành chính quyền thắng lợi ở Hà Nội",
+      "nam_dien_ra": 1945,
+      "ngay_thang_chi_tiet": "19/08/1945",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Sáng 19/8/1945, hàng chục vạn quần chúng nhân dân thủ đô mít tinh tại Nhà hát Lớn rồi biến thành cuộc biểu tình vũ trang thị uy. Quần chúng dưới sự dẫn đầu của các đội tự vệ xung phong chia làm nhiều cánh đánh chiếm Phủ Khâm sai Bắc Bộ, Trại Bảo an binh, Sở Cảnh sát, giành toàn bộ chính quyền tại Hà Nội.",
+      "nguon_trich_dan": "Lịch sử Thủ đô Hà Nội, GS. Trần Huy Liệu (Chủ biên), NXB Sử học (2010); Phần Cách mạng Tháng Tám: Ngày 19 tháng Tám lịch sử tại Hà Nội, tr. 320-345."
+    },
+    {
+      "ma_su_kien": 25,
+      "ma_dia_diem": 6,
+      "ten_su_kien": "Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập khai sinh nước VNDCCH",
+      "nam_dien_ra": 1945,
+      "ngay_thang_chi_tiet": "02/09/1945",
+      "thoi_ky": "1930 - 1945",
+      "tom_tat_dien_bien": "Chiều ngày 2/9/1945, trước hơn 50 vạn đồng bào tại Quảng trường Ba Đình, Chủ tịch Hồ Chí Minh thay mặt Chính phủ lâm thời trang nghiêm đọc bản Tuyên ngôn Độc lập, tuyên bố với quốc dân và thế giới: Nước Việt Nam Dân chủ Cộng hòa ra đời, thoát khỏi xiềng xích thực dân, phát xít và phong kiến.",
+      "nguon_trich_dan": "Tuyên ngôn Độc lập năm 1945 - Giá trị lịch sử và thời đại, Viện Hàn lâm Khoa học Xã hội Việt Nam, NXB Chính trị quốc gia Sự thật (2015); Toàn văn bản Tuyên ngôn Độc lập ngày 2/9/1945 và khảo luận lịch sử, tr. 15-40."
+    },
+    {
+      "ma_su_kien": 26,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Chủ tịch Hồ Chí Minh ra Lời kêu gọi Toàn quốc kháng chiến",
+      "nam_dien_ra": 1946,
+      "ngay_thang_chi_tiet": "19/12/1946",
+      "thoi_ky": "1945 - 1954",
+      "tom_tat_dien_bien": "Trước dã tâm cướp nước ta một lần nữa của thực dân Pháp sau tối hậu thư ngày 18/12, đêm 19/12/1946, Chủ tịch Hồ Chí Minh ra Lời kêu gọi Toàn quốc kháng chiến: 'Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ'. Pháo đài Láng nổ súng phát lệnh kháng chiến bùng nổ.",
+      "nguon_trich_dan": "Hồ Chí Minh Toàn tập, Tập 4 (1945 - 1946), Hồ Chí Minh, NXB Chính trị quốc gia Sự thật (2011); Lời kêu gọi toàn quốc kháng chiến (19/12/1946), tr. 534-535."
+    },
+    {
+      "ma_su_kien": 27,
+      "ma_dia_diem": 7,
+      "ten_su_kien": "Chiến thắng Việt Bắc Thu - Đông 1947",
+      "nam_dien_ra": 1947,
+      "ngay_thang_chi_tiet": "07/10/1947 - 19/12/1947",
+      "thoi_ky": "1945 - 1954",
+      "tom_tat_dien_bien": "Pháp huy động hơn 12.000 quân tinh nhuệ mở cuộc hành quân Léa tấn công lên căn cứ Việt Bắc hòng tiêu diệt cơ quan đầu não kháng chiến. Quân dân ta với các trận phục kích oanh liệt tại Đoan Hùng, đèo Bông Lau, sông Lô đã đánh tan hai gọng kìm thủy - bộ của địch, tiêu diệt hơn 6.000 tên giặc.",
+      "nguon_trich_dan": "Lịch sử cuộc kháng chiến chống thực dân Pháp (1945 - 1954), Tập 1, Viện Lịch sử Quân sự Việt Nam, NXB Quân đội Nhân dân (2013); Chương IV: Chiến dịch phản công Việt Bắc Thu Đông 1947, tr. 180-215."
+    },
+    {
+      "ma_su_kien": 28,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Chiến dịch Biên Giới Thu - Đông 1950",
+      "nam_dien_ra": 1950,
+      "ngay_thang_chi_tiet": "16/09/1950 - 22/10/1950",
+      "thoi_ky": "1945 - 1954",
+      "tom_tat_dien_bien": "Quân ta mở chiến dịch Biên Giới, tấn công cứ điểm Đông Khê mở màn ngày 16/9. Chủ tịch Hồ Chí Minh trực tiếp lên đài quan sát chỉ đạo mặt trận. Quân ta tiêu diệt và bắt sống hai binh đoàn thiện chiến Le Page và Charton, giải phóng dải biên giới Việt - Trung dài 750km với 35 vạn dân.",
+      "nguon_trich_dan": "Chiến dịch Biên giới Thu Đông 1950, Viện Lịch sử Quân sự Việt Nam, NXB Quân đội Nhân dân (2010); Toàn tập diễn biến chiến dịch và trận đánh Đông Khê, tr. 88-132."
+    },
+    {
+      "ma_su_kien": 29,
+      "ma_dia_diem": 8,
+      "ten_su_kien": "Chiến thắng lịch sử Điện Biên Phủ",
+      "nam_dien_ra": 1954,
+      "ngay_thang_chi_tiet": "13/03/1954 - 07/05/1954",
+      "thoi_ky": "1945 - 1954",
+      "tom_tat_dien_bien": "Chiến dịch diễn ra qua 3 đợt trong suốt 56 ngày đêm 'khoét núi, ngủ hầm, mưa dầm, cơm vắt'. Đại tướng Võ Nguyên Giáp đưa ra quyết định lịch sử chuyển phương châm từ 'Đánh nhanh thắng nhanh' sang 'Đánh chắc tiến chắc'. Lúc 17h30 ngày 7/5/1954, cờ Quyết chiến Quyết thắng tung bay trên nóc hầm De Castries, toàn bộ tập đoàn cứ điểm bị tiêu diệt.",
+      "nguon_trich_dan": "Điện Biên Phủ - Điểm hẹn lịch sử (Hồi ký), Đại tướng Võ Nguyên Giáp (Hữu Mai thể hiện), NXB Quân đội Nhân dân (2004); Chương VII: Chiều mùng 7 tháng 5 định mệnh và khúc ca chiến thắng, tr. 350-420."
+    },
+    {
+      "ma_su_kien": 30,
+      "ma_dia_diem": null,
+      "ten_su_kien": "Chiến dịch Hồ Chí Minh toàn thắng, giải phóng hoàn toàn miền Nam",
+      "nam_dien_ra": 1975,
+      "ngay_thang_chi_tiet": "26/04/1975 - 30/04/1975",
+      "thoi_ky": "1954 - 1975",
+      "tom_tat_dien_bien": "17h ngày 26/4/1975, Chiến dịch Hồ Chí Minh nổ súng với 5 cánh quân tiến công đồng loạt vào giải phóng Sài Gòn. Đúng 10h45 ngày 30/4/1975, xe tăng 390 húc đổ cổng chính và xe tăng 843 tiến vào sân Dinh Độc Lập. 11h30, lá cờ Mặt trận Dân tộc Giải phóng tung bay trên nóc dinh, Tổng thống Dương Văn Minh tuyên bố đầu hàng không điều kiện.",
+      "nguon_trich_dan": "Tổng hành dinh trong Mùa Xuân toàn thắng, Đại tướng Võ Nguyên Giáp, NXB Chính trị quốc gia Sự thật (2005); Chương V: Chiến dịch giải phóng Sài Gòn mang tên Bác, tr. 220-275."
+    }
+  ],
+  "nhan_vat": [
+    {
+      "ma_nhan_vat": 1,
+      "ma_dia_diem": 1,
+      "ten_nhan_vat": "Người dân bến cảng",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Tôi còn nhớ chiếc tàu buôn Amiral Latouche-Tréville rời cảng Sài Gòn mang theo người thanh niên Văn Ba giàu lòng yêu nước."
+    },
+    {
+      "ma_nhan_vat": 2,
+      "ma_dia_diem": 2,
+      "ten_nhan_vat": "Cán bộ liên lạc quốc tế",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Đồng chí Nguyễn Ái Quốc đã triệu tập đại biểu Đông Dương Cộng sản Đảng và An Nam Cộng sản Đảng đến Hương Cảng vào dịp Tết năm 1930."
+    },
+    {
+      "ma_nhan_vat": 3,
+      "ma_dia_diem": 3,
+      "ten_nhan_vat": "Tự vệ đỏ Nghệ Tĩnh",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Hàng vạn nông dân Hưng Nguyên, Bến Thủy biểu tình thị uy đòi quyền sống, lập nên chính quyền Xô viết tự quản."
+    },
+    {
+      "ma_nhan_vat": 4,
+      "ma_dia_diem": 4,
+      "ten_nhan_vat": "Đồng chí dẫn đường người Tày",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Sáng 28 Tết năm ấy, sương mù giăng kín núi rừng biên giới. Tôi vinh dự được dẫn đường đón Bác bước qua cột mốc 108 trở về đất mẹ sau 30 năm bôn ba..."
+    },
+    {
+      "ma_nhan_vat": 5,
+      "ma_dia_diem": 5,
+      "ten_nhan_vat": "Đại biểu Quốc dân Đại hội",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Không khí tại đình Tân Trào hừng hực quyết tâm: Dù hy sinh tới đâu cũng phải kiên quyết giành cho được độc lập!"
+    },
+    {
+      "ma_nhan_vat": 6,
+      "ma_dia_diem": 6,
+      "ten_nhan_vat": "Chiến sĩ Tự vệ Thành Hoàng Diệu",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Sáng 19/8/1945, biển cờ đỏ sao vàng rực rỡ tại Nhà Hát Lớn. Toàn dân nhất tề đứng lên biến cuộc mít tinh thành khởi nghĩa giành chính quyền..."
+    },
+    {
+      "ma_nhan_vat": 7,
+      "ma_dia_diem": 7,
+      "ten_nhan_vat": "Chiến sĩ Trung đoàn Thủ đô",
+      "loai_nhan_vat": "witness",
+      "loi_thoai": "Rừng núi Việt Bắc hiểm trở đã chôn vùi binh đoàn dù thiện chiến của giặc Pháp trong Thu - Đông 1947."
+    },
+    {
+      "ma_nhan_vat": 8,
+      "ma_dia_diem": 8,
+      "ten_nhan_vat": "Đại tướng Võ Nguyên Giáp",
+      "loai_nhan_vat": "historical_figure",
+      "loi_thoai": "Đây là quyết định khó khăn nhất trong cuộc đời chỉ huy của tôi: Hoãn nổ súng, chuyển từ phương châm Đánh nhanh thắng nhanh sang Đánh chắc tiến chắc để bảo toàn lực lượng và bảo đảm chắc thắng..."
+    }
+  ],
+  "manh_moi": [
+    {
+      "ma_manh_moi": 1,
+      "ma_su_kien": 9,
+      "ma_nhan_vat": 1,
+      "tieu_de_manh_moi": "Thẻ thủy thủ tàu Latouche-Tréville",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Tên đăng ký Văn Ba, lên tàu ngày 5/6/1911 bắt đầu hành trình sang phương Tây.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 2,
+      "ma_su_kien": 9,
+      "ma_nhan_vat": null,
+      "tieu_de_manh_moi": "Lòng yêu nước thương dân sâu sắc",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Động lực quyết định thôi thúc người thanh niên yêu nước ra đi tìm con đường cứu nước mới.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_manh_moi": 3,
+      "ma_su_kien": 14,
+      "ma_nhan_vat": 2,
+      "tieu_de_manh_moi": "Chánh cương vắn tắt của Đảng",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Văn kiện thông qua tại Hội nghị 3/2/1930 vạch ra đường lối giải phóng dân tộc đúng đắn.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 4,
+      "ma_su_kien": 16,
+      "ma_nhan_vat": 3,
+      "tieu_de_manh_moi": "Trống lệnh biểu tình Xô Viết",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Tiếng trống mở đầu cho cuộc bãi công, biểu tình vũ trang của nhân dân Nghệ - Tĩnh.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 5,
+      "ma_su_kien": 20,
+      "ma_nhan_vat": 4,
+      "tieu_de_manh_moi": "Cột mốc biên giới 108",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Cột mốc lịch sử nơi Bác Hồ đặt bước chân đầu tiên trở về đất mẹ ngày 28/01/1941.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 6,
+      "ma_su_kien": 20,
+      "ma_nhan_vat": null,
+      "tieu_de_manh_moi": "Nghị quyết Trung ương 8 (5/1941)",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Quyết định đặt nhiệm vụ giải phóng dân tộc lên hàng đầu và thành lập Mặt trận Việt Minh.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_manh_moi": 7,
+      "ma_su_kien": 23,
+      "ma_nhan_vat": 5,
+      "tieu_de_manh_moi": "Quân lệnh số 1",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Ủy ban Khởi nghĩa toàn quốc ban bố lệnh phát động Tổng khởi nghĩa đêm 13/8/1945.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 8,
+      "ma_su_kien": 25,
+      "ma_nhan_vat": 6,
+      "tieu_de_manh_moi": "Bản thảo Tuyên ngôn Độc lập",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Soạn thảo tại 48 Hàng Ngang, khẳng định quyền độc lập, tự do thiêng liêng của dân tộc.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 9,
+      "ma_su_kien": 27,
+      "ma_nhan_vat": 7,
+      "tieu_de_manh_moi": "Chỉ thị Phá tan cuộc tấn công mùa đông của giặc Pháp",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Ban Thường vụ Trung ương Đảng chỉ đạo chiến đấu bảo vệ căn cứ địa Việt Bắc.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_manh_moi": 10,
+      "ma_su_kien": 29,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Lá cờ Quyết chiến Quyết thắng",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Phất cao trên nóc hầm tướng De Castries lúc 17h30 chiều ngày 07/05/1954.",
+      "thu_tu_timeline_dung": 1
+    }
+  ],
+  "cau_hoi_on_tap": [
+    {
+      "ma_cau_hoi": 1,
+      "ma_su_kien": 9,
+      "noi_dung_cau_hoi": "Nguyễn Tất Thành ra đi tìm đường cứu nước từ bến cảng nào vào năm 1911?",
+      "dap_an_a": "Cảng Đà Nẵng",
+      "dap_an_b": "Bến Nhà Rồng (Sài Gòn)",
+      "dap_an_c": "Cảng Hải Phòng",
+      "dap_an_d": "Cảng Cửa Lò",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Ngày 5/6/1911, người thanh niên yêu nước Nguyễn Tất Thành lấy tên Văn Ba rời bến cảng Nhà Rồng ra đi cứu nước."
+    },
+    {
+      "ma_cau_hoi": 2,
+      "ma_su_kien": 14,
+      "noi_dung_cau_hoi": "Đảng Cộng sản Việt Nam được thành lập vào ngày tháng năm nào?",
+      "dap_an_a": "03/02/1930",
+      "dap_an_b": "02/09/1945",
+      "dap_an_c": "19/08/1945",
+      "dap_an_d": "28/01/1941",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Ngày 3/2/1930 tại Hương Cảng, Hội nghị hợp nhất các tổ chức cộng sản do Nguyễn Ái Quốc chủ trì đã quyết định thành lập Đảng."
+    },
+    {
+      "ma_cau_hoi": 3,
+      "ma_su_kien": 16,
+      "noi_dung_cau_hoi": "Phong trào đấu tranh cách mạng tiêu biểu nhất trong giai đoạn 1930 - 1931 là gì?",
+      "dap_an_a": "Khởi nghĩa Yên Bái",
+      "dap_an_b": "Khởi nghĩa Ba Tơ",
+      "dap_an_c": "Xô viết Nghệ - Tĩnh",
+      "dap_an_d": "Khởi nghĩa Nam Kỳ",
+      "dap_an_dung": "C",
+      "giai_thich_chi_tiet": "Phong trào Xô viết Nghệ - Tĩnh là đỉnh cao của cao trào cách mạng 1930-1931, lập ra chính quyền của công nông."
+    },
+    {
+      "ma_cau_hoi": 4,
+      "ma_su_kien": 20,
+      "noi_dung_cau_hoi": "Nguyễn Ái Quốc trở về Tổ quốc trực tiếp lãnh đạo cách mạng vào thời gian nào?",
+      "dap_an_a": "Mùa thu năm 1940",
+      "dap_an_b": "Đầu năm 1941",
+      "dap_an_c": "Tháng 8 năm 1945",
+      "dap_an_d": "Cuối năm 1946",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Ngày 28/01/1941, Bác qua mốc 108 biên giới Việt - Trung về đến hang Pác Bó (Cao Bằng)."
+    },
+    {
+      "ma_cau_hoi": 5,
+      "ma_su_kien": 23,
+      "noi_dung_cau_hoi": "Đại hội Quốc dân Tân Trào (16/8/1945) đã đưa ra quyết định quan trọng nào?",
+      "dap_an_a": "Ký hiệp định đình chiến",
+      "dap_an_b": "Tán thành lệnh Tổng khởi nghĩa giành chính quyền",
+      "dap_an_c": "Kháng chiến toàn quốc",
+      "dap_an_d": "Đổi tên Đảng",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Quốc dân Đại hội Tân Trào đã thông qua lệnh Tổng khởi nghĩa giành chính quyền trước khi quân Đồng minh vào Đông Dương."
+    },
+    {
+      "ma_cau_hoi": 6,
+      "ma_su_kien": 25,
+      "noi_dung_cau_hoi": "Bản Tuyên ngôn Độc lập được Chủ tịch Hồ Chí Minh đọc tại đâu vào ngày 2/9/1945?",
+      "dap_an_a": "Nhà hát Lớn Hà Nội",
+      "dap_an_b": "Quảng trường Ba Đình",
+      "dap_an_c": "Bắc Bộ Phủ",
+      "dap_an_d": "Đình Tân Trào",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Ngày 2/9/1945 tại Quảng trường Ba Đình, Bác Hồ đã đọc bản Tuyên ngôn Độc lập khai sinh nước VNDCCH."
+    },
+    {
+      "ma_cau_hoi": 7,
+      "ma_su_kien": 27,
+      "noi_dung_cau_hoi": "Chiến dịch nào đã bảo vệ an toàn cơ quan đầu não kháng chiến trong Thu - Đông 1947?",
+      "dap_an_a": "Chiến dịch Điện Biên Phủ",
+      "dap_an_b": "Chiến dịch Tây Bắc",
+      "dap_an_c": "Chiến dịch Việt Bắc Thu - Đông 1947",
+      "dap_an_d": "Chiến dịch Biên Giới 1950",
+      "dap_an_dung": "C",
+      "giai_thich_chi_tiet": "Chiến thắng Việt Bắc Thu - Đông 1947 đã phá tan chiến lược đánh nhanh thắng nhanh của giặc Pháp."
+    },
+    {
+      "ma_cau_hoi": 8,
+      "ma_su_kien": 29,
+      "noi_dung_cau_hoi": "Chiến dịch Điện Biên Phủ kết thúc thắng lợi hoàn toàn vào ngày nào?",
+      "dap_an_a": "07/05/1954",
+      "dap_an_b": "20/07/1954",
+      "dap_an_c": "02/09/1954",
+      "dap_an_d": "19/12/1954",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Vào lúc 17h30 ngày 07/05/1954, cứ điểm Điện Biên Phủ bị tiêu diệt hoàn toàn, tướng De Castries bị bắt sống."
+    }
+  ]
+}

@@ -28,6 +28,7 @@ class TestValidation(unittest.TestCase):
     def test_adapter_cache_never_calls_sql_fallback(self):
         fallback = Mock(locations=[], investigation_data={}, questions={})
         service = ApiGameDataService("http://localhost", fallback_service=fallback)
+        service.async_auth_enabled = True
         service.load_game_data()
         fallback.load_game_data.assert_not_called()
         service.logout()

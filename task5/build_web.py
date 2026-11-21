@@ -23,7 +23,7 @@ def stage_project(root: Path, destination: Path) -> Path:
         shutil.rmtree(destination)
         destination.mkdir()
     marker.write_text("Task 5 staging sinh tự động", encoding="utf-8")
-    for folder in ("scenes", "services", "task4", "task5"):
+    for folder in ("scenes", "services", "task3", "task4", "task5"):
         for source in (root / folder).glob("*.py"):
             target = destination / folder / source.name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -32,16 +32,25 @@ def stage_project(root: Path, destination: Path) -> Path:
         shutil.copy2(root / filename, destination / filename)
     shutil.copy2(root / "main.py", destination / "game_desktop.py")
     shutil.copy2(root / "main_web.py", destination / "main.py")
-    font = root / "assets" / "fonts" / "Arial.ttf"
+    font = root / "assets" / "fonts" / "NotoSans.ttf"
     if not font.is_file():
         raise FileNotFoundError("Thiếu font; cần font tiếng Việt được phép phân phối.")
     target_font = destination / "assets" / "fonts" / font.name
     target_font.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(font, target_font)
+    license_file = root / 'assets/fonts/OFL.txt'
+    if license_file.is_file():
+        shutil.copy2(license_file, target_font.parent / 'OFL.txt')
     # Chỉ cần helper import cho cache desktop; không copy dữ liệu tài khoản.
     data_dir = destination / "data"
     data_dir.mkdir()
-    shutil.copy2(root / "data" / "db_queries.py", data_dir / "db_queries.py")
+    # Browser chỉ import các tên helper để dựng cache; mọi gọi DB đều bị chặn.
+    (data_dir / 'db_queries.py').write_text('''"""Web stub: không có SQLite/database/secret trong WebAssembly."""
+def _unavailable(*args, **kwargs):
+    return None, "Browser phải dùng API"
+fetch_raw_dia_diem = fetch_raw_su_kien = fetch_raw_nhan_vat = fetch_raw_manh_moi = fetch_raw_cau_hoi = _unavailable
+authenticate_user = register_user = fetch_user_progress = save_user_progress = fetch_task4_progress = save_task4_progress = get_db_connection = _unavailable
+''', encoding='utf-8')
     return destination
 
 

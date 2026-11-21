@@ -5,7 +5,7 @@ import pygame
 
 
 def task5_font(size: int, bold: bool = False):
-    font_path = Path(__file__).resolve().parents[1] / "assets" / "fonts" / "Arial.ttf"
+    font_path = Path(__file__).resolve().parents[1] / "assets" / "fonts" / "NotoSans.ttf"
     if sys.platform == "emscripten" and font_path.is_file():
         font = pygame.font.Font(str(font_path), size)
         font.set_bold(bold)

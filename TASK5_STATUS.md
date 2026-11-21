@@ -1,5 +1,22 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Trạng thái hiện hành: nhánh fix/sqlite-web-deploy
+
+Backend/DAL đã chuyển SQLite, không yêu cầu MySQL. Các đoạn MariaDB phía dưới là lịch sử.
+70 test chính PASS, 7 subtest PASS, 0 FAIL, 0 SKIP. Build sạch và Edge với API/SQLite
+thật trên file tạm đạt; xem TASK5_ACCEPTANCE.md và DEPLOY_WEB.md.
+
+Giữ công thức ScoringEngine, JWT/bcrypt, phân quyền, review và task/poll web từ main.
+Giữ thuật toán Task 3 và Quest/Timeline Task 4; Notebook thêm data_provider, phím N,
+không mở SQLite trong browser, chỉ xem tư liệu không cộng tiến độ.
+
+DB mới tự tạo/seed, DB cũ backup trước migration 5, UPSERT bảo toàn task state,
+legacy plaintext yêu cầu đặt lại mật khẩu. Seed nội dung trích game.sql commit c7813c3,
+không seed tài khoản hoặc sửa nội dung lịch sử tùy ý.
+
+Chưa kiểm Docker runtime vì không có Docker CLI; chưa deploy public. Không kết luận
+production-ready toàn bộ 11 địa điểm; UI E2E thật mới xác nhận quest đầu.
+
 ## Cập nhật mới nhất (ưu tiên hơn các ghi chú lịch sử bên dưới)
 
 Chính sách quest/tiến độ đã siết ở server: chặn tự khai completed, chặn địa điểm khóa, kiểm ID manh mối chính thức/đủ manh mối trước complete, suy ra năm server, lọc khóa scoring nội bộ. 57 test + 7 subtest đạt, Edge mock-actions và desktop smoke đạt. Chưa chứng minh hành động đọc/thu thập thật hoặc MySQL concurrency; ID cache browser còn cần đồng bộ nội dung DB. Xem biên bản chi tiết.

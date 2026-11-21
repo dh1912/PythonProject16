@@ -37,16 +37,8 @@ COLOR_PANEL_BG = (240, 234, 214)    # Nền bảng điều khiển
 COLOR_BORDER = (215, 205, 180)      # Viền chỉ
 COLOR_ACCENT = (50, 95, 150)        # Xanh dương thông tin
 
-# --- CẤU HÌNH KẾT NỐI CƠ SỞ DỮ LIỆU MYSQL / MARIADB ---
-DB_DEFAULT_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": int(os.getenv("DB_PORT", "3306")),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "game"),
-    "charset": "utf8mb4",
-    "connect_timeout": 3,
-}
+# --- SQLite: file nằm ngoài thư mục static, hosting mount ổ bền vững ---
+SQLITE_DB_PATH = Path(os.getenv("SQLITE_DB_PATH", str(PROJECT_ROOT / "game.db")))
 
 # Task 5: tắt mặc định để giữ nguyên luồng desktop hiện hữu.
 TASK5_SERVER_ENABLED = os.getenv("TASK5_SERVER_ENABLED", "0").strip().lower() in {"1", "true", "yes", "on"}

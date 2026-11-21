@@ -15,7 +15,7 @@ async def main():
         config.TASK5_API_URL = str(platform.window.location.origin)
         import pygame
         from pathlib import Path
-        font_file = Path(__file__).resolve().parent / "assets" / "fonts" / "Arial.ttf"
+        font_file = Path(__file__).resolve().parent / "assets" / "fonts" / "NotoSans.ttf"
 
         def bundled_font(name, size, bold=False, italic=False):
             """Tương thích scene desktop mà không sửa source các task khác."""
@@ -33,11 +33,12 @@ async def main():
         # Tải trong task riêng: màn login tiếp tục vẽ khi DB/API chậm hoặc lỗi.
         async def load_questions():
             try:
-                response = await game.data_service.request_async("GET", "/game/questions", authenticated=False)
-                questions = response["questions"]
-                game.data_service.questions = questions
-                game.game_data["questions"] = questions
-                game.deduction_scene.questions_bank = questions
+                response = await game.data_service.request_async("GET", "/game/content", authenticated=False)
+                game._apply_loaded_game_data(response)
+                game.data_service.questions = response['questions']
+                game.data_service.locations = response['locations']
+                game.data_service.investigation_data = response['investigation_data']
+                game.data_service.notebook_items = response['notebook']
             except Exception as exc:
                 game.notify(f"Chưa tải được câu hỏi server: {exc}")
         asyncio.create_task(load_questions())

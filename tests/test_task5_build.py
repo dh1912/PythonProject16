@@ -18,7 +18,7 @@ def test_staging_allowlist_excludes_secrets_profiles_and_server():
         root = Path(folder)
         for directory in ("scenes", "services", "task4", "task5", "data", "assets/fonts", "task5/server", "data/reviews"):
             (root / directory).mkdir(parents=True, exist_ok=True)
-        for name in ("config.py", "main.py", "main_web.py", "bando.jpg", "left_axis.png", "data/db_queries.py", "assets/fonts/Arial.ttf", ".env", "data/reviews/player_1.json", "task5/server/auth.py"):
+        for name in ("config.py", "main.py", "main_web.py", "bando.jpg", "left_axis.png", "data/db_queries.py", "assets/fonts/NotoSans.ttf", ".env", "data/reviews/player_1.json", "task5/server/auth.py"):
             (root / name).write_text("test", encoding="utf-8")
         destination = stage_project(root, root / "build" / "web-source")
         assert not (destination / ".env").exists()

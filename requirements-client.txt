@@ -1,3 +1,3 @@
 pygame-ce
-# pymysql chỉ dùng khi chạy desktop với TASK5_SERVER_ENABLED=0
-pymysql
+# SQLite thuộc thư viện chuẩn; bcrypt dùng cho đăng nhập desktop.
+bcrypt

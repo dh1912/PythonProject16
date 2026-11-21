@@ -10,3 +10,7 @@ data/reviews
 data/review_progress.json
 data/api_progress_db.json
 .web-staging
+build
+*.db
+*.db-*
+*.db.backup-*

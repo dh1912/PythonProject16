@@ -1,2 +1,2 @@
 pygame-ce
-pymysql
+bcrypt

@@ -97,6 +97,7 @@ class Game:
         game_data_service = create_game_data_service()
         self.data_service = game_data_service
         self.task5_server_enabled = game_data_service.__class__.__name__ == "ApiGameDataService"
+        self.online_content_ready = not self.task5_server_enabled
         self.game_data = {
             "locations": game_data_service.locations,
             "investigation_data": game_data_service.investigation_data,
@@ -115,8 +116,10 @@ class Game:
             self._data_loader = threading.Thread(target=self._load_game_data, args=(game_data_service,), daemon=True)
             self._data_loader.start()
         else:
-            # API mode chỉ dùng cache nội dung, không mở kết nối MySQL từ client.
-            self.game_data["status_message"] = "Nội dung offline cache; tài khoản và tiến độ dùng API"
+            self.game_data["status_message"] = "Đang chờ nội dung chính thức API"
+            if sys.platform != 'emscripten':
+                self._data_loader = threading.Thread(target=self._load_game_data, args=(game_data_service,), daemon=True)
+                self._data_loader.start()
 
         # =============================================================
         # 3. KHỞI TẠO CÁC MÀN HÌNH (GIAO DIỆN NHẬN DỮ LIỆU ĐÃ MAP)
@@ -165,6 +168,20 @@ class Game:
 
         self.notice = ""
         self.notice_until = 0
+        self.notebook_scene = None
+
+    def open_clue_notebook(self):
+        """Xem tư liệu không thu thập manh mối hoặc hoàn thành nhiệm vụ tự động."""
+        from task4.clue_notebook_scene import ClueNotebookScene
+        provider = (lambda: getattr(self.data_service, 'notebook_items', [])) if self.task5_server_enabled else None
+        self.notebook_scene = ClueNotebookScene(WIDTH, HEIGHT, data_provider=provider)
+        self.notebook_scene.font_title = self.notice_font
+        self.notebook_scene.font_meta = self.hint_font
+        self.notebook_scene.font_content = self.hint_font
+        self.notebook_scene.font_button = self.hint_font
+        self.notebook_scene.load_all_clues()
+        self.scene_before_notebook = self.scene
+        self.scene = 'notebook'
 
     def _load_game_data(self, service):
         """Load SQL data off the Pygame thread so the window remains responsive."""
@@ -174,11 +191,13 @@ class Game:
             self._data_queue.put((False, error))
 
     def _apply_loaded_game_data(self, data):
+        if self.task5_server_enabled:
+            self.online_content_ready = bool(data.get('is_connected'))
         self.game_data = data
         self.map_scene.locations = data["locations"]
         self.map_scene.db_status = data["status_message"]
         self.investigation_scene.investigation_data = data["investigation_data"]
-        self.deduction_scene.questions = data["questions"]
+        self.deduction_scene.questions_bank = data["questions"]
         from task4 import QuestManager
         self.quest_manager = QuestManager(data["locations"], self.completed)
         self.map_scene.quest_manager = self.quest_manager
@@ -268,6 +287,9 @@ class Game:
         self.settings_scene.fullscreen = self.fullscreen
 
     def open_investigation(self):
+        if self.task5_server_enabled and not self.online_content_ready:
+            self.notify('Chưa tải được nội dung API; không dùng ID cache để chơi online.')
+            return
         """Phim Enter tren ban do: vao man hinh dieu tra."""
         location = self.map_scene.selected_location
 
@@ -287,6 +309,9 @@ class Game:
         self.scene = "investigation"
 
     def open_deduction(self):
+        if self.task5_server_enabled and not self.online_content_ready:
+            self.notify('Chưa tải được nội dung API; hãy kết nối và tải lại.')
+            return
         """Phim D: sang man hinh suy luan (tu ban do hoac man hinh dieu tra)."""
         if self.scene not in ("map", "investigation"):
             return
@@ -461,9 +486,41 @@ class Game:
             question["answer"] = previous
             self._deduction_answer_scored = False
 
+    def _request_quest_confirmation(self, location):
+        if not location or getattr(self, '_quest_confirmed', False) or not self.task5_server_enabled or not self.current_user or self.current_user.get('ma_nguoi_dung',0) <= 0:
+            return False
+        if getattr(self, '_quest_task', None) is not None:
+            return True
+        self.save_task4_progress(location)
+        if getattr(self.data_service, 'async_auth_enabled', False):
+            import asyncio
+            self._quest_location = location
+            self._quest_task = asyncio.create_task(self.data_service.complete_quest_async(location['id'],location['name'],location.get('end',1914)))
+            self.notify('Đang chờ máy chủ xác nhận nhiệm vụ…')
+            return True
+        try:
+            response = self.data_service.complete_quest(location['id'],location['name'],location.get('end',1914))
+            self._finish_confirmed_quest(location,response)
+        except Exception as exc:
+            self.notify(f'Nhiệm vụ chưa được xác nhận: {exc}')
+            self.deduction_scene.finished = False
+        return True
+
+    def _finish_confirmed_quest(self, location, response):
+        self.scoring_engine.total_score = int(response['total_score'])
+        self._sync_score_views()
+        # Chỉ cập nhật trạng thái sau response thành công, không phụ thuộc scene hiện hành.
+        self.completed.add(location['name'])
+        self.quest_manager.completed.add(location['name'])
+        self.quest_manager._refresh_unlocks()
+        self.map_scene.completed = self.completed
+        self.notify(f"Máy chủ đã xác nhận nhiệm vụ. Thưởng: {response.get('bonus',0)} điểm.")
+
     def handle_deduction_result(self, result):
         if result == "completed":
             location = self.deduction_scene.location
+            if self._request_quest_confirmation(location):
+                return
             if location and location["name"] not in self.completed:
                 self.quest_manager.record_quiz_answer(location, self.deduction_scene.last_answer_correct)
                 self.save_task4_progress(location)
@@ -663,6 +720,8 @@ class Game:
         )
         self.task4_quiz_index += 1
         if self.task4_quiz_index == 3:
+            if self._request_quest_confirmation(location):
+                return
             self.task4_machine.mark_quiz_completed()
             self.task4_machine.complete()
             self.quest_manager.clues_complete(location)
@@ -795,6 +854,21 @@ class Game:
     # XU LY SU KIEN
     # =================================================================
     def handle_event(self, event):
+        if self.scene == 'notebook':
+            if event.type in (pygame.MOUSEBUTTONDOWN,pygame.MOUSEBUTTONUP,pygame.MOUSEMOTION):
+                width,height=self.display.get_size()
+                scale=min(width/WIDTH,height/HEIGHT)
+                pos=(int((event.pos[0]-(width-WIDTH*scale)/2)/scale),int((event.pos[1]-(height-HEIGHT*scale)/2)/scale))
+                event=pygame.event.Event(event.type,{**event.dict,'pos':pos})
+            result = self.notebook_scene.handle_event(event)
+            if result == 'back':
+                self.scene = self.scene_before_notebook
+            elif result == 'bookmark' and self.notebook_scene.current_clue:
+                self.notebook_scene.bookmarked.add(self.notebook_scene.current_clue['ma_manh_moi'])
+            return
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_n and self.scene in ('map','investigation','review'):
+            self.open_clue_notebook()
+            return
         # Handle quit before scene transitions or form inputs can consume the key.
         if event.type == pygame.KEYDOWN and key_is(event, "q"):
             self.running = False
@@ -1095,6 +1169,9 @@ class Game:
             print(f"Không lưu được tiến trình Task 4: {message}")
 
     def draw(self):
+        if self.scene == 'notebook':
+            self.screen.fill((248,244,230))
+            self.notebook_scene.draw(self.screen)
         if self.scene == "login":
             self.login_scene.draw(self.screen)
 
@@ -1120,7 +1197,7 @@ class Game:
 
         elif self.scene == "deduction":
             self.deduction_scene.draw(self.screen)
-            self.draw_hint("Kéo mảnh ghép vào ô | ENTER: xác thực | ESC: quay lại", 250, 675)
+            # Scene deduction đã có footer; không vẽ đè hướng dẫn timeline lên đó.
 
         elif self.scene == "task4_timeline":
             self.task4_scene.draw(self.screen)
@@ -1164,6 +1241,14 @@ class Game:
     # VONG LAP CHINH
     # =================================================================
     def step(self):
+        quest = getattr(self, '_quest_task', None)
+        if quest is not None and quest.done():
+            self._quest_task = None
+            try:
+                self._finish_confirmed_quest(self._quest_location,quest.result())
+            except Exception as exc:
+                self.notify(f'Nhiệm vụ chưa được xác nhận, thử lại sau: {exc}')
+                self.deduction_scene.finished = False
         deduction_task = getattr(self, "_deduction_task", None)
         if deduction_task is not None and deduction_task.done():
             self._deduction_task = None

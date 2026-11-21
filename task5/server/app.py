@@ -95,7 +95,24 @@ def _public(user: dict[str, Any]):
 
 
 @app.get("/api/health")
-def health(): return {"status": "healthy", "service": "task5"}
+def health():
+    from data.sqlite_store import connect
+    try:
+        conn = connect()
+        try:
+            tables = {row['name'] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            required = {'nguoi_dung','tien_do_choi','dia_diem','su_kien_lich_su','nhan_vat','manh_moi','cau_hoi_on_tap','answer_log','review_items','tai_khoan_bao_mat'}
+            if not required.issubset(tables):
+                raise RuntimeError('Thiếu bảng SQLite')
+            for table in ('dia_diem','su_kien_lich_su','nhan_vat','manh_moi','cau_hoi_on_tap'):
+                if not conn.execute(f'SELECT 1 AS ok FROM {table} LIMIT 1').fetchone():
+                    raise RuntimeError('Thiếu dữ liệu nội dung chính thức')
+            conn.execute('SELECT 1').fetchone()
+        finally:
+            conn.close()
+    except Exception as exc:
+        raise HTTPException(503, 'SQLite chưa sẵn sàng.') from exc
+    return {"status": "healthy", "service": "task5", "database": "sqlite"}
 
 
 @app.get("/game/questions")
@@ -108,6 +125,28 @@ def game_questions():
     if events is None or questions is None:
         raise HTTPException(503, "Chưa tải được bộ câu hỏi từ CSDL.")
     return {"questions": transform_deduction_questions(events, questions)}
+
+
+@app.get('/game/content')
+def game_content():
+    try:
+        return repository.load_game_content()
+    except Exception as exc:
+        raise HTTPException(503, 'Nội dung SQLite chưa sẵn sàng.') from exc
+
+
+@app.get('/game/catalog/{resource}')
+def game_catalog(resource: str):
+    """Danh mục chỉ đọc cho Notebook/graph, tên bảng luôn lấy từ allowlist."""
+    from data.db_queries import execute_select_query
+    tables = {'locations':'dia_diem','events':'su_kien_lich_su','clues':'manh_moi',
+              'characters':'nhan_vat','questions':'cau_hoi_on_tap'}
+    if resource not in tables:
+        raise HTTPException(404, 'Danh mục không tồn tại.')
+    rows, message = execute_select_query('SELECT * FROM ' + tables[resource])
+    if rows is None:
+        raise HTTPException(503, 'Không đọc được danh mục SQLite.')
+    return {'items': rows}
 
 
 @app.get("/", include_in_schema=False)
@@ -262,8 +301,12 @@ else:
     # Ưu tiên build chuẩn, sau đó tự tìm build staging local để tránh API root báo 404.
     _WEB_CANDIDATES = (
         _PROJECT_ROOT / "build" / "web",
+        _PROJECT_ROOT / "build" / "web-source" / "build" / "web",
         _PROJECT_ROOT / ".web-staging" / "build" / "web",
     )
     _WEB = next((candidate for candidate in _WEB_CANDIDATES if (candidate / "index.html").is_file()), _WEB_CANDIDATES[0])
 if _WEB.is_dir():
+    from data.sqlite_store import database_path
+    if database_path().is_relative_to(_WEB):
+        raise RuntimeError('SQLITE_DB_PATH không được nằm trong thư mục web public.')
     app.mount("/web", StaticFiles(directory=str(_WEB), html=True), name="game-web")

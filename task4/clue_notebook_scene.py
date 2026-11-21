@@ -1,4 +1,4 @@
-import sqlite3
+import sys
 import pygame
 from pathlib import Path
 from typing import Optional
@@ -6,7 +6,8 @@ from typing import Optional
 DB_PATH = Path(__file__).parent.parent / "game.db"
 
 class ClueNotebookScene:
-    def __init__(self, sw=1080, sh=720):
+    def __init__(self, sw=1080, sh=720, data_provider=None):
+        self.data_provider = data_provider
         self.sw = sw
         self.sh = sh
         self.COLOR_BG = (248, 244, 230)
@@ -26,8 +27,17 @@ class ClueNotebookScene:
     
     def load_all_clues(self):
         try:
-            conn = sqlite3.connect(str(DB_PATH))
-            conn.row_factory = sqlite3.Row
+            if self.data_provider is not None:
+                self.clues_list = list(self.data_provider())
+                if self.clues_list:
+                    self.set_current(0)
+                return
+            if sys.platform == 'emscripten':
+                raise RuntimeError('Nhật ký browser cần dữ liệu từ API, không mở SQLite local.')
+            from data.db_queries import get_db_connection
+            conn, status = get_db_connection()
+            if conn is None:
+                raise RuntimeError(status)
             cur = conn.cursor()
             sql = "SELECT mm.ma_manh_moi, mm.tieu_de_manh_moi, mm.loai_manh_moi, "
             sql += "mm.noi_dung_chi_tiet, sk.ten_su_kien, sk.nam_dien_ra, "
@@ -37,9 +47,11 @@ class ClueNotebookScene:
             sql += "LEFT JOIN nhan_vat nv ON mm.ma_nhan_vat = nv.ma_nhan_vat "
             sql += "LEFT JOIN dia_diem dd ON sk.ma_dia_diem = dd.ma_dia_diem "
             sql += "ORDER BY sk.nam_dien_ra, mm.thu_tu_timeline_dung"
-            cur.execute(sql)
-            self.clues_list = [dict(r) for r in cur.fetchall()]
-            conn.close()
+            try:
+                cur.execute(sql)
+                self.clues_list = [dict(r) for r in cur.fetchall()]
+            finally:
+                conn.close()
             if self.clues_list:
                 self.set_current(0)
         except Exception as e:

@@ -1,5 +1,9 @@
 # Task 5 — điểm, ôn tập, lưu tiến độ và triển khai web
 
+> **Bản hiện hành dùng SQLite** (`SQLITE_DB_PATH`), không cần XAMPP/MySQL.
+> Hướng dẫn chạy/deploy hiện hành ở **DEPLOY_WEB.md**, kết quả ở **TASK5_ACCEPTANCE.md**.
+> Phần hướng dẫn MySQL bên dưới là lịch sử, không áp dụng cho nhánh fix/sqlite-web-deploy.
+
 ## Trạng thái quan trọng
 
 Task 5 đang được bổ sung trong checkout này. API server và migration có mã nguồn; đã compile, nhưng chưa xác minh với MySQL thật. Không chạy migration trên DB dùng chung. Chế độ trình duyệt chưa được nghiệm thu: các scene game hiện dùng `pygame.font.SysFont`, dữ liệu game desktop còn dựa trên module `data.db_queries`, và API client dùng `urllib` đồng bộ. Pygbag yêu cầu game loop async; gọi HTTP đồng bộ sẽ đóng băng khung hình. Vì vậy chưa công bố là bản web chạy được.
