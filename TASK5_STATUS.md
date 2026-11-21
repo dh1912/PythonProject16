@@ -1,5 +1,23 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Kết quả cuối lượt Q / clean-worktree / Linux
+- Code HEAD ea8d86f: worktree riêng pytest 81 PASS + 7 subtest, compile/build/Edge UI
+  q/Q PASS; không dựa vào file chưa commit hoặc database cá nhân.
+- Run Linux 44911172510: pytest/compile/Pygbag/Docker build/container persistence sau restart
+  đều SUCCESS. Chromium UI FAIL timeout chờ /review/me sau thao tác đăng nhập.
+- Đã thử explicit mouse focus trên Linux, lỗi vẫn còn; không coi workflow tổng thể PASS.
+  Chẩn đoán công khai có traceback, nhưng chưa đủ để khẳng định nguyên nhân SDL/input.
+- Commit mới: faeb1e2 (sửa Q), 4f0d05c (CI diagnostics), ea8d86f (Linux focus harness).
+  Tất cả đã push nhánh thường. Không merge main/deploy public.
+
+## HEAD độc lập và lỗi Q
+- Nhóm v6/manifest/gameplay được thành viên chốt trong 2167792; đầu lượt Git sạch.
+- faeb1e2 sửa Q ở hai tầng Game/LoginScene; 4 regression test mới. Worktree riêng + venv
+  mới: 81 PASS, 7 subtest PASS, compile/build PASS, Edge q/Q Tab/Backspace/Enter PASS.
+- Tất cả 9 quest API qua Edge/SQLite thật cũng đạt trên worktree HEAD này.
+- Nhánh đã push, run 44910700587 thực sự chạy Linux; pytest/compile/Pygbag success.
+  Browser Linux và Docker/persistence chưa kết luận trong lúc chờ workflow.
+
 ## Bổ sung CI/UI và manifest trong lượt hiện tại
 - Phân loại Git: nhóm v6/gameplay và ảnh nghiệm thu tồn tại trước lượt này được giữ nguyên;
   commit CI/UI chỉ chứa workflow, helper container/UI, sửa chọn sự kiện đại diện và tài liệu.

@@ -1,5 +1,39 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Kết quả Linux cuối lượt — cập nhật thay thế trạng thái đang chờ
+Run https://github.com/dh1912/PythonProject16/actions/runs/44911172510 tại ea8d86f:
+- SUCCESS: dependency install, pytest, compile, Pygbag, Docker build.
+- SUCCESS: container SQLite health, đăng ký/chấm quiz/lưu clue/quest, restart volume,
+  đăng nhập lại và so sánh toàn bộ tiến độ bằng ci_container_check.
+- FAIL: Chromium UI timeout chờ /review/me sau thao tác auth. Đổi Tab/Enter thành
+  explicit canvas mouse focus trên Linux chưa giải quyết được. Không bỏ assertion,
+  không đổi thành HTTP mock, không ghi workflow tổng thể PASS.
+- Worktree riêng ea8d86f: 81 pytest + 7 subtest PASS, compile/build và Edge UI q/Q PASS.
+  Tất cả thử trên DB tạm; local Windows không có Docker nhưng Docker Linux đã chạy thật.
+- Warning còn lại: Starlette/httpx và Node 20 của các action version hiện tại.
+- Giới hạn phát hành: Chromium Linux UI chưa đạt; cần đọc thêm browser/SDL diagnostic.
+  Không kết luận production-ready và chưa deploy.
+
+## Nghiệm thu từ Git HEAD độc lập: faeb1e2
+- Đầu lượt working tree sạch: thành viên đã commit toàn bộ nhóm v6/manifest/gameplay/test
+  trong `2167792`, không còn nhóm thay đổi cũ cần tự gộp. Giữ nguyên commit này.
+- `faeb1e2`: Game không bắt Q ở scene login; LoginScene chỉ cho Q thoát khi không ô nào
+  có focus. Ô username/password/đăng ký nhận q/Q bình thường; giữ Tab/Backspace/Enter.
+- Worktree detached tại faeb1e2: `C:/Users/Admin/PycharmProjects/PythonProject/task5-clean-acceptance`.
+  Tạo venv mới và cài requirements server/client, pygbag, playwright, pytest-subtests.
+- Từ worktree: 81 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS; compile/build Pygbag mã thoát 0.
+  Test SQLite dùng DB mới/tạm: active manifest, dữ liệu legacy, tiến độ, concurrency,
+  thưởng một lần và khôi phục process mới đều thuộc suite này.
+- Edge UI thật: username và password chứa cả q/Q, Tab chuyển focus, Backspace xóa,
+  Enter đăng nhập thành công; Notebook/điều tra/quiz/review/quest/Bảng Vàng đạt,
+  `page_errors=[]`, mã thoát 0. Không HTTP mock.
+- Edge fetch + FastAPI/SQLite tạm: 9/9 địa điểm đạt, restore và reward-once đạt, exit 0.
+- Push nhánh thường faeb1e2 thành công. Run Linux thật:
+  https://github.com/dh1912/PythonProject16/actions/runs/44910700587
+  Đã xác nhận pytest/compile/Pygbag success; Chromium/Docker đang chờ kết quả khi ghi mục này.
+- Worktree kiểm thử chỉ sinh thay đổi JSON kết quả UI; không dựa vào DB hoặc mã chưa commit.
+  Không merge main, không force push, không public.
+
 ## Nghiệm thu bổ sung UI/CI/manifest
 - Pytest toàn bộ: 77 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS; 1 warning Starlette/httpx.
 - Compile và build Pygbag sau sửa: mã thoát 0.

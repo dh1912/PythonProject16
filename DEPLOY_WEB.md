@@ -1,5 +1,19 @@
 # Deploy FastAPI + Pygbag + SQLite
 
+### Kết quả hosting prerequisite thực tế
+Run 44911172510 (ea8d86f) đã SUCCESS Docker build và container SQLite persistent-volume
+qua restart: tài khoản/điểm/manh mối/completed khôi phục nguyên vẹn. Tuy nhiên workflow
+tổng thể FAIL vì Chromium Linux UI timeout lúc login. Edge Windows cùng code HEAD đạt.
+Chưa deploy public; không dùng kết quả Docker để bỏ qua lỗi UI Linux chưa nghiệm thu.
+
+## Mốc Git được nghiệm thu độc lập
+Commit chức năng `faeb1e2` đã chạy từ detached worktree và venv mới: 81 pytest + 7
+subtest, compile, build Pygbag, Edge UI tài khoản chứa q/Q và toàn tuyến API 9 quest đạt.
+Nhánh fix/sqlite-web-deploy đã push; workflow thật xem tại
+https://github.com/dh1912/PythonProject16/actions/runs/44910700587 .
+Chỉ kết luận Docker/persistent disk PASS sau khi step container trong run này thành công;
+local Windows vẫn không có Docker. Push nhánh không phải triển khai public.
+
 ## CI Linux và nghiệm thu trước phát hành
 Workflow `.github/workflows/sqlite-web.yml` chạy Python 3.11, pytest (SQLite file tạm),
 compile, Pygbag, Chromium UI thật, build Docker và chạy container với volume `/data`.
