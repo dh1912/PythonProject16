@@ -1,0 +1,940 @@
+{
+  "dia_diem": [
+    {
+      "ma_dia_diem": 9,
+      "ten_dia_diem": "Dinh Độc Lập (Sài Gòn)",
+      "toa_do_x": 380,
+      "toa_do_y": 505,
+      "khu_vuc": "Nam",
+      "mo_ta": "Nơi giải phóng hoàn toàn miền Nam ngày 30/4/1975.",
+      "mo_khoa_mac_dinh": 0
+    }
+  ],
+  "su_kien_lich_su": [
+    {
+      "ma_su_kien": 30,
+      "ma_dia_diem": 9,
+      "ten_su_kien": "Đại thắng mùa Xuân 1975 - Giải phóng miền Nam",
+      "nam_dien_ra": 1975,
+      "ngay_thang_chi_tiet": "30/04/1975",
+      "thoi_ky": "1954 - 1975",
+      "tom_tat_dien_bien": "11h30 trưa 30/4/1975, xe tăng quân giải phóng tiến vào Dinh Độc Lập, cắm cờ chiến thắng.",
+      "nguon_trich_dan": "Đại thắng mùa Xuân 1975, NXB Quân đội Nhân dân"
+    }
+  ],
+  "manh_moi": [
+    {
+      "ma_su_kien": 20,
+      "ma_nhan_vat": 4,
+      "tieu_de_manh_moi": "Nguyễn Ái Quốc trở về Tổ quốc",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Ngày 28/01/1941, Người qua mốc 108 Cao Bằng về nước.",
+      "thu_tu_timeline_dung": 0
+    },
+    {
+      "ma_su_kien": 20,
+      "ma_nhan_vat": 4,
+      "tieu_de_manh_moi": "Hội nghị Trung ương lần thứ tám",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Họp từ 10 đến 19/5/1941 tại Pác Bó đặt giải phóng dân tộc lên hàng đầu.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_su_kien": 20,
+      "ma_nhan_vat": 4,
+      "tieu_de_manh_moi": "Thành lập Mặt trận Việt Minh",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Quyết định thành lập Việt Nam Độc lập Đồng minh ngày 19/5/1941.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_su_kien": 20,
+      "ma_nhan_vat": 4,
+      "tieu_de_manh_moi": "Chuẩn bị lực lượng giải phóng dân tộc",
+      "loai_manh_moi": "lời khai",
+      "noi_dung_chi_tiet": "Cao Bằng trở thành căn cứ địa cách mạng đầu tiên của cả nước.",
+      "thu_tu_timeline_dung": 3
+    },
+    {
+      "ma_su_kien": 25,
+      "ma_nhan_vat": 6,
+      "tieu_de_manh_moi": "Tổng khởi nghĩa giành chính quyền",
+      "loai_manh_moi": "lời khai",
+      "noi_dung_chi_tiet": "Tháng Tám năm 1945, nhân dân cả nước nổi dậy giành chính quyền thắng lợi.",
+      "thu_tu_timeline_dung": 0
+    },
+    {
+      "ma_su_kien": 25,
+      "ma_nhan_vat": 6,
+      "tieu_de_manh_moi": "Chính phủ lâm thời ra đời",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Ủy ban Dân tộc Giải phóng cải tổ thành Chính phủ lâm thời nước VNDCCH.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_su_kien": 25,
+      "ma_nhan_vat": 6,
+      "tieu_de_manh_moi": "Tuyên ngôn Độc lập được soạn thảo",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Bác Hồ soạn thảo bản Tuyên ngôn tại căn nhà số 48 Hàng Ngang, Hà Nội.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_su_kien": 25,
+      "ma_nhan_vat": 6,
+      "tieu_de_manh_moi": "Tuyên bố độc lập tại Ba Đình",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Ngày 2/9/1945, Tuyên ngôn Độc lập khai sinh nước Việt Nam Dân chủ Cộng hòa.",
+      "thu_tu_timeline_dung": 3
+    },
+    {
+      "ma_su_kien": 29,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Chiến dịch Đông Xuân 1953-1954",
+      "loai_manh_moi": "lời khai",
+      "noi_dung_chi_tiet": "Quân và dân ta chủ động tấn công phân tán lực lượng cơ động của Pháp.",
+      "thu_tu_timeline_dung": 0
+    },
+    {
+      "ma_su_kien": 29,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Điện Biên Phủ thành tập đoàn cứ điểm",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Pháp xây dựng Điện Biên Phủ thành pháo đài bất khả xâm phạm.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_su_kien": 29,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Mở màn chiến dịch",
+      "loai_manh_moi": "lời khai",
+      "noi_dung_chi_tiet": "Trận mở màn Him Lam chiều ngày 13/3/1954 giáng đòn sấm sét vào quân Pháp.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_su_kien": 29,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Chiến thắng ngày 7/5/1954",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "17h30 chiều 7/5/1954, tướng De Castries đầu hàng, tập đoàn cứ điểm bị xóa sổ.",
+      "thu_tu_timeline_dung": 3
+    },
+    {
+      "ma_su_kien": 30,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Hiệp định Paris được ký kết",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Ngày 27/1/1973, Hiệp định Paris buộc đế quốc Mỹ phải rút hết quân về nước.",
+      "thu_tu_timeline_dung": 0
+    },
+    {
+      "ma_su_kien": 30,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Giải phóng Tây Nguyên và miền Trung",
+      "loai_manh_moi": "lời khai",
+      "noi_dung_chi_tiet": "Cuộc Tổng tiến công mùa Xuân 1975 giải phóng Buôn Ma Thuột, Huế, Đà Nẵng.",
+      "thu_tu_timeline_dung": 1
+    },
+    {
+      "ma_su_kien": 30,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Chiến dịch Hồ Chí Minh bắt đầu",
+      "loai_manh_moi": "văn kiện",
+      "noi_dung_chi_tiet": "Chiến dịch lịch sử giải phóng Sài Gòn mở màn ngày 26/4/1975.",
+      "thu_tu_timeline_dung": 2
+    },
+    {
+      "ma_su_kien": 30,
+      "ma_nhan_vat": 8,
+      "tieu_de_manh_moi": "Dinh Độc Lập được giải phóng",
+      "loai_manh_moi": "hiện vật",
+      "noi_dung_chi_tiet": "Trưa 30/4/1975, xe tăng húc đổ cổng Dinh Độc Lập, non sông thu về một mối.",
+      "thu_tu_timeline_dung": 3
+    }
+  ],
+  "cau_hoi_on_tap": [
+    {
+      "ma_su_kien": 20,
+      "noi_dung_cau_hoi": "Nguyễn Ái Quốc trở về Tổ quốc vào năm nào?",
+      "dap_an_a": "1930",
+      "dap_an_b": "1941",
+      "dap_an_c": "1945",
+      "dap_an_d": "1954",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Người trở về nước ngày 28/01/1941 qua mốc biên giới 108."
+    },
+    {
+      "ma_su_kien": 20,
+      "noi_dung_cau_hoi": "Hội nghị Trung ương 8 họp vào tháng nào?",
+      "dap_an_a": "1/1941",
+      "dap_an_b": "3/1941",
+      "dap_an_c": "5/1941",
+      "dap_an_d": "8/1941",
+      "dap_an_dung": "C",
+      "giai_thich_chi_tiet": "Hội nghị diễn ra từ ngày 10 đến 19/5/1941 tại Pác Bó."
+    },
+    {
+      "ma_su_kien": 20,
+      "noi_dung_cau_hoi": "Mặt trận được thành lập tại Hội nghị Trung ương 8 có tên gì?",
+      "dap_an_a": "Việt Minh",
+      "dap_an_b": "Mặt trận Liên Việt",
+      "dap_an_c": "Mặt trận Dân chủ",
+      "dap_an_d": "Mặt trận Tổ quốc",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Việt Nam Độc lập Đồng minh (Việt Minh) ra đời năm 1941."
+    },
+    {
+      "ma_su_kien": 25,
+      "noi_dung_cau_hoi": "Tuyên ngôn Độc lập được đọc vào ngày nào?",
+      "dap_an_a": "19/08/1945",
+      "dap_an_b": "02/09/1945",
+      "dap_an_c": "07/05/1954",
+      "dap_an_d": "19/12/1946",
+      "dap_an_dung": "B",
+      "giai_thich_chi_tiet": "Tuyên ngôn được đọc tại Ba Đình ngày 2/9/1945."
+    },
+    {
+      "ma_su_kien": 25,
+      "noi_dung_cau_hoi": "Ai là người thay mặt Chính phủ lâm thời đọc Tuyên ngôn Độc lập?",
+      "dap_an_a": "Trường Chinh",
+      "dap_an_b": "Võ Nguyên Giáp",
+      "dap_an_c": "Hồ Chí Minh",
+      "dap_an_d": "Phạm Văn Đồng",
+      "dap_an_dung": "C",
+      "giai_thich_chi_tiet": "Chủ tịch Hồ Chí Minh thay mặt Chính phủ lâm thời đọc Tuyên ngôn."
+    },
+    {
+      "ma_su_kien": 25,
+      "noi_dung_cau_hoi": "Tên nước được khai sinh ngày 2/9/1945 là gì?",
+      "dap_an_a": "Việt Nam Dân chủ Cộng hòa",
+      "dap_an_b": "Cộng hòa XHCN Việt Nam",
+      "dap_an_c": "Đại Nam",
+      "dap_an_d": "Việt Nam Cộng hòa",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Nước Việt Nam Dân chủ Cộng hòa ra đời ngày 2/9/1945."
+    },
+    {
+      "ma_su_kien": 29,
+      "noi_dung_cau_hoi": "Chiến dịch Điện Biên Phủ toàn thắng vào ngày nào?",
+      "dap_an_a": "07/05/1954",
+      "dap_an_b": "20/07/1954",
+      "dap_an_c": "02/09/1954",
+      "dap_an_d": "19/12/1954",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Chiến dịch toàn thắng ngày 7/5/1954."
+    },
+    {
+      "ma_su_kien": 29,
+      "noi_dung_cau_hoi": "Chiến dịch Điện Biên Phủ bắt đầu vào ngày nào?",
+      "dap_an_a": "13/03/1954",
+      "dap_an_b": "07/05/1954",
+      "dap_an_c": "19/12/1946",
+      "dap_an_d": "01/09/1954",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Chiến dịch mở màn ngày 13/3/1954."
+    },
+    {
+      "ma_su_kien": 29,
+      "noi_dung_cau_hoi": "Ai là Tổng Tư lệnh chiến dịch Điện Biên Phủ?",
+      "dap_an_a": "Võ Nguyên Giáp",
+      "dap_an_b": "Văn Tiến Dũng",
+      "dap_an_c": "Nguyễn Chí Thanh",
+      "dap_an_d": "Hoàng Văn Thái",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Đại tướng Võ Nguyên Giáp là Tổng Tư lệnh chiến dịch."
+    },
+    {
+      "ma_su_kien": 30,
+      "noi_dung_cau_hoi": "Chiến dịch Hồ Chí Minh toàn thắng ngày nào?",
+      "dap_an_a": "30/04/1975",
+      "dap_an_b": "01/05/1975",
+      "dap_an_c": "26/04/1975",
+      "dap_an_d": "02/09/1975",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Chiến dịch kết thúc thắng lợi ngày 30/4/1975."
+    },
+    {
+      "ma_su_kien": 30,
+      "noi_dung_cau_hoi": "Chiến dịch Hồ Chí Minh mở màn ngày nào?",
+      "dap_an_a": "26/04/1975",
+      "dap_an_b": "30/04/1975",
+      "dap_an_c": "07/05/1954",
+      "dap_an_d": "27/01/1973",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Chiến dịch bắt đầu ngày 26/4/1975."
+    },
+    {
+      "ma_su_kien": 30,
+      "noi_dung_cau_hoi": "Xe tăng nào đã húc đổ cổng chính Dinh Độc Lập?",
+      "dap_an_a": "Xe tăng 390",
+      "dap_an_b": "Xe tăng 843",
+      "dap_an_c": "Xe tăng 985",
+      "dap_an_d": "Xe tăng 280",
+      "dap_an_dung": "A",
+      "giai_thich_chi_tiet": "Xe tăng 390 húc đổ cổng chính Dinh Độc Lập."
+    }
+  ],
+  "moc_lich_su": [
+    {
+      "ma_moc": 1,
+      "nam": 1858,
+      "ngay_thang": "01/09/1858",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Giai đoạn kháng chiến chống thực dân Pháp xâm lược nửa cuối thế kỷ XIX."
+    },
+    {
+      "ma_moc": 2,
+      "nam": 1862,
+      "ngay_thang": "05/06/1862",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Giai đoạn thực dân Pháp từng bước chiếm đóng các tỉnh Nam Kỳ."
+    },
+    {
+      "ma_moc": 3,
+      "nam": 1864,
+      "ngay_thang": "20/08/1864",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Phong trào vũ trang chống Pháp của nghĩa sĩ Nam Kỳ."
+    },
+    {
+      "ma_moc": 4,
+      "nam": 1884,
+      "ngay_thang": "06/06/1884",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Thời kỳ thiết lập ách đô hộ của chủ nghĩa thực dân Pháp."
+    },
+    {
+      "ma_moc": 5,
+      "nam": 1885,
+      "ngay_thang": "13/07/1885",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Phong trào Cần Vương yêu nước (1885-1896)."
+    },
+    {
+      "ma_moc": 6,
+      "nam": 1887,
+      "ngay_thang": "Giai đoạn 1884 - 1913",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Phong trào đấu tranh tự vệ của nông dân chống khai thác thuộc địa."
+    },
+    {
+      "ma_moc": 7,
+      "nam": 1904,
+      "ngay_thang": "Tháng 05/1904",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Phong trào yêu nước theo khuynh hướng dân chủ tư sản đầu thế kỷ XX."
+    },
+    {
+      "ma_moc": 8,
+      "nam": 1907,
+      "ngay_thang": "Tháng 03/1907",
+      "thoi_ky": "1858 - 1918",
+      "y_nghia_giai_doan": "Cao trào duy tân văn hóa xã hội đầu thế kỷ XX."
+    },
+    {
+      "ma_moc": 9,
+      "nam": 1911,
+      "ngay_thang": "05/06/1911",
+      "thoi_ky": "1858 - 1930",
+      "y_nghia_giai_doan": "Thời kỳ Nguyễn Ái Quốc bôn ba khảo sát thực tiễn phong trào thế giới."
+    },
+    {
+      "ma_moc": 10,
+      "nam": 1919,
+      "ngay_thang": "18/06/1919",
+      "thoi_ky": "1919 - 1930",
+      "y_nghia_giai_doan": "Phong trào yêu nước và cách mạng Việt Nam sau Chiến tranh thế giới thứ nhất."
+    },
+    {
+      "ma_moc": 11,
+      "nam": 1920,
+      "ngay_thang": "Tháng 12/1920",
+      "thoi_ky": "1919 - 1930",
+      "y_nghia_giai_doan": "Thời kỳ xác lập con đường cách mạng vô sản cho Việt Nam."
+    },
+    {
+      "ma_moc": 12,
+      "nam": 1925,
+      "ngay_thang": "Tháng 06/1925",
+      "thoi_ky": "1919 - 1930",
+      "y_nghia_giai_doan": "Thời kỳ chuẩn bị về tư tưởng, chính trị và tổ chức cho việc thành lập Đảng."
+    },
+    {
+      "ma_moc": 13,
+      "nam": 1927,
+      "ngay_thang": "Năm 1927",
+      "thoi_ky": "1919 - 1930",
+      "y_nghia_giai_doan": "Thời kỳ hoàn thiện đường lối chiến lược cách mạng giải phóng dân tộc."
+    },
+    {
+      "ma_moc": 14,
+      "nam": 1930,
+      "ngay_thang": "03/02/1930",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ đấu tranh giành chính quyền dưới sự lãnh đạo của Đảng (1930-1945)."
+    },
+    {
+      "ma_moc": 15,
+      "nam": 1930,
+      "ngay_thang": "09/02/1930",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Phong trào đấu tranh sôi nổi đầu năm 1930."
+    },
+    {
+      "ma_moc": 16,
+      "nam": 1930,
+      "ngay_thang": "12/09/1930",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Cao trào cách mạng 1930 - 1931."
+    },
+    {
+      "ma_moc": 17,
+      "nam": 1930,
+      "ngay_thang": "Tháng 10/1930",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ hoàn thiện hệ thống lãnh đạo của Đảng."
+    },
+    {
+      "ma_moc": 18,
+      "nam": 1936,
+      "ngay_thang": "Giai đoạn 1936 - 1939",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ vận động dân chủ rộng lớn."
+    },
+    {
+      "ma_moc": 19,
+      "nam": 1940,
+      "ngay_thang": "Cuối năm 1940",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ mở đầu giai đoạn khởi nghĩa vũ trang."
+    },
+    {
+      "ma_moc": 20,
+      "nam": 1941,
+      "ngay_thang": "28/01/1941",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ chuẩn bị trực tiếp Tổng khởi nghĩa giành chính quyền."
+    },
+    {
+      "ma_moc": 21,
+      "nam": 1941,
+      "ngay_thang": "19/05/1941",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ cao trào giải phóng dân tộc dưới ngọn cờ Việt Minh."
+    },
+    {
+      "ma_moc": 22,
+      "nam": 1944,
+      "ngay_thang": "22/12/1944",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ xây dựng lực lượng vũ trang nòng cốt chuẩn bị khởi nghĩa."
+    },
+    {
+      "ma_moc": 23,
+      "nam": 1945,
+      "ngay_thang": "16/08/1945",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Thời kỳ đỉnh cao Tổng khởi nghĩa Tháng Tám 1945."
+    },
+    {
+      "ma_moc": 24,
+      "nam": 1945,
+      "ngay_thang": "19/08/1945",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Tuần lễ tổng khởi nghĩa tháng Tám hào hùng."
+    },
+    {
+      "ma_moc": 25,
+      "nam": 1945,
+      "ngay_thang": "02/09/1945",
+      "thoi_ky": "1930 - 1945",
+      "y_nghia_giai_doan": "Khai sinh nước Việt Nam Dân chủ Cộng hòa."
+    },
+    {
+      "ma_moc": 26,
+      "nam": 1946,
+      "ngay_thang": "19/12/1946",
+      "thoi_ky": "1945 - 1954",
+      "y_nghia_giai_doan": "Thời kỳ kháng chiến chống thực dân Pháp xâm lược (1945-1954)."
+    },
+    {
+      "ma_moc": 27,
+      "nam": 1947,
+      "ngay_thang": "Thu - Đông 1947",
+      "thoi_ky": "1945 - 1954",
+      "y_nghia_giai_doan": "Giai đoạn chuyển từ cầm cự sang phản công trong kháng chiến chống Pháp."
+    },
+    {
+      "ma_moc": 28,
+      "nam": 1950,
+      "ngay_thang": "Thu - Đông 1950",
+      "thoi_ky": "1945 - 1954",
+      "y_nghia_giai_doan": "Thời kỳ giành quyền chủ động chiến lược trên chiến trường."
+    },
+    {
+      "ma_moc": 29,
+      "nam": 1954,
+      "ngay_thang": "07/05/1954",
+      "thoi_ky": "1945 - 1954",
+      "y_nghia_giai_doan": "Đỉnh cao chiến thắng kháng chiến chống Pháp kết thúc bằng Hiệp định Giơ-ne-vơ."
+    },
+    {
+      "ma_moc": 30,
+      "nam": 1975,
+      "ngay_thang": "30/04/1975",
+      "thoi_ky": "1954 - 1975",
+      "y_nghia_giai_doan": "Thời kỳ kháng chiến chống Mỹ, cứu nước kết thúc toàn thắng (1954-1975)."
+    }
+  ],
+  "nguon_lich_su": [
+    {
+      "ma_nguon": 1,
+      "ten_tai_lieu": "Đại cương Lịch sử Việt Nam, Tập 2",
+      "loai_nguon": "Giáo trình chuẩn đại học",
+      "tac_gia_co_quan": "GS. Đinh Xuân Lâm (Chủ biên)",
+      "nha_xuat_ban": "Giáo dục Việt Nam",
+      "nam_xuat_ban": 2006,
+      "trich_dan_chi_tiet": "Chương I: Cuộc kháng chiến chống thực dân Pháp xâm lược (1858-1884), tr. 15-22.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 2,
+      "ten_tai_lieu": "Lịch sử Việt Nam, Tập 6 (Từ 1858 đến 1896)",
+      "loai_nguon": "Công trình nghiên cứu khoa học",
+      "tac_gia_co_quan": "Viện Sử học Việt Nam",
+      "nha_xuat_ban": "Khoa học Xã hội",
+      "nam_xuat_ban": 2017,
+      "trich_dan_chi_tiet": "Phần II: Quá trình phân hóa và thỏa hiệp của triều đình Huế, tr. 84-95.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 3,
+      "ten_tai_lieu": "Sách giáo khoa Lịch sử 11",
+      "loai_nguon": "Sách giáo khoa Quốc gia",
+      "tac_gia_co_quan": "Bộ Giáo dục và Đào tạo",
+      "nha_xuat_ban": "Giáo dục Việt Nam",
+      "nam_xuat_ban": 2020,
+      "trich_dan_chi_tiet": "Bài 19: Nhân dân Việt Nam kháng chiến chống Pháp xâm lược (1858-1873), tr. 115-118.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 4,
+      "ten_tai_lieu": "Lịch sử bang giao Việt Nam cận đại",
+      "loai_nguon": "Chuyên khảo lịch sử",
+      "tac_gia_co_quan": "PGS.TS. Trần Nam Tiến",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2014,
+      "trich_dan_chi_tiet": "Chương 3: Các hòa ước giữa nhà Nguyễn và thực dân Pháp 1862-1884, tr. 145-152.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 5,
+      "ten_tai_lieu": "Phong trào Cần Vương trong lịch sử Việt Nam",
+      "loai_nguon": "Chuyên khảo lịch sử",
+      "tac_gia_co_quan": "GS. Đinh Xuân Lâm - Đỗ Bang",
+      "nha_xuat_ban": "Thuận Hóa",
+      "nam_xuat_ban": 2001,
+      "trich_dan_chi_tiet": "Chương II: Chiếu Cần Vương và sự bùng nổ các cuộc khởi nghĩa, tr. 45-60.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 6,
+      "ten_tai_lieu": "Khởi nghĩa Yên Thế (1884-1913)",
+      "loai_nguon": "Tư liệu lịch sử địa phương và quốc gia",
+      "tac_gia_co_quan": "Sở Văn hóa Thể thao và Du lịch Bắc Giang",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2013,
+      "trich_dan_chi_tiet": "Phần III: Chiến thuật du kích và các căn cứ Phồn Xương, tr. 112-140.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 7,
+      "ten_tai_lieu": "Phan Bội Châu Toàn tập, Tập 3: Tự phán",
+      "loai_nguon": "Tự truyện / Hồi ký danh nhân",
+      "tac_gia_co_quan": "Phan Bội Châu (Chương Thâu sưu tầm, khảo cứu)",
+      "nha_xuat_ban": "Thuận Hóa",
+      "nam_xuat_ban": 2001,
+      "trich_dan_chi_tiet": "Phần Đông Du ký và tôn chỉ Hội Duy Tân, tr. 45-78.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 8,
+      "ten_tai_lieu": "Phong trào Đông Kinh Nghĩa Thục",
+      "loai_nguon": "Công trình nghiên cứu lịch sử văn hóa",
+      "tac_gia_co_quan": "Nguyễn Hiến Lê",
+      "nha_xuat_ban": "Văn hóa Thông tin",
+      "nam_xuat_ban": 2007,
+      "trich_dan_chi_tiet": "Chương II: Tôn chỉ, mục đích và các hoạt động giảng dạy, tr. 32-58.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 9,
+      "ten_tai_lieu": "Hồ Chí Minh: Biên niên tiểu sử, Tập 1 (1890 - 1929)",
+      "loai_nguon": "Tư liệu chính văn lịch sử",
+      "tac_gia_co_quan": "Viện Lịch sử Đảng, Học viện Chính trị Quốc gia Hồ Chí Minh",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2016,
+      "trich_dan_chi_tiet": "Mục năm 1911: Ngày 5 tháng 6, tr. 42-45.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 10,
+      "ten_tai_lieu": "Hồ Chí Minh Toàn tập, Tập 1 (1912 - 1925)",
+      "loai_nguon": "Văn kiện chính trị toàn tập",
+      "tac_gia_co_quan": "Hồ Chí Minh",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2011,
+      "trich_dan_chi_tiet": "Văn kiện: Yêu sách của nhân dân An Nam (18/6/1919), tr. 435-438.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 11,
+      "ten_tai_lieu": "Hồ Chí Minh: Tiểu sử",
+      "loai_nguon": "Tiểu sử lãnh tụ chuẩn quốc gia",
+      "tac_gia_co_quan": "Ban Tuyên giáo Trung ương",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2020,
+      "trich_dan_chi_tiet": "Chương 2: Tìm thấy con đường cứu nước, giải phóng dân tộc (1911-1920), tr. 68-75.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 12,
+      "ten_tai_lieu": "Lịch sử Đảng Cộng sản Việt Nam, Tập 1 (1930 - 1954)",
+      "loai_nguon": "Lịch sử Đảng chuẩn",
+      "tac_gia_co_quan": "Hội đồng Trung ương chỉ đạo biên soạn Giáo trình quốc gia",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2018,
+      "trich_dan_chi_tiet": "Chương I: Sự ra đời của Đảng Cộng sản Việt Nam, tr. 55-65.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 13,
+      "ten_tai_lieu": "Hồ Chí Minh Toàn tập, Tập 2 (1926 - 1930)",
+      "loai_nguon": "Văn kiện chính trị toàn tập",
+      "tac_gia_co_quan": "Hồ Chí Minh",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2011,
+      "trich_dan_chi_tiet": "Tác phẩm: Đường Kách mệnh (1927), tr. 279-340.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 14,
+      "ten_tai_lieu": "Văn kiện Đảng toàn tập, Tập 2 (1930)",
+      "loai_nguon": "Văn kiện Đảng gốc",
+      "tac_gia_co_quan": "Ban Nghiên cứu Lịch sử Đảng Trung ương",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2002,
+      "trich_dan_chi_tiet": "Văn kiện: Chánh cương vắn tắt, Sách lược vắn tắt của Đảng, tr. 1-15.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 15,
+      "ten_tai_lieu": "Sách giáo khoa Lịch sử 12 (Chương trình chuẩn)",
+      "loai_nguon": "Sách giáo khoa Quốc gia",
+      "tac_gia_co_quan": "Bộ Giáo dục và Đào tạo",
+      "nha_xuat_ban": "Giáo dục Việt Nam",
+      "nam_xuat_ban": 2021,
+      "trich_dan_chi_tiet": "Bài 13: Phong trào dân tộc dân chủ ở Việt Nam từ năm 1925 đến năm 1930, tr. 82-84.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 16,
+      "ten_tai_lieu": "Lịch sử giai cấp công nhân Việt Nam, Tập 1",
+      "loai_nguon": "Công trình nghiên cứu lịch sử",
+      "tac_gia_co_quan": "Viện Sử học",
+      "nha_xuat_ban": "Khoa học Xã hội",
+      "nam_xuat_ban": 2012,
+      "trich_dan_chi_tiet": "Chương IV: Phong trào Xô viết Nghệ Tĩnh 1930-1931, tr. 145-180.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 17,
+      "ten_tai_lieu": "Văn kiện Đảng toàn tập, Tập 2 (1930)",
+      "loai_nguon": "Văn kiện Đảng gốc",
+      "tac_gia_co_quan": "Ban Chấp hành Trung ương Đảng",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2002,
+      "trich_dan_chi_tiet": "Luận cương chánh trị của Đảng Cộng sản Đông Dương (10/1930), tr. 88-114.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 18,
+      "ten_tai_lieu": "Lịch sử Đảng Cộng sản Việt Nam, Tập 1 (1930 - 1954)",
+      "loai_nguon": "Giáo trình quốc gia",
+      "tac_gia_co_quan": "Hội đồng Trung ương chỉ đạo biên soạn Giáo trình quốc gia",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2018,
+      "trich_dan_chi_tiet": "Chương III: Phong trào dân chủ 1936-1939, tr. 210-245.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 19,
+      "ten_tai_lieu": "Lịch sử Nam Bộ kháng chiến, Tập 1 (1945 - 1954)",
+      "loai_nguon": "Công trình tổng kết lịch sử cấp nhà nước",
+      "tac_gia_co_quan": "Hội đồng chỉ đạo biên soạn Lịch sử Nam Bộ kháng chiến",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2011,
+      "trich_dan_chi_tiet": "Phần mở đầu: Khởi nghĩa Nam Kỳ và sự ra đời của lá cờ đỏ sao vàng, tr. 95-108.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 20,
+      "ten_tai_lieu": "Bác Hồ ở Pác Bó",
+      "loai_nguon": "Hồi ký và khảo cứu lịch sử",
+      "tac_gia_co_quan": "Ban Tuyên giáo Tỉnh ủy Cao Bằng",
+      "nha_xuat_ban": "Kim Đồng",
+      "nam_xuat_ban": 2015,
+      "trich_dan_chi_tiet": "Chương I: Bước chân qua mốc 108 và căn lán Pác Bó, tr. 18-35.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 21,
+      "ten_tai_lieu": "Văn kiện Đảng toàn tập, Tập 7 (1940 - 1945)",
+      "loai_nguon": "Văn kiện Đảng gốc",
+      "tac_gia_co_quan": "Ban Chấp hành Trung ương Đảng",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2000,
+      "trich_dan_chi_tiet": "Nghị quyết của Hội nghị Ban Chấp hành Trung ương Đảng lần thứ 8, tr. 99-135.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 22,
+      "ten_tai_lieu": "Lịch sử Quân đội nhân dân Việt Nam, Tập 1",
+      "loai_nguon": "Lịch sử quân sự cấp quốc gia",
+      "tac_gia_co_quan": "Viện Lịch sử Quân sự Việt Nam",
+      "nha_xuat_ban": "Quân đội Nhân dân",
+      "nam_xuat_ban": 2014,
+      "trich_dan_chi_tiet": "Chương II: Đội Việt Nam Tuyên truyền Giải phóng quân ra đời và những chiến công đầu tiên, tr. 75-92.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 23,
+      "ten_tai_lieu": "Cách mạng Tháng Tám 1945 - Thắng lợi của ý chí độc lập tự do",
+      "loai_nguon": "Công trình tổng kết lịch sử",
+      "tac_gia_co_quan": "Viện Lịch sử Quân sự Việt Nam",
+      "nha_xuat_ban": "Quân đội Nhân dân",
+      "nam_xuat_ban": 2015,
+      "trich_dan_chi_tiet": "Chương IV: Quốc dân Đại hội Tân Trào và Lệnh Tổng khởi nghĩa, tr. 140-162.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 24,
+      "ten_tai_lieu": "Lịch sử Thủ đô Hà Nội",
+      "loai_nguon": "Lịch sử địa phương chuẩn",
+      "tac_gia_co_quan": "GS. Trần Huy Liệu (Chủ biên)",
+      "nha_xuat_ban": "Sử học",
+      "nam_xuat_ban": 2010,
+      "trich_dan_chi_tiet": "Phần Cách mạng Tháng Tám: Ngày 19 tháng Tám lịch sử tại Hà Nội, tr. 320-345.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 25,
+      "ten_tai_lieu": "Tuyên ngôn Độc lập năm 1945 - Giá trị lịch sử và thời đại",
+      "loai_nguon": "Văn kiện lập quốc cấp nhà nước",
+      "tac_gia_co_quan": "Viện Hàn lâm Khoa học Xã hội Việt Nam",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2015,
+      "trich_dan_chi_tiet": "Toàn văn bản Tuyên ngôn Độc lập ngày 2/9/1945 và khảo luận lịch sử, tr. 15-40.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 26,
+      "ten_tai_lieu": "Hồ Chí Minh Toàn tập, Tập 4 (1945 - 1946)",
+      "loai_nguon": "Văn kiện chính trị toàn tập",
+      "tac_gia_co_quan": "Hồ Chí Minh",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2011,
+      "trich_dan_chi_tiet": "Lời kêu gọi toàn quốc kháng chiến (19/12/1946), tr. 534-535.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 27,
+      "ten_tai_lieu": "Lịch sử cuộc kháng chiến chống thực dân Pháp (1945 - 1954), Tập 1",
+      "loai_nguon": "Lịch sử chiến tranh toàn diện",
+      "tac_gia_co_quan": "Viện Lịch sử Quân sự Việt Nam",
+      "nha_xuat_ban": "Quân đội Nhân dân",
+      "nam_xuat_ban": 2013,
+      "trich_dan_chi_tiet": "Chương IV: Chiến dịch phản công Việt Bắc Thu Đông 1947, tr. 180-215.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 28,
+      "ten_tai_lieu": "Chiến dịch Biên giới Thu Đông 1950",
+      "loai_nguon": "Tư liệu tổng kết chiến dịch quân sự",
+      "tac_gia_co_quan": "Viện Lịch sử Quân sự Việt Nam",
+      "nha_xuat_ban": "Quân đội Nhân dân",
+      "nam_xuat_ban": 2010,
+      "trich_dan_chi_tiet": "Toàn tập diễn biến chiến dịch và trận đánh Đông Khê, tr. 88-132.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 29,
+      "ten_tai_lieu": "Điện Biên Phủ - Điểm hẹn lịch sử (Hồi ký)",
+      "loai_nguon": "Hồi ký tướng lĩnh chỉ huy tối cao",
+      "tac_gia_co_quan": "Đại tướng Võ Nguyên Giáp (Hữu Mai thể hiện)",
+      "nha_xuat_ban": "Quân đội Nhân dân",
+      "nam_xuat_ban": 2004,
+      "trich_dan_chi_tiet": "Chương VII: Chiều mùng 7 tháng 5 định mệnh và khúc ca chiến thắng, tr. 350-420.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    },
+    {
+      "ma_nguon": 30,
+      "ten_tai_lieu": "Tổng hành dinh trong Mùa Xuân toàn thắng",
+      "loai_nguon": "Hồi ký lịch sử quân sự",
+      "tac_gia_co_quan": "Đại tướng Võ Nguyên Giáp",
+      "nha_xuat_ban": "Chính trị quốc gia Sự thật",
+      "nam_xuat_ban": 2005,
+      "trich_dan_chi_tiet": "Chương V: Chiến dịch giải phóng Sài Gòn mang tên Bác, tr. 220-275.",
+      "muc_do_xac_thuc": "Chính thống - Cấp Quốc gia"
+    }
+  ],
+  "nhan_vat_lich_su": [
+    {
+      "ma_nhan_vat": 101,
+      "ten_nhan_vat": "Nguyễn Tri Phương",
+      "nam_sinh_mat": "1800 - 1873",
+      "vai_tro": "Đại thần Tổng đốc quân vụ",
+      "tieu_su_dong_gop": "Danh tướng triều Nguyễn, kiên quyết chống giặc tại mặt trận Đà Nẵng, Gia Định và Hà Nội."
+    },
+    {
+      "ma_nhan_vat": 102,
+      "ten_nhan_vat": "Phan Thanh Giản",
+      "nam_sinh_mat": "1796 - 1867",
+      "vai_tro": "Chánh sứ đàm phán triều Nguyễn",
+      "tieu_su_dong_gop": "Đại thần đầu triều, người trực tiếp thương thuyết và ký Hiệp ước Nhâm Tuất 1862."
+    },
+    {
+      "ma_nhan_vat": 103,
+      "ten_nhan_vat": "Trương Định",
+      "nam_sinh_mat": "1820 - 1864",
+      "vai_tro": "Thủ lĩnh nghĩa quân Nam Bộ",
+      "tieu_su_dong_gop": "Anh hùng kháng chiến chống thực dân Pháp, được nhân dân tôn vinh Bình Tây Đại nguyên soái."
+    },
+    {
+      "ma_nhan_vat": 104,
+      "ten_nhan_vat": "Nguyễn Văn Tường",
+      "nam_sinh_mat": "1824 - 1886",
+      "vai_tro": "Phụ chính đại thần triều Nguyễn",
+      "tieu_su_dong_gop": "Cùng Tôn Thất Thuyết nắm quyền triều chính giai đoạn biến loạn 1883-1885."
+    },
+    {
+      "ma_nhan_vat": 105,
+      "ten_nhan_vat": "Hàm Nghi (Nguyễn Phúc Ưng Lịch)",
+      "nam_sinh_mat": "1871 - 1944",
+      "vai_tro": "Hoàng đế thứ 8 triều Nguyễn",
+      "tieu_su_dong_gop": "Vị hoàng đế yêu nước, bất khuất lãnh đạo phong trào Cần Vương chống ách đô hộ Pháp."
+    },
+    {
+      "ma_nhan_vat": 106,
+      "ten_nhan_vat": "Tôn Thất Thuyết",
+      "nam_sinh_mat": "1839 - 1913",
+      "vai_tro": "Thượng thư Bộ Binh, đại thần phái chủ chiến",
+      "tieu_su_dong_gop": "Linh hồn chỉ huy cuộc phản công tại kinh thành Huế và phát động phong trào Cần Vương."
+    },
+    {
+      "ma_nhan_vat": 107,
+      "ten_nhan_vat": "Hoàng Hoa Thám",
+      "nam_sinh_mat": "1858 - 1913",
+      "vai_tro": "Thủ lĩnh khởi nghĩa Yên Thế",
+      "tieu_su_dong_gop": "Được mệnh danh 'Hùm xám Yên Thế', lãnh tụ phong trào nông dân kháng chiến chống Pháp tiêu biểu."
+    },
+    {
+      "ma_nhan_vat": 108,
+      "ten_nhan_vat": "Phan Bội Châu",
+      "nam_sinh_mat": "1867 - 1940",
+      "vai_tro": "Chí sĩ yêu nước, nhà cách mạng tiền bối",
+      "tieu_su_dong_gop": "Người sáng lập phong trào Đông Du, Việt Nam Quang phục Hội."
+    },
+    {
+      "ma_nhan_vat": 109,
+      "ten_nhan_vat": "Lương Văn Can",
+      "nam_sinh_mat": "1854 - 1927",
+      "vai_tro": "Hiệu trưởng Đông Kinh Nghĩa Thục",
+      "tieu_su_dong_gop": "Nhà giáo dục yêu nước, khởi xướng tinh thần doanh thương và canh tân đất nước."
+    },
+    {
+      "ma_nhan_vat": 110,
+      "ten_nhan_vat": "Hồ Chí Minh (Nguyễn Ái Quốc)",
+      "nam_sinh_mat": "1890 - 1969",
+      "vai_tro": "Lãnh tụ vĩ đại của dân tộc Việt Nam",
+      "tieu_su_dong_gop": "Người sáng lập Đảng, khai sinh nước Việt Nam Dân chủ Cộng hòa."
+    },
+    {
+      "ma_nhan_vat": 111,
+      "ten_nhan_vat": "Nguyễn Thái Học",
+      "nam_sinh_mat": "1902 - 1930",
+      "vai_tro": "Chủ tịch Việt Nam Quốc dân Đảng",
+      "tieu_su_dong_gop": "Lãnh tụ cuộc khởi nghĩa Yên Bái, nêu cao tinh thần bất khuất trước máy chém thực dân."
+    },
+    {
+      "ma_nhan_vat": 112,
+      "ten_nhan_vat": "Lê Mao",
+      "nam_sinh_mat": "1903 - 1931",
+      "vai_tro": "Ủy viên Trung ương Đảng, Bí thư Tỉnh ủy Nghệ An",
+      "tieu_su_dong_gop": "Một trong những lãnh đạo nòng cốt của cao trào Xô viết Nghệ - Tĩnh."
+    },
+    {
+      "ma_nhan_vat": 113,
+      "ten_nhan_vat": "Trần Phú",
+      "nam_sinh_mat": "1904 - 1931",
+      "vai_tro": "Tổng Bí thư đầu tiên của Đảng",
+      "tieu_su_dong_gop": "Người dự thảo bản Luận cương chính trị tháng 10/1930 với câu nói bất hủ 'Hãy giữ vững chí khí chiến đấu'."
+    },
+    {
+      "ma_nhan_vat": 114,
+      "ten_nhan_vat": "Nguyễn Văn Cừ",
+      "nam_sinh_mat": "1912 - 1941",
+      "vai_tro": "Tổng Bí thư Ban Chấp hành Trung ương Đảng (1938-1940)",
+      "tieu_su_dong_gop": "Tác giả tác phẩm 'Tự chỉ trích' nổi tiếng, chỉ đạo chuyển hướng chiến lược cách mạng sắc bén."
+    },
+    {
+      "ma_nhan_vat": 115,
+      "ten_nhan_vat": "Nguyễn Thị Minh Khai",
+      "nam_sinh_mat": "1910 - 1941",
+      "vai_tro": "Bí thư Thành ủy Sài Gòn - Chợ Lớn",
+      "tieu_su_dong_gop": "Chiến sĩ cộng sản kiên trung tham gia lãnh đạo chuẩn bị Khởi nghĩa Nam Kỳ."
+    },
+    {
+      "ma_nhan_vat": 116,
+      "ten_nhan_vat": "Trường Chinh (Đặng Xuân Khu)",
+      "nam_sinh_mat": "1907 - 1988",
+      "vai_tro": "Tổng Bí thư Đảng Cộng sản Đông Dương",
+      "tieu_su_dong_gop": "Nhà lý luận chiến lược xuất sắc của Đảng, được bầu làm Tổng Bí thư tại Hội nghị TW 8."
+    },
+    {
+      "ma_nhan_vat": 117,
+      "ten_nhan_vat": "Võ Nguyên Giáp",
+      "nam_sinh_mat": "1911 - 2013",
+      "vai_tro": "Chỉ huy trưởng Mặt trận Biên Giới / Điện Biên Phủ",
+      "tieu_su_dong_gop": "Đại tướng Tổng tư lệnh kiệt xuất của Quân đội nhân dân Việt Nam."
+    },
+    {
+      "ma_nhan_vat": 118,
+      "ten_nhan_vat": "Nguyễn Khang",
+      "nam_sinh_mat": "1919 - 1976",
+      "vai_tro": "Chủ tịch Ủy ban Khởi nghĩa Hà Nội",
+      "tieu_su_dong_gop": "Người trực tiếp ra quyết định phát động khởi nghĩa giành chính quyền tại Hà Nội ngày 19/8/1945."
+    },
+    {
+      "ma_nhan_vat": 119,
+      "ten_nhan_vat": "La Văn Cầu",
+      "nam_sinh_mat": "1931 - nay",
+      "vai_tro": "Anh hùng Lực lượng Vũ trang Nhân dân",
+      "tieu_su_dong_gop": "Tấm gương dũng cảm nhờ đồng đội chặt cánh tay bị thương tiếp tục ôm bộc phá phá lô cốt Đông Khê."
+    },
+    {
+      "ma_nhan_vat": 120,
+      "ten_nhan_vat": "Văn Tiến Dũng",
+      "nam_sinh_mat": "1917 - 2002",
+      "vai_tro": "Tư lệnh Chiến dịch Hồ Chí Minh",
+      "tieu_su_dong_gop": "Đại tướng Quân đội, trực tiếp chỉ huy 5 cánh quân giải phóng Sài Gòn mùa Xuân 1975."
+    },
+    {
+      "ma_nhan_vat": 121,
+      "ten_nhan_vat": "Bùi Quang Thận",
+      "nam_sinh_mat": "1948 - 2012",
+      "vai_tro": "Đại đội trưởng Đại đội 4 xe tăng, Lữ đoàn 203",
+      "tieu_su_dong_gop": "Người cắm lá cờ chiến thắng lên nóc Dinh Độc Lập lúc 11h30 ngày 30/4/1975."
+    }
+  ]
+}

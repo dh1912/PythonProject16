@@ -73,7 +73,7 @@ class Quiz(BaseModel):
 
 class Progress(BaseModel):
     current_loc_id: int = Field(ge=0)
-    max_year: int = Field(ge=1911, le=1975)
+    max_year: int = Field(ge=1858, le=1975)
     completed: list[str] = Field(default_factory=list, max_length=100)
     task4: dict[str, Any] = Field(default_factory=dict)
 
@@ -81,7 +81,13 @@ class Progress(BaseModel):
 class QuestComplete(BaseModel):
     ma_dia_diem: int = Field(ge=1)
     ten_dia_diem: str = Field(min_length=1, max_length=255)
-    nam_mo_khoa: int = Field(ge=1911, le=1975)
+    nam_mo_khoa: int = Field(ge=1858, le=1975)
+
+
+class CollectClue(BaseModel):
+    ma_dia_diem: int = Field(ge=1)
+    ma_manh_moi: str = Field(min_length=1,max_length=100)
+    tu_lieu_chon: str = Field(min_length=1,max_length=500)
 
 
 class ReviewRetry(BaseModel):
@@ -98,6 +104,8 @@ def _public(user: dict[str, Any]):
 def health():
     from data.sqlite_store import connect
     try:
+        if _WEB.is_dir() and (database_path() == _WEB or _WEB in database_path().parents):
+            raise RuntimeError('SQLite nằm trong thư mục static public.')
         conn = connect()
         try:
             tables = {row['name'] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
@@ -143,10 +151,34 @@ def game_catalog(resource: str):
               'characters':'nhan_vat','questions':'cau_hoi_on_tap'}
     if resource not in tables:
         raise HTTPException(404, 'Danh mục không tồn tại.')
-    rows, message = execute_select_query('SELECT * FROM ' + tables[resource])
+    if resource in {'clues', 'questions'}:
+        from data.db_queries import fetch_active_content
+        rows, message = fetch_active_content(tables[resource])
+    else:
+        rows, message = execute_select_query('SELECT * FROM ' + tables[resource])
     if rows is None:
         raise HTTPException(503, 'Không đọc được danh mục SQLite.')
     return {'items': rows}
+
+
+@app.get('/notebook/clues')
+def notebook_clues(user=Depends(get_current_user)):
+    """Nguồn dữ liệu Notebook chỉ đọc; không cập nhật collected/quest progress."""
+    try:
+        from data.sqlite_store import connect
+        conn=connect()
+        try:
+            rows=conn.execute('''SELECT m.ma_manh_moi,m.ma_su_kien,m.tieu_de_manh_moi,m.loai_manh_moi,m.noi_dung_chi_tiet,
+                e.ten_su_kien,e.nam_dien_ra,n.ten_nhan_vat,d.ten_dia_diem,d.khu_vuc
+                FROM manh_moi m LEFT JOIN su_kien_lich_su e ON e.ma_su_kien=m.ma_su_kien
+                LEFT JOIN nhan_vat n ON n.ma_nhan_vat=m.ma_nhan_vat
+                LEFT JOIN dia_diem d ON d.ma_dia_diem=e.ma_dia_diem
+                ORDER BY e.nam_dien_ra,m.thu_tu_timeline_dung,m.ma_manh_moi''').fetchall()
+            from data.content_v6 import active_rows
+            return {'items':active_rows(conn,'manh_moi',rows)}
+        finally: conn.close()
+    except Exception as exc:
+        raise HTTPException(503,'Không tải được Nhật ký Manh mối.') from exc
 
 
 @app.get("/", include_in_schema=False)
@@ -216,6 +248,14 @@ def progress_save(body: Progress, user=Depends(get_current_user)):
 def quest_complete(body: QuestComplete, user=Depends(get_current_user)):
     try: return repository.complete_quest(user["ma_nguoi_dung"], body.ma_dia_diem, body.ten_dia_diem, body.nam_mo_khoa)
     except repository.RepositoryError as exc: raise HTTPException(503, "Không thể lưu quest.") from exc
+
+
+@app.post('/clues/collect')
+def clue_collect(body: CollectClue, user=Depends(get_current_user)):
+    try:
+        return repository.collect_clue(user['ma_nguoi_dung'],body.ma_dia_diem,body.ma_manh_moi,body.tu_lieu_chon)
+    except repository.RepositoryError as exc:
+        raise HTTPException(400,str(exc)) from exc
 
 
 @app.get("/review/me")
@@ -295,6 +335,7 @@ def teacher_report(user=Depends(require_role("giao_vien", "quan_tri"))):
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from data.sqlite_store import database_path
 if TASK5_WEB_BUILD_DIR:
     _WEB = Path(TASK5_WEB_BUILD_DIR).resolve()
 else:
@@ -306,7 +347,6 @@ else:
     )
     _WEB = next((candidate for candidate in _WEB_CANDIDATES if (candidate / "index.html").is_file()), _WEB_CANDIDATES[0])
 if _WEB.is_dir():
-    from data.sqlite_store import database_path
-    if database_path().is_relative_to(_WEB):
+    if database_path() == _WEB or _WEB in database_path().parents:
         raise RuntimeError('SQLITE_DB_PATH không được nằm trong thư mục web public.')
     app.mount("/web", StaticFiles(directory=str(_WEB), html=True), name="game-web")

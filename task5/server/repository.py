@@ -8,6 +8,7 @@ from typing import Any
 from data import db_queries
 from data.db_queries import get_db_connection
 from task5.scoring_system import ScoringEngine
+from .quest_policy import validate_progress
 
 # API chỉ kết nối đúng một database từ cấu hình; không thử fallback database khác.
 
@@ -27,6 +28,9 @@ def load_game_content():
         people = conn.execute('SELECT * FROM nhan_vat ORDER BY ma_nhan_vat').fetchall()
         clues = conn.execute('SELECT * FROM manh_moi ORDER BY ma_manh_moi').fetchall()
         questions = conn.execute('SELECT * FROM cau_hoi_on_tap ORDER BY ma_cau_hoi').fetchall()
+        from data.content_v6 import active_rows
+        clues=active_rows(conn,'manh_moi',clues)
+        questions=active_rows(conn,'cau_hoi_on_tap',questions)
         ids = {row['ma_dia_diem'] for row in locations}
         mapped = [row for row in transform_locations(locations, events) if row['id'] in ids]
         investigation = transform_investigation_data(locations, events, people, clues)
@@ -37,8 +41,8 @@ def load_game_content():
           FROM manh_moi m LEFT JOIN su_kien_lich_su e ON e.ma_su_kien=m.ma_su_kien
           LEFT JOIN nhan_vat n ON n.ma_nhan_vat=m.ma_nhan_vat LEFT JOIN dia_diem d ON d.ma_dia_diem=e.ma_dia_diem
           ORDER BY e.nam_dien_ra,m.thu_tu_timeline_dung,m.ma_manh_moi''').fetchall()
-        return {'locations':mapped,'investigation_data':{loc['name']:investigation[loc['name']] for loc in mapped},
-                'questions':transform_deduction_questions(events,questions),'notebook':notebook,
+        return {'locations':mapped, 'investigation_data':{loc['name']:investigation[loc['name']] for loc in mapped},
+                'questions':transform_deduction_questions(events,questions),'notebook':active_rows(conn,'manh_moi',notebook),
                 'is_connected':True,'status_message':'Nội dung chính thức SQLite qua API'}
     finally:
         conn.close()
@@ -190,8 +194,49 @@ def _location_catalog(cursor):
 
 def _required_clues(cursor, location_id: int) -> set[str]:
     """ID chính thức cùng định dạng transform_investigation_data hiện có."""
-    cursor.execute("SELECT m.ma_manh_moi FROM manh_moi m JOIN su_kien_lich_su e ON e.ma_su_kien=m.ma_su_kien WHERE e.ma_dia_diem=?", (location_id,))
+    cursor.execute("SELECT m.ma_manh_moi FROM manh_moi m JOIN su_kien_lich_su e ON e.ma_su_kien=m.ma_su_kien WHERE e.ma_dia_diem=? AND (m.ma_su_kien NOT IN (20,25,29,30) OR m.ma_manh_moi IN (SELECT row_id FROM content_manifest WHERE table_name='manh_moi'))", (location_id,))
     return {str(row["ma_manh_moi"]) for row in cursor.fetchall()}
+
+
+def collect_clue(user_id: int, location_id: int, clue_id: str, selected_evidence: str):
+    """Lưu mảnh mối đã đối chiếu và xác thực ID trên SQLite."""
+    conn = _connect()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        cursor = conn.cursor()
+        cursor.execute("SELECT ma_dia_diem_hien_tai,danh_sach_dia_diem_da_mo,du_lieu_nhiem_vu FROM tien_do_choi WHERE ma_nguoi_dung=?", (user_id,))
+        progress = cursor.fetchone()
+        if not progress:
+            raise RepositoryError("Không có tiến độ người chơi.")
+        completed = set(json.loads(progress.get("danh_sach_dia_diem_da_mo") or "[]"))
+        catalog = _location_catalog(cursor)
+        try:
+            validate_progress(catalog, completed, [], location_id)
+        except ValueError as exc:
+            raise RepositoryError(str(exc)) from exc
+        valid_ids = _required_clues(cursor, location_id)
+        if int(progress.get("ma_dia_diem_hien_tai") or 0) != location_id or str(clue_id) not in valid_ids:
+            raise RepositoryError("Mảnh mối không thuộc địa điểm đang điều tra.")
+        cursor.execute("SELECT tieu_de_manh_moi FROM manh_moi WHERE ma_manh_moi=?", (int(clue_id),))
+        clue = cursor.fetchone()
+        if not clue or str(selected_evidence).strip() != str(clue.get("tieu_de_manh_moi") or "").strip():
+            raise RepositoryError("Tư liệu đối chiếu không khớp mảnh mối chính thức.")
+        state = json.loads(progress.get("du_lieu_nhiem_vu") or "{}")
+        state = {key:value for key,value in state.items() if str(key).isdigit() and isinstance(value,dict)}
+        current = state.get(str(location_id), {})
+        collected = set(current.get("clue_ids", []))
+        collected.add(str(clue_id))
+        state[str(location_id)] = {"clue_ids": sorted(collected), "quiz_attempts": int(current.get("quiz_attempts",0))}
+        cursor.execute("UPDATE tien_do_choi SET du_lieu_nhiem_vu=? WHERE ma_nguoi_dung=?", (json.dumps(state,ensure_ascii=False),user_id))
+        conn.commit()
+        return {"success":True,"collected":sorted(collected),"clues_complete":valid_ids.issubset(collected)}
+    except Exception as exc:
+        conn.rollback()
+        if isinstance(exc,RepositoryError):
+            raise
+        raise RepositoryError(str(exc)) from exc
+    finally:
+        conn.close()
 
 
 @lru_cache(maxsize=1)
@@ -320,7 +365,7 @@ def complete_quest(user_id: int, location_id: int, location_name: str, max_year:
         collected = set(saved_tasks.get(str(location_id), {}).get("clue_ids", []))
         if not required_clues.issubset(collected):
             raise RepositoryError("Chưa lưu đủ manh mối chính thức của địa điểm.")
-        c.execute("SELECT q.ma_cau_hoi FROM cau_hoi_on_tap q JOIN su_kien_lich_su e ON e.ma_su_kien=q.ma_su_kien WHERE e.ma_dia_diem=?", (location_id,))
+        c.execute("SELECT q.ma_cau_hoi FROM cau_hoi_on_tap q JOIN su_kien_lich_su e ON e.ma_su_kien=q.ma_su_kien WHERE e.ma_dia_diem=? AND (q.ma_su_kien NOT IN (20,25,29,30) OR q.ma_cau_hoi IN (SELECT row_id FROM content_manifest WHERE table_name='cau_hoi_on_tap'))", (location_id,))
         required = {str(row["ma_cau_hoi"]) for row in c.fetchall()}
         # Có hai đường chơi hợp lệ: deduction DB hoặc quiz timeline Task 4.
         from services.game_data_service import LOCATION_MAP_CONFIG

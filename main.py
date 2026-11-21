@@ -179,7 +179,11 @@ class Game:
         self.notebook_scene.font_meta = self.hint_font
         self.notebook_scene.font_content = self.hint_font
         self.notebook_scene.font_button = self.hint_font
-        self.notebook_scene.load_all_clues()
+        if self.task5_server_enabled and getattr(self.data_service,'async_auth_enabled',False):
+            import asyncio
+            self._notebook_task=asyncio.create_task(self.data_service.load_notebook_async())
+        else:
+            self.notebook_scene.load_all_clues()
         self.scene_before_notebook = self.scene
         self.scene = 'notebook'
 
@@ -302,6 +306,8 @@ class Game:
             return
 
         self.investigation_scene.set_location(location)
+        if sys.platform == 'emscripten' and hasattr(self, '_web_evidence_answers'):
+            self._web_evidence_answers = self.investigation_scene.export_official_evidence_answers()
         self.quest_manager.start(location)
         self.investigation_scene.collected_clues.update(
             self.quest_manager.collected_clues.get(location["name"], set())
@@ -1131,6 +1137,31 @@ class Game:
         required_ids = [clue["id"] for clue in data.get("clues", [])]
         previous_clues = set(self.quest_manager.collected_clues.get(location["name"], set()))
         before = set(self.quest_manager.collected_clues.get(location["name"], set()))
+        if self.task5_server_enabled and self.current_user and self.current_user.get("ma_nguoi_dung", 0) > 0:
+            pending = getattr(self, '_pending_clue_ids', set())
+            for clue_id in set(self.investigation_scene.collected_clues) - previous_clues - pending:
+                clue = next((item for item in data.get('clues', []) if str(item.get('id')) == str(clue_id)), None)
+                if clue is None:
+                    self.investigation_scene.collected_clues.discard(clue_id)
+                    self.notify('Manh mối không có trong dữ liệu chính thức API.')
+                    continue
+                if getattr(self.data_service, 'async_auth_enabled', False):
+                    import asyncio
+                    pending.add(clue_id)
+                    task = asyncio.create_task(self.data_service.collect_clue_async(location['id'], clue_id, clue.get('name', '')))
+                    self._pending_clue_tasks[task] = (location, clue_id)
+                else:
+                    try:
+                        self.data_service.collect_clue(location['id'], clue_id, clue.get('name', ''))
+                    except Exception as exc:
+                        self.investigation_scene.collected_clues.discard(clue_id)
+                        self.notify(f'Chưa lưu được manh mối: {exc}')
+                        continue
+                    self.quest_manager.collect_clue(location, clue_id, required_ids)
+            # Không merge vào state/không cho mở suy luận khi request đang chờ server.
+            self.investigation_scene.collected_clues.intersection_update(previous_clues | self.quest_manager.collected_clues.get(location['name'], set()))
+            self._pending_clue_ids = pending
+            return
         for clue_id in self.investigation_scene.collected_clues:
             self.quest_manager.collect_clue(location, clue_id, required_ids)
         self.investigation_scene.collected_clues.update(
@@ -1241,6 +1272,29 @@ class Game:
     # VONG LAP CHINH
     # =================================================================
     def step(self):
+        notebook_task=getattr(self,'_notebook_task',None)
+        if notebook_task is not None and notebook_task.done():
+            self._notebook_task=None
+            try:
+                self.notebook_scene.clues_list=list(notebook_task.result())
+                if self.notebook_scene.clues_list:self.notebook_scene.set_current(0)
+            except Exception as exc:
+                self.notify(f'Chưa tải được Nhật ký Manh mối: {exc}')
+        if not hasattr(self, '_pending_clue_tasks'):
+            self._pending_clue_tasks = {}
+            self._pending_clue_ids = set()
+        for task, (location, clue_id) in list(self._pending_clue_tasks.items()):
+            if task.done():
+                self._pending_clue_tasks.pop(task, None)
+                self._pending_clue_ids.discard(clue_id)
+                try:
+                    task.result()
+                    self.quest_manager.collect_clue(location, clue_id)
+                    self.investigation_scene.collected_clues.add(clue_id)
+                    self.notify('Máy chủ đã lưu manh mối.')
+                except Exception as exc:
+                    self.investigation_scene.collected_clues.discard(clue_id)
+                    self.notify(f'Chưa lưu được manh mối; hãy thử lại: {exc}')
         quest = getattr(self, '_quest_task', None)
         if quest is not None and quest.done():
             self._quest_task = None

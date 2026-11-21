@@ -138,6 +138,16 @@ def test_existing_extra_tables_survive_and_seed_is_stable(database):
     conn.close()
 
 
+def test_backup_api_is_wal_consistent_and_separate(tmp_path,monkeypatch):
+    import sqlite3
+    from data.sqlite_store import backup_database
+    source=tmp_path/'live.db';backup=tmp_path/'backup'/'copy.db';monkeypatch.setenv('SQLITE_DB_PATH',str(source))
+    c=connect();c.execute("INSERT INTO nguoi_dung(ten_dang_nhap,mat_khau_ma_hoa,ho_va_ten) VALUES('b','x','B')");c.commit();c.close()
+    backup_database(backup)
+    c=sqlite3.connect(backup);assert c.execute("SELECT ten_dang_nhap FROM nguoi_dung").fetchone()[0]=='b';assert c.execute('PRAGMA integrity_check').fetchone()[0]=='ok';c.close()
+    with pytest.raises(ValueError):backup_database(source)
+
+
 def test_migration_failure_preserves_existing_duplicate_progress(tmp_path,monkeypatch):
     import sqlite3
     path=tmp_path/'old.db';monkeypatch.setenv('SQLITE_DB_PATH',str(path))
@@ -171,6 +181,18 @@ def test_real_quest_clues_idempotency_and_rollback(database):
     assert restored['completed']==[location['name']]
     assert restored['max_year']<1975
     assert '_task5' not in restored['task4']
+
+
+def test_clue_collection_validates_location_and_official_evidence(database):
+    user=repo.create_user('clue_student',password_hash('test-password'),'Clue')
+    uid=user['ma_nguoi_dung']; content=repo.load_game_content();loc=next(x for x in content['locations'] if x['id']==1)
+    clue=content['investigation_data'][loc['name']]['clues'][0]
+    repo.save_progress(uid,1,1914,[],{})
+    with pytest.raises(repo.RepositoryError):
+        repo.collect_clue(uid,1,clue['id'],'not the official evidence')
+    c=connect();assert json.loads(c.execute('SELECT du_lieu_nhiem_vu FROM tien_do_choi WHERE ma_nguoi_dung=?',(uid,)).fetchone()['du_lieu_nhiem_vu'])=={};c.close()
+    result=repo.collect_clue(uid,1,clue['id'],clue['name'])
+    assert result['collected']==[clue['id']]
 
 
 def test_exception_after_insert_rolls_back_real_sqlite(database):

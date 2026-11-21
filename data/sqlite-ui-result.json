@@ -1,0 +1,13 @@
+{
+  "ui_login": true,
+  "notebook_read_only": true,
+  "ui_investigation": true,
+  "ui_quiz_wrong_correct": true,
+  "ui_review": true,
+  "ui_quest_confirmed": true,
+  "ui_leaderboard": true,
+  "next_location_input_sent": true,
+  "page_errors": [],
+  "http_mock": false,
+  "scope": "Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật."
+}

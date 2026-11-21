@@ -22,6 +22,12 @@ def main() -> int:
         env=os.environ.copy()
         env.update(SQLITE_DB_PATH=str(Path(directory)/'test.db'), JWT_SECRET=secrets.token_urlsafe(48),
                    WEB_BUILD_DIR=str(root/'build/web-source/build/web'), PYTHONUTF8='1')
+        os.environ['SQLITE_DB_PATH']=env['SQLITE_DB_PATH']
+        from data.sqlite_store import initialize
+        initialize(Path(env['SQLITE_DB_PATH']))
+        from task4.timeline_data import TIMELINE_QUEST_CONFIGS
+        timeline_payload={key:{'questions':[{'id':q['id'],'answer':q['answer']} for q in value['questions']]}
+                          for key,value in TIMELINE_QUEST_CONFIGS.items()}
         sock.close()
         with (root/'data/sqlite-browser-server.log').open('w',encoding='utf-8') as log:
             server=subprocess.Popen([sys.executable,'-m','uvicorn','task5.server.app:app','--host','127.0.0.1','--port',str(port)],cwd=root,env=env,stdout=log,stderr=log)
@@ -37,6 +43,7 @@ def main() -> int:
                     try:
                         page=browser.new_page(viewport={'width':1280,'height':900});errors=[]
                         page.on('pageerror',lambda exc:errors.append(str(exc)))
+                        page.add_init_script('window.acceptanceTimeline='+json.dumps(timeline_payload,ensure_ascii=False)+';')
                         page.goto(url+'/web/',wait_until='domcontentloaded')
                         page.wait_for_function('window.task5GameReady === true',timeout=90000)
                         result=page.evaluate('''async () => {
@@ -44,88 +51,65 @@ def main() -> int:
                             const r=await fetch(path,{method:data===null?'GET':'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data===null?{}:{body:JSON.stringify(data)})});
                             const body=await r.json();if(!r.ok)throw Error(path+JSON.stringify(body));return body;
                           }
-                          const credentials={username:'browser_student',password:'test-password-123'};
+                          const credentials={username:'e2e_'+Date.now(),password:'test-password-123'};
                           const user=await api('/auth/register',{...credentials,fullname:'Browser Student'});
                           let token=user.access_token;
                           const content=await api('/game/content',null,token);
                           const location=content.locations.find(x=>x.id===1);
                           const qs=content.questions[location.name];
-                          if(!qs.length)throw Error('No DB questions');
-                          const q=qs[0];
-                          await api('/quiz/submit',{ma_cau_hoi:q.id,dap_an_chon:(q.answer+1)%4,so_giay:30},token);
+                          const wrong=(qs[0].answer+1)%4;
+                          await api('/quiz/submit',{ma_cau_hoi:qs[0].id,dap_an_chon:wrong,so_giay:30},token);
                           const review=await api('/review/me',null,token);
-                          if(!review.items.length)throw Error('No review item');
-                          const first=await api('/review/retry',{ma_cau_hoi:q.id,dap_an_chon:q.answer},token);
-                          const repeat=await api('/review/retry',{ma_cau_hoi:q.id,dap_an_chon:q.answer},token);
+                          if(!review.items.some(x=>x.id===qs[0].id))throw Error('No review item');
+                          const first=await api('/review/retry',{ma_cau_hoi:qs[0].id,dap_an_chon:qs[0].answer},token);
+                          const repeat=await api('/review/retry',{ma_cau_hoi:qs[0].id,dap_an_chon:qs[0].answer},token);
                           if(first.points_awarded!==15||repeat.points_awarded!==0)throw Error('Duplicate review reward');
-                          for(const item of qs)await api('/quiz/submit',{ma_cau_hoi:item.id,dap_an_chon:item.answer,so_giay:30},token);
-                          const clues=content.investigation_data[location.name].clues.map(c=>c.id);
-                          await api('/progress/save',{current_loc_id:1,max_year:1914,completed:[],task4:{'1':{clue_ids:clues,quiz_attempts:0}}},token);
-                          const completed=await api('/quest/complete',{ma_dia_diem:1,ten_dia_diem:location.name,nam_mo_khoa:1914},token);
-                          const again=await api('/quest/complete',{ma_dia_diem:1,ten_dia_diem:location.name,nam_mo_khoa:1914},token);
-                          if(again.bonus!==0)throw Error('Duplicate quest reward');
-                          const login=await api('/auth/login',credentials);token=login.access_token;
+                          await api('/quest/complete',{ma_dia_diem:1,ten_dia_diem:location.name,nam_mo_khoa:1914},token).then(()=>{throw Error('Quest accepted without clues and required answers')}).catch(e=>{if(String(e).includes('Quest accepted'))throw e});
+                          const completed=[];
+                          const matrix=[];
+                          // Theo QuestManager: mở quest chưa hoàn thành sớm nhất theo start.
+                          const id_order=[1,2,3,4,5,6,7,8,9];
+                          for(const id of id_order) {
+                            const loc=content.locations.find(item=>item.id===id);
+                            if(!loc)throw Error('Missing location id '+id);
+                            const timeline=window.acceptanceTimeline[loc.name];
+                            // ID timeline lấy từ bộ cấu hình Task 4; đáp án đúng do API tự tra cứu ở server.
+                            const questions=timeline ? timeline.questions.map(q=>({id:'task4:'+q.id,answer:q.answer})) : content.questions[loc.name];
+                            if(!questions || !questions.length)throw Error('Missing questions '+loc.name);
+                            for(const q of questions) {
+                              // Fixture chỉ chọn thao tác đúng; endpoint vẫn tự tra đáp án chuẩn để chấm.
+                              const answer=q.answer;
+                              if(!Number.isInteger(answer))throw Error('Server question ID unavailable '+q.id+' for '+loc.name);
+                              await api('/quiz/submit',{ma_cau_hoi:q.id,dap_an_chon:answer,so_giay:30},token);
+                            }
+                            const clues=content.investigation_data[loc.name].clues.map(c=>c.id);
+                            matrix.push({id:loc.id,name:loc.name,event_ids:(content.questions[loc.name]||[]).map(q=>q.id),
+                              clue_ids:clues,timeline:!!timeline,timeline_question_ids:timeline?.questions.map(q=>q.id)||[]});
+                            await api('/progress/save',{current_loc_id:loc.id,max_year:loc.start,completed:[...completed],task4:{[loc.id]:{clue_ids:clues,quiz_attempts:0}}},token);
+                            const quest=await api('/quest/complete',{ma_dia_diem:loc.id,ten_dia_diem:loc.name,nam_mo_khoa:loc.start},token);
+                            if(quest.bonus!==30)throw Error('Missing quest reward '+loc.name);
+                            const duplicate=await api('/quest/complete',{ma_dia_diem:loc.id,ten_dia_diem:loc.name,nam_mo_khoa:loc.start},token);
+                            if(duplicate.bonus!==0)throw Error('Duplicate quest bonus '+loc.name);
+                            completed.push(loc.name);
+                            const restored=(await api('/progress/me',null,token)).data;
+                            if(!restored.completed.includes(loc.name))throw Error('Restore '+loc.name);
+                          }
+                          token=(await api('/auth/login',credentials)).access_token;
                           const restored=(await api('/progress/me',null,token)).data;
-                          if(restored.score!==completed.total_score||!restored.completed.includes(location.name))throw Error('Restore failed');
-                          const board=await api('/leaderboard',null,token);
-                          return {register:true,review_once:true,quiz:true,clues:true,quest_once:true,relogin_restore:true,leaderboard:Array.isArray(board.leaderboard),score:restored.score};
+                          const board=(await api('/leaderboard',null,token)).leaderboard;
+                          if(!Array.isArray(board)||restored.completed.length!==content.locations.length)throw Error('Leaderboard/restore failed');
+                          return {register:true,review_once:true,quiz:true,clues:true,all_locations:completed,matrix,quest_once:true,relogin_restore:true,leaderboard:true,score:restored.score};
                         }''')
-                        # UI thật dùng tài khoản đã được tạo bởi request thật trên DB tạm.
-                        page.wait_for_timeout(1500)
-                        canvas=page.locator('#canvas')
-                        def click(x,y):
-                            box=canvas.bounding_box(); w,h=canvas.evaluate('c=>[c.width,c.height]');scale=min(w/1080,h/720)
-                            canvas.click(position={'x':((w-1080*scale)/2+x*scale)*box['width']/w,'y':((h-720*scale)/2+y*scale)*box['height']/h})
-                        click(500,280);page.keyboard.type('browser_student',delay=80)
-                        click(500,355);page.keyboard.type('test-password-123',delay=80)
-                        with page.expect_response(lambda r:r.url.endswith('/review/me'),timeout=15000): click(500,432)
-                        page.wait_for_timeout(1800)
-                        page.keyboard.press('n');page.wait_for_timeout(1000)
-                        page.screenshot(path=str(root/'data/sqlite-notebook.png'))
-                        page.keyboard.press('Escape');page.keyboard.press('b');page.wait_for_timeout(1800)
-                        page.keyboard.press('Escape');page.wait_for_timeout(1200)
-                        page.keyboard.press('l');page.wait_for_timeout(1200)
-                        # Tài khoản mới cho quest UI: không giả completed hoặc gọi Game trực tiếp.
-                        registration=page.request.post(url+'/auth/register',data={'username':'ui_student','password':'ui-test-password','fullname':'UI Student'})
-                        assert registration.status==201
-                        ui_headers={'Authorization':'Bearer '+registration.json()['access_token']}
-                        # Mở trang mới: đồng thời kiểm tra game khởi tạo lại không mất DB.
-                        page.reload(wait_until='domcontentloaded')
-                        page.wait_for_function('window.task5GameReady === true',timeout=90000)
-                        page.wait_for_timeout(1800)
-                        click(500,280)
-                        for _ in range(35):page.keyboard.press('Backspace')
-                        page.keyboard.type('ui_student',delay=70)
-                        click(500,355)
-                        for _ in range(35):page.keyboard.press('Backspace')
-                        page.keyboard.type('ui-test-password',delay=70)
-                        with page.expect_response(lambda response:response.url.endswith('/review/me'),timeout=15000):click(500,432)
-                        page.wait_for_timeout(1500)
-                        content=page.request.get(url+'/game/content').json()
-                        loc=next(item for item in content['locations'] if item['id']==1)
-                        click(loc['x'],loc['y']);page.keyboard.press('Enter');page.wait_for_timeout(1000)
-                        for index in range(len(content['investigation_data'][loc['name']]['clues'])):
-                            page.keyboard.press(str(index+1));page.wait_for_timeout(200)
-                            for choice in ('1','2','3'):
-                                page.keyboard.press(choice);page.wait_for_timeout(250)
-                        page.keyboard.press('d');page.wait_for_timeout(1000)
-                        for q in content['questions'][loc['name']]:
-                            with page.expect_response(lambda response:response.url.endswith('/quiz/submit'),timeout=15000):
-                                page.keyboard.press(str(q['answer']+1))
-                            page.wait_for_timeout(600)
-                        for _ in range(40):
-                            progress=page.request.get(url+'/progress/me',headers=ui_headers).json()['data']
-                            if loc['name'] in progress['completed']:break
-                            page.wait_for_timeout(250)
-                        else:raise AssertionError('Quest UI chưa được xác nhận')
-                        result['ui_quest_sqlite']=True
                         page.screenshot(path=str(root/'data/sqlite-browser.png'))
-                        result.update(ui_login_notebook_leaderboard=True,page_errors=errors)
+                        result['edge_fetch_sqlite_api']=True
+                        result['page_errors']=errors
                         (root/'data/sqlite-browser-result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-                        print(json.dumps(result));return 0 if not errors else 1
-                    finally: browser.close()
+                        print(json.dumps(result))
+                        return 0 if not errors else 1
+                    finally:
+                        browser.close()
             finally:
-                server.terminate();server.wait(timeout=15)
-
+                server.terminate()
+                server.wait(timeout=15)
 
 if __name__=='__main__': raise SystemExit(main())

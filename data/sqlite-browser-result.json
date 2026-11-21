@@ -3,11 +3,168 @@
   "review_once": true,
   "quiz": true,
   "clues": true,
+  "all_locations": [
+    "Ben Nha Rong",
+    "Kinh Thanh Hue",
+    "Vinh - Ben Thuy",
+    "Pac Bo",
+    "Tan Trao",
+    "Ba Dinh",
+    "Viet Bac",
+    "Dien Bien Phu",
+    "Dinh Doc Lap"
+  ],
+  "matrix": [
+    {
+      "id": 1,
+      "name": "Ben Nha Rong",
+      "event_ids": [
+        "1"
+      ],
+      "clue_ids": [
+        "1",
+        "2"
+      ],
+      "timeline": false,
+      "timeline_question_ids": []
+    },
+    {
+      "id": 2,
+      "name": "Kinh Thanh Hue",
+      "event_ids": [
+        "2"
+      ],
+      "clue_ids": [
+        "3"
+      ],
+      "timeline": false,
+      "timeline_question_ids": []
+    },
+    {
+      "id": 3,
+      "name": "Vinh - Ben Thuy",
+      "event_ids": [
+        "3"
+      ],
+      "clue_ids": [
+        "4"
+      ],
+      "timeline": false,
+      "timeline_question_ids": []
+    },
+    {
+      "id": 4,
+      "name": "Pac Bo",
+      "event_ids": [
+        "61001",
+        "61002",
+        "61003"
+      ],
+      "clue_ids": [
+        "60001",
+        "60002",
+        "60003",
+        "60004"
+      ],
+      "timeline": true,
+      "timeline_question_ids": [
+        "pacbo_q1",
+        "pacbo_q2",
+        "pacbo_q3"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Tan Trao",
+      "event_ids": [
+        "5"
+      ],
+      "clue_ids": [
+        "7"
+      ],
+      "timeline": false,
+      "timeline_question_ids": []
+    },
+    {
+      "id": 6,
+      "name": "Ba Dinh",
+      "event_ids": [
+        "61004",
+        "61005",
+        "61006"
+      ],
+      "clue_ids": [
+        "60005",
+        "60006",
+        "60007",
+        "60008"
+      ],
+      "timeline": true,
+      "timeline_question_ids": [
+        "badinh_q1",
+        "badinh_q2",
+        "badinh_q3"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Viet Bac",
+      "event_ids": [
+        "7"
+      ],
+      "clue_ids": [
+        "9"
+      ],
+      "timeline": false,
+      "timeline_question_ids": []
+    },
+    {
+      "id": 8,
+      "name": "Dien Bien Phu",
+      "event_ids": [
+        "61007",
+        "61008",
+        "61009"
+      ],
+      "clue_ids": [
+        "60009",
+        "60010",
+        "60011",
+        "60012"
+      ],
+      "timeline": true,
+      "timeline_question_ids": [
+        "dienbien_q1",
+        "dienbien_q2",
+        "dienbien_q3"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Dinh Doc Lap",
+      "event_ids": [
+        "61010",
+        "61011",
+        "61012"
+      ],
+      "clue_ids": [
+        "60013",
+        "60014",
+        "60015",
+        "60016"
+      ],
+      "timeline": true,
+      "timeline_question_ids": [
+        "dinh_q1",
+        "dinh_q2",
+        "dinh_q3"
+      ]
+    }
+  ],
   "quest_once": true,
   "relogin_restore": true,
   "leaderboard": true,
-  "score": 75,
-  "ui_quest_sqlite": true,
-  "ui_login_notebook_leaderboard": true,
+  "score": 1005,
+  "edge_fetch_sqlite_api": true,
   "page_errors": []
 }

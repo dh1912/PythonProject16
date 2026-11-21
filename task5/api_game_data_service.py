@@ -77,6 +77,23 @@ class ApiGameDataService:
         self._browser_reviews = result.get("items", [])
         return list(self._browser_reviews)
 
+    async def load_notebook_async(self):
+        return (await self.request_async('GET','/notebook/clues')).get('items',[])
+
+    async def collect_clue_async(self, location_id: int, clue_id: str, official_title: str):
+        generation = self._session_generation
+        result = await self.request_async('POST', '/clues/collect', {
+            'ma_dia_diem': int(location_id), 'ma_manh_moi': str(clue_id), 'tu_lieu_chon': str(official_title)})
+        if generation != self._session_generation:
+            raise ApiClientError('Phiên đăng nhập đã thay đổi.')
+        task = dict(self._progress.get('task4', {}))
+        key = str(location_id)
+        old = task.get(key, {})
+        task[key] = {'clue_ids': sorted(set(old.get('clue_ids', [])) | set(result['collected'])),
+                     'quiz_attempts': int(old.get('quiz_attempts', 0))}
+        self._progress['task4'] = task
+        return result
+
     @staticmethod
     def _decode_progress(data):
         return {"score": int(data.get("score", 0)), "current_loc_id": int(data.get("current_loc_id", 1)),

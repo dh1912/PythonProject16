@@ -243,6 +243,16 @@ class InvestigationScene:
                 "hint": clue.get("detail", "Đối chiếu tên tư liệu với sự kiện đang điều tra."),
             }
 
+    def export_official_evidence_answers(self):
+        """Xuất đáp án challenge để server kiểm tra; không dùng trong UI production.
+
+        Endpoint/dev-test có thể so sánh ID manh mối + lựa chọn với giá trị này.
+        Client bình thường chỉ gửi ID/choice; server không chấp nhận correct_index từ payload.
+        """
+        return {str(index): {"clue_id": self.investigation_data[self.location["name"]]["clues"][index]["id"],
+                            "correct_index": int(challenge["correct_index"])}
+                for index, challenge in self.evidence_options.items()}
+
     def quest_objectives(self):
         """Return actionable objectives; each objective rewards one clue."""
         if not self.location:

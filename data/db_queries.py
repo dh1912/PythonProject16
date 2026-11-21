@@ -28,8 +28,25 @@ def execute_select_query(sql, params=None):
 def fetch_raw_dia_diem(): return execute_select_query('SELECT * FROM dia_diem ORDER BY ma_dia_diem')
 def fetch_raw_su_kien(): return execute_select_query('SELECT * FROM su_kien_lich_su ORDER BY ma_su_kien')
 def fetch_raw_nhan_vat(): return execute_select_query('SELECT * FROM nhan_vat ORDER BY ma_nhan_vat')
-def fetch_raw_manh_moi(): return execute_select_query('SELECT * FROM manh_moi ORDER BY ma_su_kien,ma_manh_moi')
-def fetch_raw_cau_hoi(): return execute_select_query('SELECT * FROM cau_hoi_on_tap ORDER BY ma_cau_hoi')
+def fetch_active_content(table: str):
+    """Chỉ đọc bộ nội dung active; không xóa hàng legacy và liên kết tiến độ cũ."""
+    if table not in {'manh_moi', 'cau_hoi_on_tap'}:
+        raise ValueError('Bảng nội dung không hợp lệ.')
+    conn, message = get_db_connection()
+    if conn is None:
+        return None, message
+    try:
+        from data.content_v6 import active_rows
+        rows = conn.execute(f'SELECT * FROM {table}').fetchall()
+        return active_rows(conn, table, rows), 'OK'
+    except sqlite3.Error as exc:
+        return None, str(exc)
+    finally:
+        conn.close()
+
+
+def fetch_raw_manh_moi(): return fetch_active_content('manh_moi')
+def fetch_raw_cau_hoi(): return fetch_active_content('cau_hoi_on_tap')
 def fetch_raw_nguoi_dung(): return execute_select_query('SELECT ma_nguoi_dung,ten_dang_nhap,ho_va_ten,vai_tro FROM nguoi_dung')
 
 
