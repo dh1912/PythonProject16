@@ -111,3 +111,26 @@ def test_session_transaction_rolls_back_on_score_error(context):
     assert c.execute('SELECT response_json FROM question_sessions WHERE session_id=?',(session,)).fetchone()['response_json'] is None
     assert not c.execute('SELECT * FROM answer_log WHERE ma_nguoi_dung=?',(uid,)).fetchall()
     c.close()
+
+
+def test_cleanup_bounded_repeat_and_expired_renewal(context, monkeypatch):
+    uid,qid,answer=context
+    monkeypatch.setattr(repo.time,'time',lambda:1000)
+    old=repo.start_question(uid,qid)['session_id']
+    monkeypatch.setattr(repo.time,'time',lambda:5000)
+    new=repo.start_question(uid,qid)['session_id']
+    assert old != new
+    repo.submit_answer(uid,qid,answer,30,new)
+    c=connect()
+    for i in range(105):
+        c.execute('INSERT INTO question_sessions(session_id,ma_nguoi_dung,ma_cau_hoi,started_at,expires_at) VALUES(?,?,?,?,?)',
+                  (f'old-{i}',uid,qid,-900000,-899000))
+    c.commit()
+    assert repo.cleanup_question_sessions()==100
+    assert repo.cleanup_question_sessions()==5
+    assert repo.cleanup_question_sessions()==0
+    assert c.execute('SELECT COUNT(*) AS n FROM question_sessions WHERE session_id IN (?,?)',(old,new)).fetchone()['n']==2
+    assert c.execute('SELECT COUNT(*) AS n FROM answer_log').fetchone()['n']==1
+    assert c.execute('PRAGMA integrity_check').fetchone()['integrity_check']=='ok'
+    assert c.execute('PRAGMA foreign_key_check').fetchall()==[]
+    c.close()

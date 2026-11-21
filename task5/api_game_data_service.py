@@ -28,10 +28,15 @@ class ApiGameDataService:
         self._save_revision = 0
         self._question_sessions = {}
         self._question_starts = {}
+        self._question_expiry = {}
 
     def prepare_question(self, question_id):
         """Gọi khi câu hỏi xuất hiện, không tạo đồng hồ mới tại thời điểm nộp bài."""
         qid = str(question_id)
+        import time
+        if qid in self._question_sessions and time.monotonic() >= self._question_expiry.get(qid, float('inf')):
+            self._question_sessions.pop(qid, None)
+            self._question_expiry.pop(qid, None)
         if qid in self._question_sessions or qid in self._question_starts:
             return
         if not self.async_auth_enabled:
@@ -43,6 +48,7 @@ class ApiGameDataService:
                 result = await self.request_async('POST','/quiz/start',{'ma_cau_hoi':qid})
                 if generation == self._session_generation:
                     self._question_sessions[qid] = result['session_id']
+                    self._question_expiry[qid] = time.monotonic()+max(0, result['expires_at']-__import__('time').time())
             finally:
                 if generation == self._session_generation:
                     self._question_starts.pop(qid, None)
@@ -54,11 +60,14 @@ class ApiGameDataService:
         if self.browser_client is None:
             self.browser_client = BrowserApiClient(self.client.base_url, self.client.timeout)
             self.browser_client.token = self.client.token
+        generation = self._session_generation
         if method.upper() == "POST":
             # Giữ thứ tự save manh mối -> hoàn thành quest trong cùng phiên browser.
             if self._write_lock is None:
                 self._write_lock = asyncio.Lock()
             async with self._write_lock:
+                if generation != self._session_generation:
+                    raise ApiClientError('Phiên đăng nhập đã thay đổi.')
                 return await self.browser_client.request(method, path, payload, authenticated)
         return await self.browser_client.request(method, path, payload, authenticated)
 
@@ -84,7 +93,12 @@ class ApiGameDataService:
             payload['session_id'] = self._question_sessions[qid]
         try:
             result = await self.request_async("POST", "/quiz/submit", payload)
-        except ApiClientError:
+        except ApiClientError as exc:
+            if 'hết hạn' in str(exc):
+                self._question_sessions.pop(qid, None)
+                self._question_expiry.pop(qid, None)
+                self.prepare_question(qid)
+                raise ApiClientError('Phiên câu hỏi hết hạn. Đang mở phiên mới; hãy đọc lại câu và thử lại.') from exc
             await self.reconcile_progress(generation)
             raise
         if generation != self._session_generation:
@@ -294,6 +308,7 @@ class ApiGameDataService:
         self._save_revision += 1
         self._question_sessions.clear()
         self._question_starts.clear()
+        self._question_expiry.clear()
         self.save_state = 'confirmed'
         self.save_error = None
         for task in tuple(self.pending_operations):

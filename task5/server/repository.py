@@ -285,8 +285,31 @@ def _get_question(cursor, question_id: str):
     return {"id": str(qid), "text": row["noi_dung_cau_hoi"], "options": [row[x] for x in ("dap_an_a","dap_an_b","dap_an_c","dap_an_d")], "answer": ord(ans[0])-65, "explanation": row.get("giai_thich_chi_tiet") or "", "source": row.get("nguon_trich_dan") or "Nguồn chung: chưa có trích dẫn cho sự kiện này", "location": row.get("ten_su_kien") or ""}
 
 
+def cleanup_question_sessions(limit: int = 100) -> int:
+    """Dọn tối đa 100 phiên đã quá hạn hơn 7 ngày; giữ answer_log làm audit điểm.
+
+    Dùng cùng khóa ghi với submit nên không xóa phiên đang chấm. Giữ response replay
+    ít nhất bảy ngày sau expiry; không xóa bất kỳ phiên còn hiệu lực nào.
+    """
+    conn = _connect()
+    try:
+        conn.execute('BEGIN IMMEDIATE')
+        result = conn.execute('DELETE FROM question_sessions WHERE session_id IN '
+                              '(SELECT session_id FROM question_sessions WHERE expires_at < ? '
+                              'ORDER BY expires_at LIMIT ?)',
+                              (time.time()-7*86400, max(1,min(int(limit),100))))
+        conn.commit()
+        return result.rowcount
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 def start_question(user_id: int, question_id: str) -> dict:
     """Tái sử dụng phiên đang mở để không reset đồng hồ qua nhiều lần start."""
+    cleanup_question_sessions()
     conn = _connect()
     try:
         conn.execute('BEGIN IMMEDIATE')
