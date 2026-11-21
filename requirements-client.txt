@@ -1,3 +1,4 @@
 pygame-ce
 # pymysql chỉ dùng khi chạy desktop với TASK5_SERVER_ENABLED=0
 pymysql
+bcrypt
