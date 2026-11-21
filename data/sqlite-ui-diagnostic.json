@@ -5,70 +5,70 @@
       "path": "/web/",
       "method": "GET",
       "status": null,
-      "seconds": 0.375
+      "seconds": 1.953
     },
     {
       "event": "response",
       "path": "/web/",
       "method": "GET",
       "status": 200,
-      "seconds": 0.453
+      "seconds": 2.172
     },
     {
       "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 0.75
+      "seconds": 2.828
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 0.75
+      "seconds": 2.828
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 5.578
+      "seconds": 14.937
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 5.578
+      "seconds": 14.953
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 6.828
+      "seconds": 18.359
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 6.828
+      "seconds": 18.359
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 15.218
+      "seconds": 30.609
     },
     {
-      "event": "response",
+      "event": "failed",
       "path": "/auth/login",
       "method": "POST",
-      "status": 401,
-      "seconds": 15.234
+      "status": null,
+      "seconds": 35.656
     }
   ],
   "clicks": [
@@ -92,16 +92,20 @@
   ],
   "errors": [],
   "console_errors": [
-    "PyMain: BrowserFS not found",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+    "PyMain: BrowserFS not found"
   ],
-  "requestfailed": [],
+  "requestfailed": [
+    {
+      "path": "/auth/login",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
   "credentials_received": {
-    "username_matches": false,
-    "password_matches": false,
-    "username_lowercase_matches": true,
-    "password_lowercase_matches": true
+    "username_matches": true,
+    "password_matches": true,
+    "username_lowercase_matches": false,
+    "password_lowercase_matches": false
   },
-  "ui_state": "{\"scene\": \"login\", \"username_length\": 16, \"password_length\": 30, \"username_focus\": false, \"password_focus\": true, \"loading\": true}",
+  "ui_state": "{\"scene\": \"login\", \"username_length\": 16, \"password_length\": 30, \"username_focus\": false, \"password_focus\": true, \"loading\": false}",
   "focus": "CANVAS"
 }
