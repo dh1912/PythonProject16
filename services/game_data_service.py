@@ -643,11 +643,11 @@ class GameDataService:
 
     def load_game_data(self):
         """
-        Nạp dữ liệu từ MySQL XAMPP.
+        Nạp dữ liệu từ SQLite game.db.
         Nếu thành công -> áp dụng thuật toán chuyển đổi và đổ dữ liệu vào.
         Nếu thất bại -> dùng Fallback Cache an toàn và ghi nhận trạng thái.
         """
-        print("\n[GameDataService] Đang tải dữ liệu từ CSDL MySQL...")
+        print("\n[GameDataService] Đang tải dữ liệu từ CSDL SQLite (game.db)...")
         raw_dia_diem, status_dd = fetch_raw_dia_diem()
         raw_su_kien, _ = fetch_raw_su_kien()
         raw_nhan_vat, _ = fetch_raw_nhan_vat()
@@ -672,14 +672,14 @@ class GameDataService:
                         self.questions[k] = v
 
                 self.is_connected = True
-                self.status_message = f"CSDL: MySQL Connected ({len(self.locations)} địa điểm)"
+                self.status_message = f"CSDL: SQLite Connected ({len(self.locations)} địa điểm)"
                 print(f"[GameDataService] THÀNH CÔNG: Đã nạp {len(self.locations)} địa điểm, "
-                      f"{len(self.investigation_data)} dữ liệu điều tra, {len(self.questions)} bộ câu hỏi từ MySQL!")
+                      f"{len(self.investigation_data)} dữ liệu điều tra, {len(self.questions)} bộ câu hỏi từ SQLite!")
             except Exception as e:
                 print(f"[GameDataService] Lỗi khi chuyển đổi dữ liệu SQL: {e}")
                 self.use_fallback(f"Lỗi mapping CSDL: {e}")
         else:
-            self.use_fallback(f"Không thể kết nối MySQL ({status_dd})")
+            self.use_fallback(f"Không thể kết nối SQLite ({status_dd})")
 
         return {
             "locations": self.locations,
@@ -688,6 +688,7 @@ class GameDataService:
             "is_connected": self.is_connected,
             "status_message": self.status_message
         }
+
 
     def use_fallback(self, reason):
         """Kích hoạt dữ liệu dự phòng an toàn."""

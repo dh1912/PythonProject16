@@ -12,9 +12,10 @@ from .quest_system import (
 )
 from .timeline_data import TIMELINE_QUEST_CONFIGS
 from .timeline_scene import TimelineScene
+from .clue_notebook_scene import ClueNotebookScene
 
 __all__ = [
     "Clue", "ClueInventory", "DeductionTimelineBoard", "QuestState",
     "QuestStateMachine", "QuizSystem", "QuestManager", "build_save_json",
-    "TIMELINE_QUEST_CONFIGS", "TimelineScene",
+    "TIMELINE_QUEST_CONFIGS", "TimelineScene", "ClueNotebookScene",
 ]
