@@ -1,9 +1,7 @@
-import sqlite3
 import pygame
-from pathlib import Path
 from typing import Optional
 
-DB_PATH = Path(__file__).parent.parent / "game.db"
+from data.db_queries import execute_select_query
 
 class ClueNotebookScene:
     def __init__(self, sw=1080, sh=720):
@@ -26,9 +24,6 @@ class ClueNotebookScene:
     
     def load_all_clues(self):
         try:
-            conn = sqlite3.connect(str(DB_PATH))
-            conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
             sql = "SELECT mm.ma_manh_moi, mm.tieu_de_manh_moi, mm.loai_manh_moi, "
             sql += "mm.noi_dung_chi_tiet, sk.ten_su_kien, sk.nam_dien_ra, "
             sql += "nv.ten_nhan_vat, dd.ten_dia_diem, dd.khu_vuc "
@@ -37,9 +32,10 @@ class ClueNotebookScene:
             sql += "LEFT JOIN nhan_vat nv ON mm.ma_nhan_vat = nv.ma_nhan_vat "
             sql += "LEFT JOIN dia_diem dd ON sk.ma_dia_diem = dd.ma_dia_diem "
             sql += "ORDER BY sk.nam_dien_ra, mm.thu_tu_timeline_dung"
-            cur.execute(sql)
-            self.clues_list = [dict(r) for r in cur.fetchall()]
-            conn.close()
+            rows, status = execute_select_query(sql)
+            if rows is None:
+                raise RuntimeError(status)
+            self.clues_list = rows
             if self.clues_list:
                 self.set_current(0)
         except Exception as e:
