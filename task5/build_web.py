@@ -23,7 +23,7 @@ def stage_project(root: Path, destination: Path) -> Path:
         shutil.rmtree(destination)
         destination.mkdir()
     marker.write_text("Task 5 staging sinh tự động", encoding="utf-8")
-    for folder in ("scenes", "services", "task4", "task5"):
+    for folder in ("scenes", "services", "task3", "task4", "task5"):
         for source in (root / folder).glob("*.py"):
             target = destination / folder / source.name
             target.parent.mkdir(parents=True, exist_ok=True)
