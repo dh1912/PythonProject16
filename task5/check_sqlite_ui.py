@@ -105,14 +105,23 @@ def main() -> int:
                             assert response.ok
                             return response.json()['data']
 
+                        def type_credentials(text: str) -> None:
+                            """SDL Linux đọc modifier KEYDOWN: gửi Shift thật thay vì chỉ JS key='Q'."""
+                            for char in text:
+                                if char.isascii() and char.isalpha() and char.isupper():
+                                    page.keyboard.press('Shift+' + char.lower())
+                                else:
+                                    page.keyboard.type(char, delay=40)
+                                page.wait_for_timeout(40)
+
                         # Chỉ tạo fixture bằng HTTP; toàn bộ hành động chơi dưới đây qua UI.
                         click(500, 280)
-                        page.keyboard.type(username, delay=40)
+                        type_credentials(username)
                         if sys.platform == 'win32':
                             page.keyboard.press('Tab')
                         else:
                             click(500, 355)
-                        page.keyboard.type(password, delay=40)
+                        type_credentials(password)
                         page.keyboard.type('x')
                         page.keyboard.press('Backspace')
                         with page.expect_response(lambda r: r.url.endswith('/auth/login')) as auth_response:
@@ -121,6 +130,8 @@ def main() -> int:
                             else:
                                 click(500, 432)
                         assert auth_response.value.status == 200, f'Login HTTP {auth_response.value.status}'
+                        assert diagnostic['credentials_received']['username_matches']
+                        assert diagnostic['credentials_received']['password_matches']
                         page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'", timeout=15000)
                         review_responses = [entry for entry in diagnostic['network']
                                             if entry['path'] == '/review/me' and entry['event'] == 'response']
