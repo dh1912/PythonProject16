@@ -480,6 +480,7 @@ class Game:
         if not response["correct"]:
             self.deduction_scene.last_answer_correct = False
             self.deduction_scene.feedback = response.get("explanation", "Chưa chính xác.")
+            self.data_service.prepare_question(self.deduction_scene.questions[self.deduction_scene.question_index]['id'])
             if getattr(self.data_service, "async_auth_enabled", False) is True and getattr(self, "_review_refresh_task", None) is None:
                 import asyncio
                 self._review_refresh_task = asyncio.create_task(self.data_service.refresh_reviews_async())

@@ -318,6 +318,7 @@ def start_question(user_id: int, question_id: str) -> dict:
         now = time.time()
         row = conn.execute('SELECT session_id,expires_at FROM question_sessions WHERE ma_nguoi_dung=? AND ma_cau_hoi=? AND response_json IS NULL AND expires_at>? ORDER BY started_at LIMIT 1', (user_id,qid,now)).fetchone()
         if row:
+            row['remaining_seconds'] = max(0,row['expires_at']-now)
             conn.commit()
             return row
         count = conn.execute('SELECT COUNT(*) AS n FROM question_sessions WHERE ma_nguoi_dung=? AND response_json IS NULL AND expires_at>?',(user_id,now)).fetchone()['n']
@@ -326,7 +327,7 @@ def start_question(user_id: int, question_id: str) -> dict:
         session_id = secrets.token_urlsafe(32)
         conn.execute('INSERT INTO question_sessions(session_id,ma_nguoi_dung,ma_cau_hoi,started_at,expires_at) VALUES(?,?,?,?,?)', (session_id,user_id,qid,now,now+3600))
         conn.commit()
-        return {'session_id':session_id,'expires_at':now+3600}
+        return {'session_id':session_id,'expires_at':now+3600,'remaining_seconds':3600}
     except Exception:
         conn.rollback()
         raise

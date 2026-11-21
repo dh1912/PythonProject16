@@ -48,7 +48,8 @@ class ApiGameDataService:
                 result = await self.request_async('POST','/quiz/start',{'ma_cau_hoi':qid})
                 if generation == self._session_generation:
                     self._question_sessions[qid] = result['session_id']
-                    self._question_expiry[qid] = time.monotonic()+max(0, result['expires_at']-__import__('time').time())
+                    # TTL server -> monotonic local, không phụ thuộc đồng hồ máy người chơi.
+                    self._question_expiry[qid] = time.monotonic()+max(0, result.get('remaining_seconds',3600))
             finally:
                 if generation == self._session_generation:
                     self._question_starts.pop(qid, None)
