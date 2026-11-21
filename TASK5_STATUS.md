@@ -1,6 +1,28 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Bổ sung CI/UI và manifest trong lượt hiện tại
+- Phân loại Git: nhóm v6/gameplay và ảnh nghiệm thu tồn tại trước lượt này được giữ nguyên;
+  commit CI/UI chỉ chứa workflow, helper container/UI, sửa chọn sự kiện đại diện và tài liệu.
+- 77 test PASS, 0 FAIL, 0 SKIP; 7 subtest PASS. Compile và Pygbag build PASS.
+- Edge UI thật + API/SQLite tạm: login, Notebook chỉ đọc, điều tra, quiz sai/đúng,
+  quest server xác nhận, review, leaderboard, vào màn điều tra thứ hai PASS; page_errors=[].
+- Sửa lọc active cho DAL/catalog/Notebook; test phát hiện JOIN thiếu ma_su_kien và đã sửa.
+  Những file dùng chung có diff v6 từ trước được giữ chưa commit để không gộp nhầm.
+- CI Linux đã chuẩn bị pytest/compile/Pygbag/Chromium UI/Docker/persistent-volume restart.
+  Docker local và GitHub Actions thực thi: CHƯA KIỂM THỬ. Không push/merge/public.
+
 ## Trạng thái hiện hành: nhánh fix/sqlite-web-deploy
+
+### Trạng thái mới nhất (2026-11-21)
+- Historical content migration 006 đã bổ sung đúng dữ liệu được thay thế trong migration
+  Task 4 004, theo cách additive và manifest; không xóa dữ liệu người chơi hoặc bản ghi cũ.
+- SQLite sạch: 9 địa điểm/30 sự kiện; 16 clue và 12 câu hỏi Task 4 mới được đưa vào active
+  content, ID ổn định theo manifest; tất cả 9 địa điểm có câu hỏi và clue chính thức hiện hành.
+- Edge + FastAPI + SQLite file tạm chạy toàn tuyến quest qua API: 9/9 hoàn thành, điểm/tiến độ
+  tải lại, quest/review thưởng không lặp, leaderboard; không JS page errors.
+- `pytest`: 76 PASS, 0 FAIL, 7 subtest PASS; compile/build đạt.
+- Đây là E2E fetch từ browser thật, không phải click UI thủ công cho 9 địa điểm. Docker chưa
+  chạy do thiếu Docker CLI; public deployment chưa thực hiện.
 
 Backend/DAL đã chuyển SQLite, không yêu cầu MySQL. Các đoạn MariaDB phía dưới là lịch sử.
 70 test chính PASS, 7 subtest PASS, 0 FAIL, 0 SKIP. Build sạch và Edge với API/SQLite

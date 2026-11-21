@@ -1,0 +1,58 @@
+name: SQLite web acceptance
+permissions:
+  contents: read
+on:
+  push:
+    branches: [fix/sqlite-web-deploy]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements-server.txt -r requirements-client.txt pygbag==0.9.3
+      - run: python -m pytest -q tests
+      - run: python -m compileall -q data task5 task3 task4 scenes services main.py main_web.py
+      - run: python -m task5.build_web
+      - name: Chromium UI with real SQLite
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+          python -m task5.check_sqlite_ui
+      - run: docker build -t history-sqlite-test .
+      - name: Container SQLite persistence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export JWT_SECRET=$(python -c 'import secrets; print(secrets.token_urlsafe(48))')
+          docker volume create history-test
+          docker run -d --name history-test -p 8000:8000 --mount source=history-test,target=/data -e JWT_SECRET history-sqlite-test
+          ready() {
+            for i in $(seq 1 60); do
+              if curl -fsS http://127.0.0.1:8000/api/health; then return 0; fi
+              sleep 2
+            done
+            return 1
+          }
+          ready
+          python -m task5.ci_container_check create --state "$RUNNER_TEMP/account.json"
+          docker restart history-test
+          ready
+          python -m task5.ci_container_check restore --state "$RUNNER_TEMP/account.json"
+          rm -f "$RUNNER_TEMP/account.json"
+      - name: Cleanup
+        if: always()
+        run: |
+          docker logs history-test || true
+          docker rm -f history-test || true
+          docker volume rm history-test || true
+          rm -f "$RUNNER_TEMP/account.json"

@@ -448,8 +448,12 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
         # Chọn sự kiện có năm gần nhất với loc_start của địa điểm
         ev = {}
         if loc_events:
-            loc_events.sort(key=lambda e: abs(int(e.get("nam_dien_ra", loc_start)) - loc_start))
-            ev = loc_events[0]
+            # Ưu tiên sự kiện có manh mối thật, tránh hiển thị một sự kiện khác năm
+            # chỉ vì cấu hình bản đồ dùng mốc bắt đầu của cả giai đoạn.
+            ordered_events = sorted(loc_events, key=lambda e: (
+                not bool(clues_by_event.get(e.get("ma_su_kien"))),
+                abs(int(e.get("nam_dien_ra", loc_start)) - loc_start)))
+            ev = ordered_events[0]
 
         nv = npcs_by_loc.get(loc_id, {})
         ev_id = ev.get("ma_su_kien")

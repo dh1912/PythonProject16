@@ -1,6 +1,47 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Nghiệm thu bổ sung UI/CI/manifest
+- Pytest toàn bộ: 77 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS; 1 warning Starlette/httpx.
+- Compile và build Pygbag sau sửa: mã thoát 0.
+- `python -m task5.check_sqlite_ui`: Edge headless, API SQLite tạm thật, không mock,
+  mã thoát 0. Thao tác bằng canvas/keyboard: login -> N Notebook -> điều tra -> quiz sai
+  rồi đúng -> chờ quest hoàn thành -> ENTER về map -> R review đúng -> B leaderboard
+  -> vào điều tra thứ hai. Notebook không thay đổi điểm/tiến độ; page_errors=[].
+- Harness gặp lỗi điều hướng ESC sai màn và password ngẫu nhiên chứa phím q (game dùng
+  Q để thoát); fixture dùng mật khẩu không chứa q, dùng ENTER đúng hướng dẫn game.
+  Giới hạn game hiện tại: phím Q toàn cục có thể gây thoát lúc nhập mật khẩu chứa q.
+- Phát hiện ảnh địa điểm Hương Cảng ghi sự kiện 1862 dù clue năm 1930: sửa mapping ưu
+  tiên sự kiện có clue chính thức, không thay đổi hàng lịch sử hoặc luật tính điểm.
+- Manifest: test mới kiểm tra DAL, catalog, Notebook và bộ câu hỏi API chỉ trả ID active,
+  đồng thời số hàng legacy trong SQLite không giảm. JOIN Notebook bổ sung ma_su_kien.
+- CI workflow có quyền read-only, timeout, health polling thất bại rõ ràng và cleanup.
+  Docker CLI không có; workflow chưa push/chạy trên GitHub nên KHÔNG ghi Docker/CI PASS.
+- Bằng chứng UI cục bộ: data/sqlite-ui-result.json, sqlite-ui-notebook.png,
+  sqlite-ui-board.png, sqlite-ui-next.png. Không có JWT/mật khẩu trong JSON kết quả.
+
 ## SQLite web — kết quả hiện hành (thay thế ghi chú lịch sử bên dưới)
+
+### Cập nhật kiểm thử lịch sử v6 và toàn bộ địa điểm — 2026-11-21
+- Thêm migration 006 additive và seed lấy trực tiếp từ `data/migrations/004_task4_complete.sql`;
+  bản ghi manh mối/câu hỏi bị migration 004 thay thế được giữ lịch sử trong SQLite và chỉ
+  các ID trong `content_manifest` được phục vụ làm bộ nội dung active. Không xóa tiến độ.
+- DB sạch sau v6: 9 địa điểm, 30 sự kiện, 26 manh mối đang lưu (16 bản chính thức 004
+  cùng các bản ghi legacy được giữ), 20 câu hỏi đang lưu (12 chính thức 004 và legacy),
+  30 mốc lịch sử, 30 nguồn và 21 nhân vật lịch sử; foreign_key_check sạch.
+- Cập nhật harness Edge: không còn tra câu timeline trong endpoint DB không chứa timeline;
+  ID và đáp án fixture lấy từ cấu hình Task 4 chính thức, server vẫn tự xác minh đáp án.
+  Tuân theo thứ tự mở khóa QuestManager: 1,2,3,4,5,6,7,8,9.
+- Edge headless + FastAPI thật + SQLite tạm: đăng ký, câu sai/review +15 một lần,
+  câu quiz, lưu đủ clue ID chính thức, hoàn thành từng địa điểm +30 một lần, tải tiến độ,
+  đăng nhập lại và leaderboard: **9/9 quest PASS**, `page_errors=[]`, mã thoát 0.
+- Matrix: địa điểm 1–3,5,7 dùng bộ câu hỏi SQLite tương ứng; 4 Pác Bó, 6 Ba Đình,
+  8 Điện Biên Phủ, 9 Dinh Độc Lập dùng ba ID `task4:` chính thức mỗi nơi. Manh mối DB
+  được lưu theo ID: lần lượt 2,1,1,4,1,4,1,4,4.
+- Test toàn cục sau cập nhật: **76 PASS, 0 FAIL, 7 subtest PASS**, 1 warning deprecation
+  Starlette/httpx. Compile và Pygbag build mới PASS.
+- Phạm vi: game runtime trong Edge được khởi tạo thật; chuỗi 9 quest được thực hiện bằng
+  `fetch` trong tab browser với API/SQLite thật, không HTTP mock. Đây chưa phải thao tác UI
+  thủ công từng câu cho cả 9 địa điểm. Docker vẫn chưa được chạy trên máy này.
 
 ### Git
 - Workspace ban đầu sạch, feature/clue-notebook-system ở 71d7b66.
