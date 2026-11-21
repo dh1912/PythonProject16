@@ -102,12 +102,19 @@ def health(): return {"status": "healthy", "service": "task5"}
 def game_questions():
     """Cấp bộ câu hỏi hiện hành có ID; chấm điểm vẫn luôn truy vấn DB server."""
     from data import db_queries
-    from services.game_data_service import transform_deduction_questions
+    from services.game_data_service import transform_deduction_questions, transform_locations, transform_investigation_data
     events, event_message = db_queries.fetch_raw_su_kien()
     questions, question_message = db_queries.fetch_raw_cau_hoi()
     if events is None or questions is None:
         raise HTTPException(503, "Chưa tải được bộ câu hỏi từ CSDL.")
-    return {"questions": transform_deduction_questions(events, questions)}
+    locations, _ = db_queries.fetch_raw_dia_diem()
+    characters, _ = db_queries.fetch_raw_nhan_vat()
+    clues, _ = db_queries.fetch_raw_manh_moi()
+    if any(rows is None for rows in (locations, characters, clues)):
+        raise HTTPException(503, "Chưa tải được dữ liệu điều tra.")
+    return {"questions": transform_deduction_questions(events, questions),
+            "locations": transform_locations(locations, events),
+            "investigation_data": transform_investigation_data(locations, events, characters, clues)}
 
 
 @app.get("/", include_in_schema=False)
@@ -261,6 +268,7 @@ if TASK5_WEB_BUILD_DIR:
 else:
     # Ưu tiên build chuẩn, sau đó tự tìm build staging local để tránh API root báo 404.
     _WEB_CANDIDATES = (
+        _PROJECT_ROOT / "build" / "web-source" / "build" / "web",
         _PROJECT_ROOT / "build" / "web",
         _PROJECT_ROOT / ".web-staging" / "build" / "web",
     )
