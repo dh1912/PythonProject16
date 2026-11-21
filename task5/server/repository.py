@@ -222,7 +222,9 @@ def collect_clue(user_id: int, location_id: int, clue_id: str, selected_evidence
         if not clue or str(selected_evidence).strip() != str(clue.get("tieu_de_manh_moi") or "").strip():
             raise RepositoryError("Tư liệu đối chiếu không khớp mảnh mối chính thức.")
         state = json.loads(progress.get("du_lieu_nhiem_vu") or "{}")
-        state = {key:value for key,value in state.items() if str(key).isdigit() and isinstance(value,dict)}
+        # Đây là state đọc từ server, không phải payload client: giữ _task5 và địa điểm khác.
+        if not isinstance(state, dict):
+            raise RepositoryError("Trạng thái nhiệm vụ không hợp lệ.")
         current = state.get(str(location_id), {})
         collected = set(current.get("clue_ids", []))
         collected.add(str(clue_id))

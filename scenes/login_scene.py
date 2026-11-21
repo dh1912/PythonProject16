@@ -35,7 +35,7 @@ class InputBox:
         if event.type == pygame.TEXTINPUT and self.active and sys.platform == 'emscripten':
             # SDL web KEYDOWN.unicode có thể là phím vật lý viết thường.
             # TEXTINPUT mới là văn bản chuẩn đã áp dụng Shift/Caps Lock/IME.
-            self.text += ''.join(char for char in event.text if char.isprintable())[:max(0, 35-len(self.text))]
+            self.text += ''.join(char for char in event.text if char.isprintable())
             return False
 
         if event.type == pygame.KEYDOWN and self.active:
@@ -45,7 +45,7 @@ class InputBox:
                 return False
             else:
                 # Chỉ nhận các ký tự hợp lệ
-                if sys.platform != 'emscripten' and event.unicode and len(self.text) < 35:
+                if sys.platform != 'emscripten' and event.unicode:
                     # Cho phép chữ, số, dấu gạch dưới, khoảng trắng
                     if event.unicode.isprintable():
                         self.text += event.unicode
@@ -157,7 +157,7 @@ class LoginScene:
 
     def do_login(self):
         username = self.input_login_user.text.strip()
-        password = self.input_login_pass.text.strip()
+        password = self.input_login_pass.text
 
         if not username or not password:
             self.message = "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!"
@@ -182,7 +182,7 @@ class LoginScene:
 
     def do_register(self):
         username = self.input_reg_user.text.strip()
-        password = self.input_reg_pass.text.strip()
+        password = self.input_reg_pass.text
         fullname = self.input_reg_name.text.strip()
 
         if not username or not password or not fullname:
