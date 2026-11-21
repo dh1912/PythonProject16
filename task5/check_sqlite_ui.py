@@ -11,6 +11,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+import sqlite3
 from urllib.parse import urlsplit
 
 
@@ -211,6 +212,62 @@ def main() -> int:
                         page.keyboard.press('Enter')
                         page.wait_for_timeout(1000)
                         page.screenshot(path=str(root / 'data/sqlite-ui-next.png'))
+                        # Fixture DB chỉ mở khóa các mốc cho test canvas; không dùng làm bằng chứng
+                        # hoàn thành những quest trước đó. Mỗi quest đích vẫn thu clue/chấm/complete thật.
+                        from task4.timeline_data import TIMELINE_QUEST_CONFIGS
+                        timeline_results = []
+                        def state():
+                            return json.loads(page.evaluate('window.task5UiState'))
+                        def logical_position(x, y):
+                            box=canvas.bounding_box();w,h=canvas.evaluate('c=>[c.width,c.height]')
+                            scale=min(w/1080,h/720)
+                            return (box['x']+((w-1080*scale)/2+x*scale)*box['width']/w,
+                                    box['y']+((h-720*scale)/2+y*scale)*box['height']/h)
+                        for target_id in (4,6,8,9):
+                            target=next(item for item in content['locations'] if item['id']==target_id)
+                            completed=[item['name'] for item in content['locations'] if item['id']!=target_id]
+                            db=sqlite3.connect(env['SQLITE_DB_PATH'])
+                            db.execute('UPDATE tien_do_choi SET danh_sach_dia_diem_da_mo=?,ma_dia_diem_hien_tai=1 WHERE ma_nguoi_dung=?',
+                                       (json.dumps(completed),registration.json()['user']['ma_nguoi_dung']))
+                            db.commit();db.close()
+                            page.reload(wait_until='domcontentloaded')
+                            page.wait_for_function('window.task5GameReady === true',timeout=120000)
+                            page.wait_for_timeout(1500)
+                            click(500,280);type_credentials(username)
+                            click(500,355);type_credentials(password)
+                            with page.expect_response(lambda r:r.url.endswith('/review/me') and r.ok):click(500,432)
+                            page.wait_for_timeout(1400)
+                            # Hai pin Bến Nhà Rồng/Dinh cách 16px; chọn mép phải pin Dinh
+                            # tránh hit pin Bến trước trong danh sách mà không gọi Game trực tiếp.
+                            click(target['x']+(15 if target_id==9 else 0),target['y'])
+                            page.keyboard.press('Enter')
+                            page.wait_for_function("JSON.parse(window.task5UiState).scene === 'investigation'")
+                            page.wait_for_timeout(800)
+                            for index in range(len(content['investigation_data'][target['name']]['clues'])):
+                                page.keyboard.press(str(index+1));page.wait_for_timeout(150)
+                                for choice in ('1','2','3'):
+                                    page.keyboard.press(choice);page.wait_for_timeout(450)
+                            page.keyboard.press('d');page.wait_for_timeout(900)
+                            assert state()['scene']=='task4_timeline',target['name']
+                            for index in range(4):
+                                start=logical_position(200,150+index*105)
+                                end=logical_position(700,150+index*105)
+                                page.mouse.move(*start);page.mouse.down()
+                                page.mouse.move(*end,steps=10);page.mouse.up();page.wait_for_timeout(150)
+                            page.keyboard.press('Enter')
+                            page.wait_for_function("JSON.parse(window.task5UiState).scene === 'task4_quiz'")
+                            submissions_before=len(diagnostic.get('session_submissions',[]))
+                            for index,q in enumerate(TIMELINE_QUEST_CONFIGS[target['name']]['questions']):
+                                page.wait_for_function("JSON.parse(window.task5UiState).quiz_index === "+str(index))
+                                page.wait_for_timeout(700)
+                                with page.expect_response(lambda r:r.url.endswith('/quiz/submit') and r.ok):
+                                    page.keyboard.press(str(q['answer']+1))
+                            for _ in range(60):
+                                if target['name'] in progress()['completed']:break
+                                page.wait_for_timeout(250)
+                            else:raise AssertionError('Timeline quest chưa confirmed '+target['name'])
+                            assert diagnostic['session_submissions'][submissions_before:]==[True,True,True]
+                            timeline_results.append(target['name'])
                         assert not errors, errors
                         assert '/quiz/start' in [item['path'] for item in diagnostic['network']]
                         assert diagnostic.get('session_submissions', [False])[0], 'Quiz đầu phải dùng phiên server'
@@ -218,6 +275,7 @@ def main() -> int:
                                   'ui_investigation': True, 'ui_quiz_wrong_correct': True,
                                   'ui_review': True, 'ui_quest_confirmed': True,
                                   'ui_leaderboard': True, 'next_location_input_sent': True,
+                                  'timeline_canvas':timeline_results,
                                   'page_errors': errors, 'http_mock': False,
                                   'scope': 'Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật.'}
                         (root / 'data/sqlite-ui-result.json').write_text(

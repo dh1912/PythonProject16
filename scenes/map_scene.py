@@ -504,7 +504,12 @@ class MapScene:
                 self.message = ""
 
             # Bam vao dia diem (kiem tra ca cham tron va khung chu ten dia danh)
-            for location in self.locations:
+            # Pin chồng nhau: chọn pin gần click nhất trước, rồi mới xét nhãn.
+            pins = [loc for loc in self.locations if
+                    (mouse_x-loc['x'])**2+(mouse_y-loc['y'])**2 <= 20**2]
+            candidates = sorted(pins, key=lambda loc:
+                (mouse_x-loc['x'])**2+(mouse_y-loc['y'])**2) if pins else self.locations
+            for location in candidates:
                 distance_x = mouse_x - location["x"]
                 distance_y = mouse_y - location["y"]
                 hit_pin = (distance_x ** 2 + distance_y ** 2 <= 20 ** 2)

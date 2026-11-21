@@ -55,6 +55,8 @@ async def main():
                         'username_focus': login.input_login_user.active,
                         'password_focus': login.input_login_pass.active,
                         'loading': login.auth_task is not None,
+                        'save_state': getattr(game.data_service, 'save_state', ''),
+                        'quiz_index': getattr(game, 'task4_quiz_index', None),
                     })
                     await asyncio.sleep(.1)
             asyncio.create_task(publish_input_diagnostic())

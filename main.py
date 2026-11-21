@@ -312,6 +312,9 @@ class Game:
         self.investigation_scene.collected_clues.update(
             self.quest_manager.collected_clues.get(location["name"], set())
         )
+        if self.task5_server_enabled and self.current_user:
+            self.data_service.sync_user_progress(self.current_user['ma_nguoi_dung'],
+                location['id'], max(1914,location.get('start',1914)), self.score, self.completed)
         self.scene = "investigation"
 
     def open_deduction(self):
