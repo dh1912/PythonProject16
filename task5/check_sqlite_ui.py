@@ -48,8 +48,8 @@ def main() -> int:
                         page.on('pageerror', lambda exc: errors.append(str(exc)))
                         page.on('response', lambda response: paths.append(response.url.split(url)[-1])
                                 if response.ok and response.url.startswith(url) else None)
-                        username = 'ui_' + secrets.token_hex(5)
-                        password = 'ui-test-password-' + secrets.token_hex(5)
+                        username = 'ui_qQ_' + secrets.token_hex(5)
+                        password = 'ui-qQ-test-password-' + secrets.token_hex(5)
                         registration = page.request.post(url + '/auth/register', data={
                             'username': username, 'password': password, 'fullname': 'UI Acceptance'})
                         assert registration.status == 201
@@ -79,10 +79,12 @@ def main() -> int:
                         # Chỉ tạo fixture bằng HTTP; toàn bộ hành động chơi dưới đây qua UI.
                         click(500, 280)
                         page.keyboard.type(username, delay=40)
-                        click(500, 355)
+                        page.keyboard.press('Tab')
                         page.keyboard.type(password, delay=40)
+                        page.keyboard.type('x')
+                        page.keyboard.press('Backspace')
                         with page.expect_response(lambda r: r.url.endswith('/review/me') and r.ok):
-                            click(500, 432)
+                            page.keyboard.press('Enter')
                         page.wait_for_timeout(1500)
                         before = progress()
                         page.keyboard.press('n')
@@ -141,7 +143,7 @@ def main() -> int:
                         page.wait_for_timeout(1000)
                         page.screenshot(path=str(root / 'data/sqlite-ui-next.png'))
                         assert not errors, errors
-                        result = {'ui_login': True, 'notebook_read_only': True,
+                        result = {'ui_login': True, 'qQ_credentials_tab_backspace_enter': True, 'notebook_read_only': True,
                                   'ui_investigation': True, 'ui_quiz_wrong_correct': True,
                                   'ui_review': True, 'ui_quest_confirmed': True,
                                   'ui_leaderboard': True, 'next_location_input_sent': True,

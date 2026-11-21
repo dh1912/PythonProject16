@@ -875,8 +875,8 @@ class Game:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_n and self.scene in ('map','investigation','review'):
             self.open_clue_notebook()
             return
-        # Handle quit before scene transitions or form inputs can consume the key.
-        if event.type == pygame.KEYDOWN and key_is(event, "q"):
+        # Không chiếm ký tự q/Q của form; LoginScene tự kiểm tra focus nhập liệu.
+        if event.type == pygame.KEYDOWN and key_is(event, "q") and self.scene != "login":
             self.running = False
             return
 

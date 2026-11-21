@@ -254,8 +254,10 @@ class LoginScene:
 
         # Xử lý Bàn phím
         elif event.type == pygame.KEYDOWN:
-            # Keep the advertised global quit shortcut out of form fields.
-            if event.key == pygame.K_q:
+            # q/Q là ký tự nhập bình thường khi bất kỳ ô của form hiện hành có focus.
+            inputs = ((self.input_login_user, self.input_login_pass) if self.mode == "login"
+                      else (self.input_reg_user, self.input_reg_pass, self.input_reg_name))
+            if event.key == pygame.K_q and not any(box.active for box in inputs):
                 return {"action": "quit"}
 
             # Phím TAB: Chuyển qua lại giữa các ô nhập
