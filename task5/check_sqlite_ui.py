@@ -200,6 +200,10 @@ def main() -> int:
                         text = text.replace(password, '[REDACTED]').replace(username, '[REDACTED]')
                         (root / 'data/sqlite-ui-diagnostic.json').write_text(text, encoding='utf-8')
                         print('UI_SAFE_DIAGNOSTIC=' + text, flush=True)
+                        if os.getenv('GITHUB_ACTIONS') == 'true':
+                            summary = json.dumps({k: diagnostic.get(k) for k in
+                                ('credentials_received', 'ui_state', 'focus', 'network', 'clicks')}, ensure_ascii=True)
+                            print('::error title=Auth safe state::' + summary.replace('%', '%25'), flush=True)
                         raise
                     finally:
                         browser.close()
