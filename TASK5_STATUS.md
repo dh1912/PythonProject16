@@ -1,5 +1,14 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Trạng thái mới nhất: Chromium Linux PASS
+Run 44913145381 tại f4a255f SUCCESS toàn bộ: Python/SQLite, compile, Pygbag,
+Chromium UI thật không mock, Docker build và SQLite volume sau restart.
+Lỗi cũ là văn bản hoa/thường trong đường nhập SDL web/harness, không phải backend treo:
+login gửi dữ liệu lowercase và nhận 401 đúng, vì vậy không phát sinh review request.
+Đã dùng TEXTINPUT cho web và Shift+key hoa đúng trong harness. Assert credential match,
+login/review 200 và pageerror rỗng được giữ nguyên. Local 82 test + 7 subtest PASS.
+Xem đầu TASK5_ACCEPTANCE.md; các ghi chú Linux FAIL phía dưới là lịch sử.
+
 ## Kết quả cuối lượt Q / clean-worktree / Linux
 - Code HEAD ea8d86f: worktree riêng pytest 81 PASS + 7 subtest, compile/build/Edge UI
   q/Q PASS; không dựa vào file chưa commit hoặc database cá nhân.

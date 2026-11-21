@@ -1,5 +1,28 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Chromium Linux đã sửa và nghiệm thu — f4a255f
+- Run thành công: https://github.com/dh1912/PythonProject16/actions/runs/44913145381 .
+  Pytest, compile, Pygbag, Chromium UI SQLite thật, Docker build và container persistence
+  qua restart đều SUCCESS. Step artifact lỗi SKIPPED vì không có lỗi, không phải skip test.
+- Nguyên nhân xác minh bằng run chẩn đoán 44912530045: POST /auth/login có gửi và trả 401;
+  không có /review/me. Canvas có focus đúng, username dài 16/password dài 30, không rơi
+  ký tự. Payload khớp bản lowercase của fixture nhưng không khớp đúng hoa/thường.
+  Loading được giải phóng sau khi nhận 401, không phải backend treo.
+- SDL web không nên dùng KEYDOWN.unicode như văn bản đã nhập. Form web chuyển sang
+  TEXTINPUT (Shift/Caps Lock/IME), KEYDOWN chỉ xử lý phím điều khiển; desktop giữ nguyên.
+  Harness dùng phím hoa thực với Shift và key='Q', không key='q' khi mong nhập 'Q'.
+  Thử chỉ Shift+key thường không sửa được lỗi; đã tái hiện 401 trên Edge.
+- Không nới lỏng xác thực password, không bỏ assertion: login phải HTTP 200, payload
+  username/password phải khớp chính xác, /review/me phải 200 và game phải sang map.
+- Chẩn đoán allowlist: endpoint/method/status/thời gian, requestfailed, pageerror,
+  console error, kích thước canvas/focus, độ dài ô và loading; không headers/token/body.
+  Timeout chụp ảnh và giữ FastAPI stdout/stderr. Chế độ UI-state chỉ bật ?acceptance=1,
+  không có nội dung username/password hoặc token.
+- Local: 82 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS, compile/build và Edge UI mã thoát 0.
+  Regression mới kiểm TEXTINPUT giữ q/Q/Đ và không ghi đôi từ KEYDOWN.
+- Commit chẩn đoán: 5c40f5f, c84bc62, ca16d81; b214e07 thử Shift; f4a255f sửa cuối.
+  Các phần schema/ScoringEngine/quest/nội dung lịch sử không thay đổi trong lượt này.
+
 ## Kết quả Linux cuối lượt — cập nhật thay thế trạng thái đang chờ
 Run https://github.com/dh1912/PythonProject16/actions/runs/44911172510 tại ea8d86f:
 - SUCCESS: dependency install, pytest, compile, Pygbag, Docker build.

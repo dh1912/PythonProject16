@@ -1,5 +1,12 @@
 # Deploy FastAPI + Pygbag + SQLite
 
+## Nghiệm thu Linux mới nhất
+Run https://github.com/dh1912/PythonProject16/actions/runs/44913145381 tại f4a255f
+SUCCESS: pytest, compile, Pygbag, Chromium UI SQLite thật, Docker build và restart
+persistent volume. Lỗi chữ hoa SDL web đã sửa bằng TEXTINPUT và harness phím Shift.
+Các ghi chú FAIL cũ phía dưới chỉ là lịch sử; chưa tự triển khai public.
+UI-state chẩn đoán chỉ bật với `/web/?acceptance=1`, không trả nội dung thông tin đăng nhập.
+
 ### Kết quả hosting prerequisite thực tế
 Run 44911172510 (ea8d86f) đã SUCCESS Docker build và container SQLite persistent-volume
 qua restart: tài khoản/điểm/manh mối/completed khôi phục nguyên vẹn. Tuy nhiên workflow
