@@ -1,5 +1,28 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Release readiness P0/P1 — 2886252
+- Nền origin/main 142976c, nhánh mới improve/task5-release-readiness. Không merge/deploy.
+- Lỗi xác minh: public API có đáp án; clue state bỏ _task5; form strip password;
+  cache progress cập nhật trước xác nhận. Đã sửa, giữ ScoringEngine/schema/ID lịch sử.
+- Test mới: public recursive no-answer, server streak qua collect rồi câu tiếp +36,
+  bcrypt chính xác tiếng Việt/khoảng trắng/hoa-thường, HTTP forged score bị bỏ qua,
+  client _task5 bị từ chối, relogin giữ state, WAL backup integrity/restore,
+  build không có đáp án embedded, timeout-after-commit đọc lại không repost.
+- 89 pytest PASS, 0 FAIL, 0 SKIP; 7 subtest PASS; compile/build đạt.
+- Một lượt local Edge abort login sau timeout transport 5 giây trong lúc máy chậm;
+  lượt chạy lại đạt không thay timeout/assertion. Không coi đây là đảm bảo mạng luôn sẵn sàng.
+- Edge UI SQLite thật: password q/Q + khoảng trắng đầu/cuối khớp tuyệt đối,
+  login/review/quest/leaderboard đạt, page_errors=[]; toàn tuyến 9 API quest đạt.
+- Linux run: https://github.com/dh1912/PythonProject16/actions/runs/44915991970
+- Kết quả cuối run tại 2886252: completed/success. Pytest, compile, Pygbag, Chromium UI,
+  Docker build, container health/lưu/đăng nhập lại sau restart volume đều SUCCESS.
+  Artifact chẩn đoán SKIPPED vì không có lỗi; không có test bị skip để làm xanh.
+- Giới hạn: chưa triển khai question-session timestamp server; chưa chống giả tốc độ.
+  Queued/pending hiện là trạng thái service, chưa có chỉ báo UI chuyên biệt đầy đủ.
+  Lỗi timeout save đọc lại nhưng vẫn đánh dấu failed vì chưa chứng minh payload đã lưu đủ.
+  Chưa test browser thật tất cả lỗi 400/401/503, logout/refresh giữa từng loại write;
+  test async không thay thế các kịch bản mạng thật này. Không tuyên bố toàn bộ P1 hoàn thành.
+
 ## Chromium Linux đã sửa và nghiệm thu — f4a255f
 - Run thành công: https://github.com/dh1912/PythonProject16/actions/runs/44913145381 .
   Pytest, compile, Pygbag, Chromium UI SQLite thật, Docker build và container persistence

@@ -1,5 +1,21 @@
 # Deploy FastAPI + Pygbag + SQLite
 
+## Release-readiness và giới hạn staging
+Nhánh improve/task5-release-readiness lọc đáp án ở HTTP và gói WASM; online chấm server.
+Không dùng build trước bản sửa này để nghiệm thu bảo mật. Save chỉ confirmed sau khi đọc
+server, timeout cần đọc lại tiến độ trước thử lại; không tự cộng điểm tại client.
+Chưa có question-session server: so_giay client gửi vẫn gian lận được. Không dùng bảng vàng
+cho kỳ thi/chấm thưởng có giá trị trước khi giải quyết thời gian và test fault mạng còn thiếu.
+
+SQLite chỉ có một writer: BEGIN IMMEDIATE + busy_timeout không làm tăng số writer.
+Giữ một replica/worker, disk local bền vững, không NFS; 503/busy phải hiển thị lỗi và retry
+có idempotency. Không scale nhiều container chung file để xử lý tải.
+Backup vận hành: `python -c "from pathlib import Path; from data.sqlite_store import backup_database; backup_database(Path('/backups/game.sqlite'))"`.
+Đặt backup ngoài static, quyền truy cập riêng. Test WAL restore kiểm integrity và giữ điểm/_task5
+đã có trong tests/test_release_security.py. Restore thực: dừng backend, giữ bản DB cũ,
+đảm bảo không dùng WAL/SHM cũ cạnh DB thay thế; khởi động bằng volume đã phục hồi và kiểm health/login.
+JWT_SECRET ổn định, HTTPS và kiểm thử tải/fault vẫn là điều kiện staging có kiểm soát.
+
 ## Nghiệm thu Linux mới nhất
 Run https://github.com/dh1912/PythonProject16/actions/runs/44913145381 tại f4a255f
 SUCCESS: pytest, compile, Pygbag, Chromium UI SQLite thật, Docker build và restart

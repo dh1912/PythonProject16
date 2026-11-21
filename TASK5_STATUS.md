@@ -1,5 +1,20 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## Release readiness — nhánh improve/task5-release-readiness
+- Nền origin/main 142976c, working tree sạch trước sửa; không sửa main.
+- P0: HTTP content/questions/catalog không trả answer/dap_an_dung/correct_index hoặc
+  giải thích trước chấm. Build loại đáp án fallback/tuple timeline khỏi WASM; code server
+  vẫn giữ đáp án chuẩn. Deduction và timeline online dùng kết quả API, không fallback chấm local.
+- P0: collect_clue giữ state server _task5; password không strip, không giới hạn âm thầm 35 ký tự.
+- P1: save queued/pending/confirmed/failed; chỉ cập nhật cache sau đọc server; timeout
+  đọc lại progress, không repost thưởng; generation/revision chặn response phiên cũ.
+- Local: 89 PASS + 7 subtest, compile/build đạt. Edge UI mật khẩu q/Q và khoảng trắng
+  đầu/cuối đạt; API toàn tuyến 9 quest SQLite thật đạt.
+- Run Linux 44915991970 tại 2886252 completed/success: pytest/compile/Pygbag/Chromium UI,
+  Docker và persistence restart SUCCESS. Xem TASK5_ACCEPTANCE.md cho giới hạn nghiệm thu.
+- Chưa làm: phiên thời gian server; client vẫn khai so_giay, thưởng tốc độ có thể gian lận.
+  Chưa nghiệm thu browser network fault toàn bộ/review-timeout/refresh giữa ghi. P2 không mở rộng.
+
 ## Trạng thái mới nhất: Chromium Linux PASS
 Run 44913145381 tại f4a255f SUCCESS toàn bộ: Python/SQLite, compile, Pygbag,
 Chromium UI thật không mock, Docker build và SQLite volume sau restart.
