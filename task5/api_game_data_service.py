@@ -26,6 +26,26 @@ class ApiGameDataService:
         self.save_state = 'confirmed'
         self.save_error = None
         self._save_revision = 0
+        self._question_sessions = {}
+        self._question_starts = {}
+
+    def prepare_question(self, question_id):
+        """Gọi khi câu hỏi xuất hiện, không tạo đồng hồ mới tại thời điểm nộp bài."""
+        qid = str(question_id)
+        if qid in self._question_sessions or qid in self._question_starts:
+            return
+        if not self.async_auth_enabled:
+            self._question_sessions[qid] = self.client.post('/quiz/start', {'ma_cau_hoi':qid})['session_id']
+            return
+        generation = self._session_generation
+        async def start():
+            try:
+                result = await self.request_async('POST','/quiz/start',{'ma_cau_hoi':qid})
+                if generation == self._session_generation:
+                    self._question_sessions[qid] = result['session_id']
+            finally:
+                self._question_starts.pop(qid, None)
+        self._question_starts[qid] = self._schedule(start())
 
     async def request_async(self, method, path, payload=None, authenticated=True):
         """Transport dùng chung cho mọi hành động browser, không gọi urllib."""
@@ -55,15 +75,44 @@ class ApiGameDataService:
 
     async def submit_answer_async(self, question_id, choice_index, elapsed_seconds):
         generation = self._session_generation
-        result = await self.request_async("POST", "/quiz/submit", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)})
+        qid = str(question_id)
+        if qid in self._question_starts:
+            await self._question_starts[qid]
+        payload = {"ma_cau_hoi": qid, "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)}
+        if qid in self._question_sessions:
+            payload['session_id'] = self._question_sessions[qid]
+        try:
+            result = await self.request_async("POST", "/quiz/submit", payload)
+        except ApiClientError:
+            await self.reconcile_progress(generation)
+            raise
         if generation != self._session_generation:
             raise ApiClientError("Phiên đăng nhập đã thay đổi.")
         self._progress["score"] = int(result["total_score"])
+        self._question_sessions.pop(qid, None)
         return result
+
+    async def reconcile_progress(self, generation=None):
+        """Chỉ đọc sau kết quả không chắc chắn, không tự cấp thưởng hay gửi lại."""
+        generation = self._session_generation if generation is None else generation
+        if generation != self._session_generation:
+            return
+        self.save_state = 'reconciling'
+        try:
+            result = await self.request_async('GET','/progress/me')
+            if generation == self._session_generation:
+                self._progress = self._decode_progress(result['data'])
+        finally:
+            if generation == self._session_generation:
+                self.save_state = 'failed'
 
     async def retry_review_async(self, question_id, choice_index):
         generation = self._session_generation
-        result = await self.request_async("POST", "/review/retry", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index)})
+        try:
+            result = await self.request_async("POST", "/review/retry", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index)})
+        except ApiClientError:
+            await self.reconcile_progress(generation)
+            raise
         if generation != self._session_generation:
             raise ApiClientError("Phiên đăng nhập đã thay đổi.")
         self._progress["score"] = int(result["total_score"])
@@ -85,8 +134,12 @@ class ApiGameDataService:
 
     async def collect_clue_async(self, location_id: int, clue_id: str, official_title: str):
         generation = self._session_generation
-        result = await self.request_async('POST', '/clues/collect', {
-            'ma_dia_diem': int(location_id), 'ma_manh_moi': str(clue_id), 'tu_lieu_chon': str(official_title)})
+        try:
+            result = await self.request_async('POST', '/clues/collect', {
+                'ma_dia_diem': int(location_id), 'ma_manh_moi': str(clue_id), 'tu_lieu_chon': str(official_title)})
+        except ApiClientError:
+            await self.reconcile_progress(generation)
+            raise
         if generation != self._session_generation:
             raise ApiClientError('Phiên đăng nhập đã thay đổi.')
         task = dict(self._progress.get('task4', {}))
@@ -220,6 +273,8 @@ class ApiGameDataService:
                 if generation != self._session_generation:
                     return
                 # Timeout có thể xảy ra sau COMMIT: đọc lại thay vì tự cộng/thưởng hoặc gửi lặp.
+                if revision == self._save_revision:
+                    self.save_state = 'reconciling'
                 try:
                     result = await self.request_async('GET', '/progress/me')
                     if generation == self._session_generation and revision == self._save_revision:
@@ -235,6 +290,8 @@ class ApiGameDataService:
     def logout(self):
         self._session_generation += 1
         self._save_revision += 1
+        self._question_sessions.clear()
+        self._question_starts.clear()
         self.save_state = 'confirmed'
         self.save_error = None
         for task in tuple(self.pending_operations):
@@ -250,7 +307,12 @@ class ApiGameDataService:
     def submit_answer(self, question_id, choice_index, elapsed_seconds):
         if self.async_auth_enabled:
             raise ApiClientError("Browser phải dùng submit_answer_async.")
-        return self.client.post("/quiz/submit", {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)})
+        payload = {"ma_cau_hoi": str(question_id), "dap_an_chon": int(choice_index), "so_giay": float(elapsed_seconds)}
+        if str(question_id) in self._question_sessions:
+            payload['session_id'] = self._question_sessions[str(question_id)]
+        result = self.client.post("/quiz/submit", payload)
+        self._question_sessions.pop(str(question_id), None)
+        return result
 
     def complete_quest(self, location_id, location_name, max_year):
         if self.async_auth_enabled:
@@ -263,7 +325,11 @@ class ApiGameDataService:
         generation = self._session_generation
         if self.pending_operations:
             await asyncio.gather(*tuple(self.pending_operations))
-        result = await self.request_async('POST', '/quest/complete', {'ma_dia_diem':int(location_id), 'ten_dia_diem':str(location_name), 'nam_mo_khoa':int(max_year)})
+        try:
+            result = await self.request_async('POST', '/quest/complete', {'ma_dia_diem':int(location_id), 'ten_dia_diem':str(location_name), 'nam_mo_khoa':int(max_year)})
+        except ApiClientError:
+            await self.reconcile_progress(generation)
+            raise
         if generation != self._session_generation:
             raise ApiClientError('Phiên đăng nhập đã thay đổi.')
         self._progress['score'] = int(result['total_score'])

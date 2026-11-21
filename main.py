@@ -1278,6 +1278,14 @@ class Game:
         offset = ((display_size[0] - scaled_size[0]) // 2,
                   (display_size[1] - scaled_size[1]) // 2)
         self.display.blit(scaled, offset)
+        if self.task5_server_enabled and self.current_user:
+            labels = {'queued':'Đang chờ lưu...', 'pending':'Đang lưu tiến độ...',
+                      'confirmed':'Đã lưu thành công.', 'failed':'Không thể lưu tiến độ.',
+                      'reconciling':'Đang kiểm tra lại dữ liệu trên máy chủ...'}
+            state = getattr(self.data_service, 'save_state', 'confirmed')
+            text = self.hint_font.render(labels.get(state, ''), True,
+                                         (180,35,45) if state == 'failed' else (45,125,80))
+            self.display.blit(text, (8, 8))
         pygame.display.flip()
 
     # =================================================================
@@ -1366,6 +1374,16 @@ class Game:
         if getattr(self, "_answer_timer_key", None) != key:
             self._answer_timer_key = key
             self._answer_started_at = time.monotonic()
+            if self.task5_server_enabled and self.current_user and key[1] is not None:
+                try:
+                    question = (self.task4_questions.questions[key[1]] if key[0] == 'task4_quiz'
+                                else self.deduction_scene.questions[key[1]])
+                    qid = str(question['id'])
+                    self.data_service.prepare_question(('task4:' if key[0] == 'task4_quiz' else '')+qid)
+                except (IndexError, KeyError):
+                    pass
+                except Exception as exc:
+                    self.notify(f'Chưa mở được phiên câu hỏi: {exc}')
         try:
             succeeded, result = self._data_queue.get_nowait()
         except queue.Empty:
