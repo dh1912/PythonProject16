@@ -84,3 +84,30 @@ def test_migration_v7_backup_preserves_score(context):
     assert repo.load_progress(uid)['score']==123
     path=database_path()
     assert list(path.parent.glob(path.name+'.backup-v7-*'))
+
+
+def test_session_survives_new_process_and_lost_response(context,monkeypatch):
+    import os
+    import subprocess
+    import sys
+    uid,qid,answer=context
+    session=repo.start_question(uid,qid)['session_id']
+    code = ('from task5.server.repository import submit_answer;'
+            f'submit_answer({uid},{qid!r},{answer},0.25,{session!r})')
+    # Process chấm xong nhưng caller bỏ response: đọc/replay không cấp điểm lần hai.
+    subprocess.run([sys.executable,'-c',code],env=os.environ.copy(),check=True)
+    score=repo.load_progress(uid)['score']
+    replay=repo.submit_answer(uid,qid,answer,.25,session)
+    assert replay['points_awarded']==0 and replay['total_score']==score
+
+
+def test_session_transaction_rolls_back_on_score_error(context):
+    uid,qid,answer=context
+    session=repo.start_question(uid,qid)['session_id']
+    c=connect()
+    c.execute("CREATE TRIGGER reject_session_score BEFORE UPDATE OF diem_tri_thuc ON tien_do_choi BEGIN SELECT RAISE(ABORT,'forced'); END")
+    c.commit()
+    with pytest.raises(repo.RepositoryError):repo.submit_answer(uid,qid,answer,30,session)
+    assert c.execute('SELECT response_json FROM question_sessions WHERE session_id=?',(session,)).fetchone()['response_json'] is None
+    assert not c.execute('SELECT * FROM answer_log WHERE ma_nguoi_dung=?',(uid,)).fetchall()
+    c.close()

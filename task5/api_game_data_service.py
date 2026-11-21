@@ -44,7 +44,8 @@ class ApiGameDataService:
                 if generation == self._session_generation:
                     self._question_sessions[qid] = result['session_id']
             finally:
-                self._question_starts.pop(qid, None)
+                if generation == self._session_generation:
+                    self._question_starts.pop(qid, None)
         self._question_starts[qid] = self._schedule(start())
 
     async def request_async(self, method, path, payload=None, authenticated=True):
@@ -89,7 +90,8 @@ class ApiGameDataService:
         if generation != self._session_generation:
             raise ApiClientError("Phiên đăng nhập đã thay đổi.")
         self._progress["score"] = int(result["total_score"])
-        self._question_sessions.pop(qid, None)
+        if not result.get('correct'):
+            self._question_sessions.pop(qid, None)
         return result
 
     async def reconcile_progress(self, generation=None):
@@ -311,7 +313,8 @@ class ApiGameDataService:
         if str(question_id) in self._question_sessions:
             payload['session_id'] = self._question_sessions[str(question_id)]
         result = self.client.post("/quiz/submit", payload)
-        self._question_sessions.pop(str(question_id), None)
+        if not result.get('correct'):
+            self._question_sessions.pop(str(question_id), None)
         return result
 
     def complete_quest(self, location_id, location_name, max_year):

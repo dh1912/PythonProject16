@@ -65,6 +65,9 @@ def main() -> int:
                                     'password_matches': body.get('password') == password,
                                     'username_lowercase_matches': body.get('username') == username.lower(),
                                     'password_lowercase_matches': body.get('password') == password.lower()}
+                            if urlsplit(request.url).path == '/quiz/submit':
+                                diagnostic.setdefault('session_submissions', []).append(
+                                    bool(request.post_data_json.get('session_id')))
                         def request_failed(request):
                             network('failed', request)
                             diagnostic['requestfailed'].append({'path': urlsplit(request.url).path,
@@ -169,6 +172,7 @@ def main() -> int:
                         page.keyboard.press('d')
                         page.wait_for_timeout(800)
                         questions = content['questions'][loc['name']]
+                        page.wait_for_timeout(500)
                         q = questions[0]
                         with page.expect_response(lambda r: r.url.endswith('/quiz/submit') and r.ok):
                             page.keyboard.press(str((q['answer'] + 1) % 4 + 1))
@@ -208,6 +212,8 @@ def main() -> int:
                         page.wait_for_timeout(1000)
                         page.screenshot(path=str(root / 'data/sqlite-ui-next.png'))
                         assert not errors, errors
+                        assert '/quiz/start' in [item['path'] for item in diagnostic['network']]
+                        assert diagnostic.get('session_submissions', [False])[0], 'Quiz đầu phải dùng phiên server'
                         result = {'ui_login': True, 'qQ_credentials_tab_backspace_enter': True, 'notebook_read_only': True,
                                   'ui_investigation': True, 'ui_quiz_wrong_correct': True,
                                   'ui_review': True, 'ui_quest_confirmed': True,
