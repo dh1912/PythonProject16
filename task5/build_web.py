@@ -6,6 +6,28 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import ast
+
+
+def redact_browser_answers(source: str) -> str:
+    """Bỏ đáp án fallback và tuple timeline khỏi bản WASM, không sửa source desktop/server."""
+    class Redact(ast.NodeTransformer):
+        def visit_Dict(self, node):
+            self.generic_visit(node)
+            kept = [(k, v) for k, v in zip(node.keys, node.values)
+                    if not isinstance(k, ast.Constant) or k.value not in {'answer', 'correct_index', 'explanation'}]
+            node.keys, node.values = [k for k, _ in kept], [v for _, v in kept]
+            return node
+
+        def visit_Call(self, node):
+            self.generic_visit(node)
+            if isinstance(node.func, ast.Name) and node.func.id == '_questions' and len(node.args) == 2:
+                for row in getattr(node.args[1], 'elts', []):
+                    if isinstance(row, ast.Tuple) and len(row.elts) in (5, 6):
+                        row.elts[2] = ast.Constant(None)
+                        row.elts[-2] = ast.Constant('')
+            return node
+    return ast.unparse(ast.fix_missing_locations(Redact().visit(ast.parse(source)))) + '\n'
 
 
 def stage_project(root: Path, destination: Path) -> Path:
@@ -25,6 +47,8 @@ def stage_project(root: Path, destination: Path) -> Path:
     marker.write_text("Task 5 staging sinh tự động", encoding="utf-8")
     for folder in ("scenes", "services", "task3", "task4", "task5"):
         for source in (root / folder).glob("*.py"):
+            if folder == 'task5' and source.name.startswith(('check_', 'ci_', 'build_', 'patch_')):
+                continue
             target = destination / folder / source.name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
@@ -32,6 +56,10 @@ def stage_project(root: Path, destination: Path) -> Path:
         shutil.copy2(root / filename, destination / filename)
     shutil.copy2(root / "main.py", destination / "game_desktop.py")
     shutil.copy2(root / "main_web.py", destination / "main.py")
+    for relative in ('services/game_data_service.py', 'scenes/deduction_scene.py', 'task4/timeline_data.py'):
+        source = destination / relative
+        if source.is_file():
+            source.write_text(redact_browser_answers(source.read_text(encoding='utf-8')), encoding='utf-8')
     font = root / "assets" / "fonts" / "NotoSans.ttf"
     if not font.is_file():
         raise FileNotFoundError("Thiếu font; cần font tiếng Việt được phép phân phối.")

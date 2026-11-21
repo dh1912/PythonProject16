@@ -483,13 +483,22 @@ class Game:
             return
         # Không để đáp án cache khác DB quyết định kết quả sau khi server đã chấm.
         question = self.deduction_scene.questions[self.deduction_scene.question_index]
-        previous = question["answer"]
+        previous = question.get("answer")
+        previous_explanation = question.get("explanation")
         question["answer"] = choice
+        question["explanation"] = response.get("explanation", "")
         try:
             self._deduction_answer_scored = True
             self.handle_deduction_result(self.deduction_scene.choose(choice))
         finally:
-            question["answer"] = previous
+            if previous is None:
+                question.pop("answer", None)
+            else:
+                question["answer"] = previous
+            if previous_explanation is None:
+                question.pop("explanation", None)
+            else:
+                question["explanation"] = previous_explanation
             self._deduction_answer_scored = False
 
     def _request_quest_confirmation(self, location):
@@ -654,7 +663,9 @@ class Game:
         self._browser_quiz_result = None
         timer_key = ("task4", self.task4_quiz_index)
         elapsed = max(0.25, time.monotonic() - getattr(self, "_answer_started_at", time.monotonic()))
-        result = self.task4_questions.answer(self.task4_quiz_index, option_index)
+        # Online không chấm bằng đáp án trong WASM; kết quả chỉ từ response server.
+        result = ({"correct": False, "explanation": "", "source": ""}
+                  if self.task5_server_enabled else self.task4_questions.answer(self.task4_quiz_index, option_index))
         location = getattr(self, "current_timeline_location", None) or self.deduction_scene.location or self.investigation_scene.location
         if not location:
             location = next((loc for loc in self.game_data["locations"] if loc["name"] == "Pac Bo"), {"id": 4, "name": "Pac Bo", "end": 1945})
@@ -672,7 +683,8 @@ class Game:
                 self.last_score_delta = int(remote.get("points_awarded", 0))
                 self._sync_score_views()
             except Exception as exc:
-                self.notify(f"API quiz chưa sẵn sàng; kết quả chạy local: {exc}")
+                self.notify(f"Chưa xác nhận đáp án; hãy thử lại: {exc}")
+                return
 
         already_done = location["name"] in self.completed
         if not self.task5_server_enabled and not already_done and result["correct"]:

@@ -24,6 +24,16 @@ app.add_middleware(CORSMiddleware, allow_origins=TASK5_ALLOWED_ORIGINS, allow_cr
                    allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type"])
 
 
+def public_questions(value):
+    """Lọc đệ quy chỉ tại biên HTTP; repository vẫn giữ đáp án để tự chấm."""
+    hidden = {'answer', 'dap_an_dung', 'correct_index', 'explanation', 'giai_thich_chi_tiet'}
+    if isinstance(value, dict):
+        return {key: public_questions(item) for key, item in value.items() if key not in hidden}
+    if isinstance(value, list):
+        return [public_questions(item) for item in value]
+    return value
+
+
 @app.middleware("http")
 async def disable_web_build_cache(request: Request, call_next):
     response = await call_next(request)
@@ -132,13 +142,13 @@ def game_questions():
     questions, question_message = db_queries.fetch_raw_cau_hoi()
     if events is None or questions is None:
         raise HTTPException(503, "Chưa tải được bộ câu hỏi từ CSDL.")
-    return {"questions": transform_deduction_questions(events, questions)}
+    return public_questions({"questions": transform_deduction_questions(events, questions)})
 
 
 @app.get('/game/content')
 def game_content():
     try:
-        return repository.load_game_content()
+        return public_questions(repository.load_game_content())
     except Exception as exc:
         raise HTTPException(503, 'Nội dung SQLite chưa sẵn sàng.') from exc
 
@@ -158,7 +168,7 @@ def game_catalog(resource: str):
         rows, message = execute_select_query('SELECT * FROM ' + tables[resource])
     if rows is None:
         raise HTTPException(503, 'Không đọc được danh mục SQLite.')
-    return {'items': rows}
+    return public_questions({'items': rows})
 
 
 @app.get('/notebook/clues')

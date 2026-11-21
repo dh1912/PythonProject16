@@ -76,12 +76,22 @@ def main() -> int:
                         page.on('console', lambda msg: diagnostic['console_errors'].append(msg.text)
                                 if msg.type == 'error' and 'Bearer ' not in msg.text else None)
                         username = 'ui_qQ_' + secrets.token_hex(5)
-                        password = 'ui-qQ-test-password-' + secrets.token_hex(5)
+                        password = ' ui-qQ-test-password-' + secrets.token_hex(5) + ' '
                         registration = page.request.post(url + '/auth/register', data={
                             'username': username, 'password': password, 'fullname': 'UI Acceptance'})
                         assert registration.status == 201
                         headers = {'Authorization': 'Bearer ' + registration.json()['access_token']}
                         content = page.request.get(url + '/game/content').json()
+                        # Đáp án fixture đọc từ nguồn repository, không lấy từ API công khai.
+                        from data.content_v6 import extract_official_sources
+                        official = extract_official_sources(root)['cau_hoi_on_tap']
+                        answers = {q['noi_dung_cau_hoi']: ord(q['dap_an_dung'])-65 for q in official}
+                        legacy = json.loads((root / 'data/historical_seed.json').read_text(encoding='utf-8'))
+                        answers.update({q['noi_dung_cau_hoi']: ord(q['dap_an_dung'])-65 for q in legacy['cau_hoi_on_tap']})
+                        for items in content['questions'].values():
+                            for q in items:
+                                assert 'answer' not in q and 'explanation' not in q
+                                q['answer'] = answers[q['question']]
                         loc = next(item for item in content['locations'] if item['id'] == 1)
                         page.goto(url + '/web/?acceptance=1', wait_until='domcontentloaded')
                         page.wait_for_function('window.task5GameReady === true', timeout=120000)

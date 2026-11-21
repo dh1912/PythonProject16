@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import pytest
 from task5.build_web import stage_project
+from task5.build_web import redact_browser_answers
 from task5.patch_pygbag_build import patch_build
 
 
@@ -35,3 +36,9 @@ def test_browserfs_patch_is_idempotent():
         assert patch_build(Path(folder))
         assert not patch_build(Path(folder))
         assert index.read_text(encoding="utf-8") == "<canvas></canvas>"
+
+
+def test_web_redaction_removes_embedded_answers():
+    text = redact_browser_answers("QUESTIONS=[{'question':'Q','answer':2,'explanation':'secret'}]\nCONFIG=_questions('p',[('Q',['a','b'],1,'secret','Source')])")
+    assert "'answer':" not in text and 'secret' not in text
+    assert 'None' in text and 'Source' in text

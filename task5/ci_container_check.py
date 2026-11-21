@@ -19,7 +19,9 @@ def main():
         registered=api('/auth/register',{**state,'fullname':'CI Test'})
         token=registered['access_token'];content=api('/game/content')
         loc=next(x for x in content['locations'] if x['id']==1)
-        for q in content['questions'][loc['name']]:api('/quiz/submit',{'ma_cau_hoi':q['id'],'dap_an_chon':q['answer'],'so_giay':30},token)
+        seed=json.loads((Path(__file__).resolve().parents[1]/'data/historical_seed.json').read_text(encoding='utf-8'))
+        answers={str(q['ma_cau_hoi']):ord(q['dap_an_dung'])-65 for q in seed['cau_hoi_on_tap']}
+        for q in content['questions'][loc['name']]:api('/quiz/submit',{'ma_cau_hoi':q['id'],'dap_an_chon':answers[q['id']],'so_giay':30},token)
         api('/progress/save',{'current_loc_id':1,'max_year':1914,'completed':[],'task4':{'1':{'clue_ids':[c['id'] for c in content['investigation_data'][loc['name']]['clues']]}}},token)
         api('/quest/complete',{'ma_dia_diem':1,'ten_dia_diem':loc['name'],'nam_mo_khoa':1914},token)
         state['expected']=api('/progress/me',token=token)['data']

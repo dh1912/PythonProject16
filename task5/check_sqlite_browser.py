@@ -25,6 +25,11 @@ def main() -> int:
         os.environ['SQLITE_DB_PATH']=env['SQLITE_DB_PATH']
         from data.sqlite_store import initialize
         initialize(Path(env['SQLITE_DB_PATH']))
+        from data.sqlite_store import connect
+        conn = connect()
+        fixtures = {str(q['ma_cau_hoi']): ord(q['dap_an_dung'])-65
+                    for q in conn.execute('SELECT * FROM cau_hoi_on_tap')}
+        conn.close()
         from task4.timeline_data import TIMELINE_QUEST_CONFIGS
         timeline_payload={key:{'questions':[{'id':q['id'],'answer':q['answer']} for q in value['questions']]}
                           for key,value in TIMELINE_QUEST_CONFIGS.items()}
@@ -44,6 +49,7 @@ def main() -> int:
                         page=browser.new_page(viewport={'width':1280,'height':900});errors=[]
                         page.on('pageerror',lambda exc:errors.append(str(exc)))
                         page.add_init_script('window.acceptanceTimeline='+json.dumps(timeline_payload,ensure_ascii=False)+';')
+                        page.add_init_script('window.acceptanceAnswers='+json.dumps(fixtures)+';')
                         page.goto(url+'/web/',wait_until='domcontentloaded')
                         page.wait_for_function('window.task5GameReady === true',timeout=90000)
                         result=page.evaluate('''async () => {
@@ -55,6 +61,10 @@ def main() -> int:
                           const user=await api('/auth/register',{...credentials,fullname:'Browser Student'});
                           let token=user.access_token;
                           const content=await api('/game/content',null,token);
+                          for(const items of Object.values(content.questions))for(const q of items){
+                            if('answer' in q)throw Error('Public answer leak');
+                            q.answer=window.acceptanceAnswers[q.id];
+                          }
                           const location=content.locations.find(x=>x.id===1);
                           const qs=content.questions[location.name];
                           const wrong=(qs[0].answer+1)%4;
