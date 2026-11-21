@@ -73,7 +73,8 @@ def test_http_exact_password_forged_score_and_streak(tmp_path, monkeypatch):
     monkeypatch.setenv('SQLITE_DB_PATH', str(tmp_path/'http.db'))
     import task5.server.auth as auth
     monkeypatch.setattr(auth,'TASK5_JWT_SECRET','isolated-security-secret-at-least-32-characters')
-    with TestClient(app) as client:
+    # IP riêng cho ca này: không tiêu hao quota của các test khác, vẫn bật limiter thật.
+    with TestClient(app, client=('security-test', 50001)) as client:
         credentials={'username':'security','password':' Qq tiếng Việt '}
         registered=client.post('/auth/register',json={**credentials,'fullname':'Test'})
         assert registered.status_code == 201
