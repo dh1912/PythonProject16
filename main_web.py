@@ -35,9 +35,15 @@ async def main():
             try:
                 response = await game.data_service.request_async("GET", "/game/questions", authenticated=False)
                 questions = response["questions"]
+                data = {"questions": questions, "locations": response["locations"],
+                        "investigation_data": response["investigation_data"],
+                        "is_connected": True, "status_message": "Dữ liệu từ API"}
                 game.data_service.questions = questions
-                game.game_data["questions"] = questions
-                game.deduction_scene.questions_bank = questions
+                game.data_service.locations = data["locations"]
+                game.data_service.investigation_data = data["investigation_data"]
+                game._apply_loaded_game_data(data)
+                if game.current_user:
+                    game.apply_user_session(game.current_user, game.data_service._progress)
             except Exception as exc:
                 game.notify(f"Chưa tải được câu hỏi server: {exc}")
         asyncio.create_task(load_questions())
