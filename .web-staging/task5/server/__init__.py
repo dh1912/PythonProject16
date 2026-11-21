@@ -1,1 +1,0 @@
-"""API và lưu trữ phía máy chủ của Task 5."""

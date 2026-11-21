@@ -339,14 +339,14 @@ class InvestigationScene:
         return all(c["id"] in self.collected_clues for c in data["clues"])
 
     def collect(self, index):
-        """Open a clue's evidence challenge; do not award the clue yet."""
+        """Thu thập trực tiếp manh mối chính của sự kiện mà không cần qua câu hỏi chọn bằng chứng nhiễu."""
         if not self.location:
             return
 
         data = self.investigation_data.get(self.location["name"])
 
         if not data:
-            self.message = "Chua co du lieu dieu tra cho dia diem nay."
+            self.message = "Chưa có dữ liệu điều tra cho địa điểm này."
             return
 
         if not 0 <= index < len(data["clues"]):
@@ -354,15 +354,13 @@ class InvestigationScene:
 
         clue = data["clues"][index]
 
-        if self.active_evidence_index is not None:
-            self.message = "Hãy hoàn tất phần chọn bằng chứng trước."
-            return
-
         if clue["id"] in self.collected_clues:
-            self.message = "Bạn đã thu thập manh mối này rồi."
+            self.message = f"Bạn đã thu thập manh mối này rồi: {clue['name']}"
         else:
-            self.active_evidence_index = index
-            self.message = "Hãy chọn tư liệu liên quan đến sự kiện để nhận manh mối."
+            self.collected_clues.add(clue["id"])
+            self.message = f"Đã thu thập manh mối chính: {clue['name']}"
+            if self.is_complete():
+                self.message += ". Đã đủ manh mối - nhấn D để suy luận!"
 
     def choose_evidence(self, option_index):
         if self.active_evidence_index is None or not self.location:
