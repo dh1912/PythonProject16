@@ -1,0 +1,82 @@
+{
+  "matrix": [
+    {
+      "operation": "/quiz/start",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/review/retry",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/quiz/submit",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/clues/collect",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/clues/collect",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/quest/complete",
+      "case": "C commit rồi mất response",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "A offline",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "B abort trước server",
+      "result": "PASS"
+    },
+    {
+      "operation": "/quiz/submit",
+      "case": "D invalid session 400",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "E anonymous 401",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "F SQLite writer busy 503",
+      "result": "PASS"
+    },
+    {
+      "operation": "/progress/save",
+      "case": "G timeout sau commit",
+      "result": "PASS"
+    },
+    {
+      "operation": "auth/progress",
+      "case": "refresh rồi login restore",
+      "result": "PASS"
+    }
+  ],
+  "page_errors": [],
+  "scope": "Browser fetch thật; không chứng minh HUD/game scene fault matrix",
+  "not_tested": [
+    "toàn bộ tổ hợp endpoint x lỗi",
+    "logout pending/account switch UI",
+    "timeline canvas",
+    "HUD resize fault"
+  ]
+}

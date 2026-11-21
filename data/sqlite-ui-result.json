@@ -8,6 +8,12 @@
   "ui_quest_confirmed": true,
   "ui_leaderboard": true,
   "next_location_input_sent": true,
+  "timeline_canvas": [
+    "Pac Bo",
+    "Ba Dinh",
+    "Dien Bien Phu",
+    "Dinh Doc Lap"
+  ],
   "page_errors": [],
   "http_mock": false,
   "scope": "Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật."
