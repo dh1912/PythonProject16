@@ -79,12 +79,18 @@ def main() -> int:
                         # Chỉ tạo fixture bằng HTTP; toàn bộ hành động chơi dưới đây qua UI.
                         click(500, 280)
                         page.keyboard.type(username, delay=40)
-                        page.keyboard.press('Tab')
+                        if sys.platform == 'win32':
+                            page.keyboard.press('Tab')
+                        else:
+                            click(500, 355)
                         page.keyboard.type(password, delay=40)
                         page.keyboard.type('x')
                         page.keyboard.press('Backspace')
                         with page.expect_response(lambda r: r.url.endswith('/review/me') and r.ok):
-                            page.keyboard.press('Enter')
+                            if sys.platform == 'win32':
+                                page.keyboard.press('Enter')
+                            else:
+                                click(500, 432)
                         page.wait_for_timeout(1500)
                         before = progress()
                         page.keyboard.press('n')
