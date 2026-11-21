@@ -1,0 +1,107 @@
+{
+  "network": [
+    {
+      "event": "request",
+      "path": "/web/",
+      "method": "GET",
+      "status": null,
+      "seconds": 0.375
+    },
+    {
+      "event": "response",
+      "path": "/web/",
+      "method": "GET",
+      "status": 200,
+      "seconds": 0.453
+    },
+    {
+      "event": "request",
+      "path": "/web/favicon.png",
+      "method": "GET",
+      "status": null,
+      "seconds": 0.75
+    },
+    {
+      "event": "response",
+      "path": "/web/favicon.png",
+      "method": "GET",
+      "status": 200,
+      "seconds": 0.75
+    },
+    {
+      "event": "request",
+      "path": "/web/web-source.tar.gz",
+      "method": "GET",
+      "status": null,
+      "seconds": 5.578
+    },
+    {
+      "event": "response",
+      "path": "/web/web-source.tar.gz",
+      "method": "GET",
+      "status": 200,
+      "seconds": 5.578
+    },
+    {
+      "event": "request",
+      "path": "/game/content",
+      "method": "GET",
+      "status": null,
+      "seconds": 6.828
+    },
+    {
+      "event": "response",
+      "path": "/game/content",
+      "method": "GET",
+      "status": 200,
+      "seconds": 6.828
+    },
+    {
+      "event": "request",
+      "path": "/auth/login",
+      "method": "POST",
+      "status": null,
+      "seconds": 15.218
+    },
+    {
+      "event": "response",
+      "path": "/auth/login",
+      "method": "POST",
+      "status": 401,
+      "seconds": 15.234
+    }
+  ],
+  "clicks": [
+    {
+      "logical": [
+        500,
+        280
+      ],
+      "canvas": [
+        640,
+        640
+      ],
+      "box": {
+        "x": 190,
+        "y": 0,
+        "width": 900,
+        "height": 900
+      },
+      "active_element": "BODY"
+    }
+  ],
+  "errors": [],
+  "console_errors": [
+    "PyMain: BrowserFS not found",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "requestfailed": [],
+  "credentials_received": {
+    "username_matches": false,
+    "password_matches": false,
+    "username_lowercase_matches": true,
+    "password_lowercase_matches": true
+  },
+  "ui_state": "{\"scene\": \"login\", \"username_length\": 16, \"password_length\": 30, \"username_focus\": false, \"password_focus\": true, \"loading\": true}",
+  "focus": "CANVAS"
+}

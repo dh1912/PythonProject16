@@ -1,5 +1,6 @@
 {
   "ui_login": true,
+  "qQ_credentials_tab_backspace_enter": true,
   "notebook_read_only": true,
   "ui_investigation": true,
   "ui_quiz_wrong_correct": true,
