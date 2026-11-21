@@ -334,7 +334,7 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float, s
                 response['total_score'] = int(progress.get('diem_tri_thuc') or 0)
                 response['points_awarded'] = 0
                 response['duplicate'] = True
-                rank = ScoringEngine.calculate_rank(response['total_score'])
+                rank = ScoringEngine().calculate_rank(response['total_score'])
                 response['rank'] = rank
                 response['rank_title'] = ScoringEngine.TITLES[rank]
                 conn.commit()
