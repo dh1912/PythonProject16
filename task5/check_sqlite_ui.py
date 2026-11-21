@@ -161,4 +161,12 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except Exception:
+        if os.getenv('GITHUB_ACTIONS') == 'true':
+            # Chỉ traceback, không local variables/token/password; annotation đọc được ở trang run.
+            import traceback
+            diagnostic = traceback.format_exc().replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print('::error title=SQLite UI diagnostic::' + diagnostic, flush=True)
+        raise

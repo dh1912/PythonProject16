@@ -25,11 +25,22 @@ jobs:
       - run: python -m task5.build_web
       - name: Chromium UI with real SQLite
         run: |
+          set -o pipefail
           python -m pip install playwright
           python -m playwright install --with-deps chromium
-          python -m task5.check_sqlite_ui
-      - run: docker build -t history-sqlite-test .
+          python -m task5.check_sqlite_ui 2>&1 | tee "$RUNNER_TEMP/ui-diagnostic.txt"
+      - name: UI diagnostic (no credentials)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-diagnostic
+          path: ${{ runner.temp }}/ui-diagnostic.txt
+          retention-days: 3
+      - name: Docker build
+        if: ${{ !cancelled() }}
+        run: docker build -t history-sqlite-test .
       - name: Container SQLite persistence
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
