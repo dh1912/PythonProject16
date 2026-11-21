@@ -1,5 +1,6 @@
 import pygame
 import asyncio
+import sys
 from services.game_data_service import game_data_service
 
 # Màu sắc giao diện (Đồng bộ với chủ đề trò chơi lịch sử)
@@ -31,6 +32,12 @@ class InputBox:
             self.active = self.rect.collidepoint(event.pos)
             return False
 
+        if event.type == pygame.TEXTINPUT and self.active and sys.platform == 'emscripten':
+            # SDL web KEYDOWN.unicode có thể là phím vật lý viết thường.
+            # TEXTINPUT mới là văn bản chuẩn đã áp dụng Shift/Caps Lock/IME.
+            self.text += ''.join(char for char in event.text if char.isprintable())[:max(0, 35-len(self.text))]
+            return False
+
         if event.type == pygame.KEYDOWN and self.active:
             if event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
@@ -38,7 +45,7 @@ class InputBox:
                 return False
             else:
                 # Chỉ nhận các ký tự hợp lệ
-                if event.unicode and len(self.text) < 35:
+                if sys.platform != 'emscripten' and event.unicode and len(self.text) < 35:
                     # Cho phép chữ, số, dấu gạch dưới, khoảng trắng
                     if event.unicode.isprintable():
                         self.text += event.unicode
@@ -221,6 +228,13 @@ class LoginScene:
 
     def handle_event(self, event):
         mouse_pos = getattr(event, "pos", pygame.mouse.get_pos())
+
+        if event.type == pygame.TEXTINPUT:
+            inputs = ((self.input_login_user, self.input_login_pass) if self.mode == 'login'
+                      else (self.input_reg_user, self.input_reg_pass, self.input_reg_name))
+            for box in inputs:
+                box.handle_event(event)
+            return None
 
         # Xử lý Click chuột
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

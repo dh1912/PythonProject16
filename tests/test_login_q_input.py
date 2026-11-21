@@ -60,3 +60,16 @@ def test_q_without_form_focus_still_quits():
     scene = LoginScene()
     scene.input_login_user.active = scene.input_login_pass.active = False
     assert scene.handle_event(key(pygame.K_q, 'Q')) == {'action': 'quit'}
+
+
+def test_web_textinput_preserves_case_without_duplicate_keydown(monkeypatch):
+    import scenes.login_scene as module
+    monkeypatch.setattr(module.sys, 'platform', 'emscripten')
+    pygame.init()
+    scene = LoginScene()
+    scene.handle_event(key(pygame.K_q, 'q'))
+    assert scene.input_login_user.text == ''
+    scene.handle_event(pygame.event.Event(pygame.TEXTINPUT, text='qQĐ'))
+    assert scene.input_login_user.text == 'qQĐ'
+    scene.handle_event(key(pygame.K_BACKSPACE))
+    assert scene.input_login_user.text == 'qQ'

@@ -109,7 +109,11 @@ def main() -> int:
                             """SDL Linux đọc modifier KEYDOWN: gửi Shift thật thay vì chỉ JS key='Q'."""
                             for char in text:
                                 if char.isascii() and char.isalpha() and char.isupper():
-                                    page.keyboard.press('Shift+' + char.lower())
+                                    page.keyboard.down('Shift')
+                                    page.wait_for_timeout(100)
+                                    page.keyboard.press(char, delay=100)
+                                    page.wait_for_timeout(100)
+                                    page.keyboard.up('Shift')
                                 else:
                                     page.keyboard.type(char, delay=40)
                                 page.wait_for_timeout(40)
