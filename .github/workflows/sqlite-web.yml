@@ -34,7 +34,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ui-diagnostic
-          path: ${{ runner.temp }}/ui-diagnostic.txt
+          path: |
+            ${{ runner.temp }}/ui-diagnostic.txt
+            data/sqlite-ui-diagnostic.json
+            data/sqlite-ui-timeout.png
+            data/sqlite-ui-server.log
           retention-days: 3
       - name: Docker build
         if: ${{ !cancelled() }}

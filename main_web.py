@@ -43,6 +43,21 @@ async def main():
             except Exception as exc:
                 game.notify(f"Chưa tải được câu hỏi server: {exc}")
         asyncio.create_task(load_questions())
+        if str(platform.window.location.search) == '?acceptance=1':
+            async def publish_input_diagnostic():
+                """Chỉ bật khi nghiệm thu: số ký tự/focus/loading, không lộ nội dung hoặc token."""
+                while game.running:
+                    login = game.login_scene
+                    platform.window.task5UiState = json.dumps({
+                        'scene': game.scene,
+                        'username_length': len(login.input_login_user.text),
+                        'password_length': len(login.input_login_pass.text),
+                        'username_focus': login.input_login_user.active,
+                        'password_focus': login.input_login_pass.active,
+                        'loading': login.auth_task is not None,
+                    })
+                    await asyncio.sleep(.1)
+            asyncio.create_task(publish_input_diagnostic())
     if sys.platform == "emscripten":
         # Đánh dấu sau frame game thật, không dùng canvas loader làm bằng chứng.
         game.step()

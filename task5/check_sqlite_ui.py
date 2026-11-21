@@ -11,6 +11,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+from urllib.parse import urlsplit
 
 
 def main() -> int:
@@ -44,10 +45,34 @@ def main() -> int:
                     try:
                         page = browser.new_page(viewport={'width': 1280, 'height': 900})
                         errors: list[str] = []
-                        paths: list[str] = []
+                        diagnostic: dict = {'network': [], 'clicks': [], 'errors': errors,
+                                            'console_errors': [], 'requestfailed': []}
+                        started = time.monotonic()
+                        def network(event: str, request, status=None):
+                            path = urlsplit(request.url).path
+                            if not request.url.startswith(url):
+                                return
+                            diagnostic['network'].append({'event': event, 'path': path,
+                                'method': request.method, 'status': status,
+                                'seconds': round(time.monotonic() - started, 3)})
+                        def request_started(request):
+                            network('request', request)
+                            if urlsplit(request.url).path == '/auth/login':
+                                # Chỉ lưu kết quả so khớp, không lưu body, mật khẩu hoặc hash.
+                                body = request.post_data_json
+                                diagnostic['credentials_received'] = {
+                                    'username_matches': body.get('username') == username,
+                                    'password_matches': body.get('password') == password}
+                        def request_failed(request):
+                            network('failed', request)
+                            diagnostic['requestfailed'].append({'path': urlsplit(request.url).path,
+                                                                 'failure': request.failure})
+                        page.on('request', request_started)
+                        page.on('requestfailed', request_failed)
                         page.on('pageerror', lambda exc: errors.append(str(exc)))
-                        page.on('response', lambda response: paths.append(response.url.split(url)[-1])
-                                if response.ok and response.url.startswith(url) else None)
+                        page.on('response', lambda response: network('response', response.request, response.status))
+                        page.on('console', lambda msg: diagnostic['console_errors'].append(msg.text)
+                                if msg.type == 'error' and 'Bearer ' not in msg.text else None)
                         username = 'ui_qQ_' + secrets.token_hex(5)
                         password = 'ui-qQ-test-password-' + secrets.token_hex(5)
                         registration = page.request.post(url + '/auth/register', data={
@@ -56,7 +81,7 @@ def main() -> int:
                         headers = {'Authorization': 'Bearer ' + registration.json()['access_token']}
                         content = page.request.get(url + '/game/content').json()
                         loc = next(item for item in content['locations'] if item['id'] == 1)
-                        page.goto(url + '/web/', wait_until='domcontentloaded')
+                        page.goto(url + '/web/?acceptance=1', wait_until='domcontentloaded')
                         page.wait_for_function('window.task5GameReady === true', timeout=120000)
                         page.wait_for_timeout(1500)
                         canvas = page.locator('#canvas')
@@ -67,6 +92,8 @@ def main() -> int:
                             assert box
                             w, h = canvas.evaluate('c=>[c.width,c.height]')
                             scale = min(w / 1080, h / 720)
+                            diagnostic['clicks'].append({'logical': [x, y], 'canvas': [w, h],
+                                'box': box, 'active_element': page.evaluate('document.activeElement.tagName')})
                             canvas.click(position={
                                 'x': ((w - 1080 * scale) / 2 + x * scale) * box['width'] / w,
                                 'y': ((h - 720 * scale) / 2 + y * scale) * box['height'] / h})
@@ -86,11 +113,16 @@ def main() -> int:
                         page.keyboard.type(password, delay=40)
                         page.keyboard.type('x')
                         page.keyboard.press('Backspace')
-                        with page.expect_response(lambda r: r.url.endswith('/review/me') and r.ok):
+                        with page.expect_response(lambda r: r.url.endswith('/auth/login')) as auth_response:
                             if sys.platform == 'win32':
                                 page.keyboard.press('Enter')
                             else:
                                 click(500, 432)
+                        assert auth_response.value.status == 200, f'Login HTTP {auth_response.value.status}'
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'", timeout=15000)
+                        review_responses = [entry for entry in diagnostic['network']
+                                            if entry['path'] == '/review/me' and entry['event'] == 'response']
+                        assert review_responses and review_responses[-1]['status'] == 200, 'Review chưa tải thành công'
                         page.wait_for_timeout(1500)
                         before = progress()
                         page.keyboard.press('n')
@@ -159,6 +191,16 @@ def main() -> int:
                             json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
                         print(json.dumps(result, ensure_ascii=True))
                         return 0
+                    except Exception:
+                        diagnostic['ui_state'] = page.evaluate('window.task5UiState || null')
+                        diagnostic['focus'] = page.evaluate('document.activeElement.tagName')
+                        page.screenshot(path=str(root / 'data/sqlite-ui-timeout.png'))
+                        # Chỉ các trường allowlist; không capture headers, body, browser trace.
+                        text = json.dumps(diagnostic, ensure_ascii=True, indent=2)
+                        text = text.replace(password, '[REDACTED]').replace(username, '[REDACTED]')
+                        (root / 'data/sqlite-ui-diagnostic.json').write_text(text, encoding='utf-8')
+                        print('UI_SAFE_DIAGNOSTIC=' + text, flush=True)
+                        raise
                     finally:
                         browser.close()
             finally:
