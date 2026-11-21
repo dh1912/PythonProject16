@@ -3,7 +3,7 @@ permissions:
   contents: read
 on:
   push:
-    branches: [fix/sqlite-web-deploy]
+    branches: [fix/sqlite-web-deploy, improve/task5-release-readiness, 'release/**']
   pull_request:
   workflow_dispatch:
 jobs:

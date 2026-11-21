@@ -18,7 +18,8 @@ def test_browser_actions_and_save_use_async_only():
             {"total_score": 30, "correct": True},
             {"total_score": 45, "is_correct": True, "points_awarded": 15},
             {"leaderboard": [{"display_name": "Test", "score": 45}]},
-            {"success": True}, {"success": True},
+            {"success": True}, {"data": {"score":45}},
+            {"success": True}, {"data": {"score":45}},
         ])
         assert (await service.submit_answer_async("task4:q", 1, 30))["correct"]
         assert (await service.retry_review_async("task4:q", 1))["total_score"] == 45
@@ -75,6 +76,27 @@ def test_background_save_failure_is_reported():
         await asyncio.gather(*tuple(service.pending_operations), return_exceptions=True)
         await asyncio.sleep(0)
         assert service.network_errors == ["network down"]
+        assert service.save_state == 'failed'
+    asyncio.run(scenario())
+
+
+def test_timeout_after_commit_reconciles_without_reposting():
+    async def scenario():
+        service = ApiGameDataService('http://test')
+        service.async_auth_enabled = True
+        service.browser_client = Mock()
+        service.browser_client.request = AsyncMock(side_effect=[
+            RuntimeError('timeout after commit'),
+            {'data': {'score': 45, 'current_loc_id': 2, 'completed': ['A']}}])
+        service.sync_user_progress(1, 2, 1930, 999, {'A'})
+        assert service.save_state == 'queued'
+        assert service._progress['current_loc_id'] == 1
+        await asyncio.gather(*tuple(service.pending_operations), return_exceptions=True)
+        await asyncio.sleep(0)
+        assert service.save_state == 'failed'
+        assert service._progress['score'] == 45
+        assert service._progress['current_loc_id'] == 2
+        assert service.browser_client.request.await_count == 2
     asyncio.run(scenario())
 
 

@@ -23,6 +23,9 @@ class ApiGameDataService:
         self.network_errors = []
         self._session_generation = 0
         self._write_lock = None
+        self.save_state = 'confirmed'
+        self.save_error = None
+        self._save_revision = 0
 
     async def request_async(self, method, path, payload=None, authenticated=True):
         """Transport dùng chung cho mọi hành động browser, không gọi urllib."""
@@ -159,8 +162,7 @@ class ApiGameDataService:
     def sync_user_progress(self, user_id, current_loc_id, max_year, score, completed_set):
         if self.async_auth_enabled:
             payload = {"current_loc_id": int(current_loc_id), "max_year": int(max_year), "completed": list(completed_set)}
-            self._schedule(self.request_async("POST", "/progress/save", payload))
-            self._progress.update(current_loc_id=current_loc_id, max_year=max_year, completed=set(completed_set))
+            self._queue_save(payload)
             return True, "Đã xếp hàng lưu; chưa xác nhận máy chủ."
         try:
             response = self.client.post("/progress/save", {"current_loc_id": current_loc_id, "max_year": max_year, "completed": list(completed_set)})
@@ -176,8 +178,7 @@ class ApiGameDataService:
         task4 = dict(self._progress.get("task4", {})); task4[str(location_id)] = {"clue_ids": sorted(set(clue_ids)), "quiz_attempts": int(quiz_attempts)}
         if self.async_auth_enabled:
             payload = {"current_loc_id": self._progress["current_loc_id"], "max_year": self._progress["max_year"], "completed": list(self._progress["completed"]), "task4": task4}
-            self._schedule(self.request_async("POST", "/progress/save", payload))
-            self._progress["task4"] = task4
+            self._queue_save(payload)
             return True, "Đã xếp hàng lưu nhiệm vụ."
         try:
             result = self.client.post("/progress/save", {"current_loc_id": self._progress["current_loc_id"], "max_year": self._progress["max_year"], "completed": list(self._progress["completed"]), "task4": task4})
@@ -196,8 +197,46 @@ class ApiGameDataService:
         return {"locations": self.locations, "investigation_data": self.investigation_data, "questions": self.questions, "is_connected": False, "status_message": self.status_message}
 
     def get_locations_from_db(self): return self.locations
+
+    def _queue_save(self, payload):
+        """Không sửa cache đã xác nhận bằng trạng thái dự đoán của client."""
+        self._save_revision += 1
+        revision = self._save_revision
+        generation = self._session_generation
+        self.save_state = 'queued'
+        self.save_error = None
+
+        async def persist():
+            if generation != self._session_generation:
+                return
+            self.save_state = 'pending'
+            try:
+                await self.request_async('POST', '/progress/save', payload)
+                result = await self.request_async('GET', '/progress/me')
+                if generation == self._session_generation and revision == self._save_revision:
+                    self._progress = self._decode_progress(result['data'])
+                    self.save_state = 'confirmed'
+            except Exception as exc:
+                if generation != self._session_generation:
+                    return
+                # Timeout có thể xảy ra sau COMMIT: đọc lại thay vì tự cộng/thưởng hoặc gửi lặp.
+                try:
+                    result = await self.request_async('GET', '/progress/me')
+                    if generation == self._session_generation and revision == self._save_revision:
+                        self._progress = self._decode_progress(result['data'])
+                except Exception:
+                    pass
+                if generation == self._session_generation and revision == self._save_revision:
+                    self.save_state = 'failed'
+                    self.save_error = str(exc)
+                raise
+        return self._schedule(persist())
+
     def logout(self):
         self._session_generation += 1
+        self._save_revision += 1
+        self.save_state = 'confirmed'
+        self.save_error = None
         for task in tuple(self.pending_operations):
             task.cancel()
         self.client.token = None
