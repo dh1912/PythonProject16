@@ -76,6 +76,15 @@ def initialize(path: Path | None = None) -> Path:
                 migrate(conn)
                 conn.execute('PRAGMA user_version=6')
                 conn.commit()
+            if version < 7:
+                if existed:
+                    backup_path = path.with_name(path.name+'.backup-v7-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f'))
+                    with sqlite3.connect(str(backup_path)) as backup:
+                        conn.backup(backup)
+                schema = (Path(__file__).parent/'migrations/007_question_sessions.sql').read_text(encoding='utf-8')
+                conn.executescript('BEGIN IMMEDIATE;\n'+schema)
+                conn.execute('PRAGMA user_version=7')
+                conn.commit()
         except Exception:
             conn.rollback()
             raise

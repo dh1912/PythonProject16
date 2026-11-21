@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import time
+import secrets
 from functools import lru_cache
 from typing import Any
 
@@ -283,7 +285,33 @@ def _get_question(cursor, question_id: str):
     return {"id": str(qid), "text": row["noi_dung_cau_hoi"], "options": [row[x] for x in ("dap_an_a","dap_an_b","dap_an_c","dap_an_d")], "answer": ord(ans[0])-65, "explanation": row.get("giai_thich_chi_tiet") or "", "source": row.get("nguon_trich_dan") or "Nguồn chung: chưa có trích dẫn cho sự kiện này", "location": row.get("ten_su_kien") or ""}
 
 
-def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
+def start_question(user_id: int, question_id: str) -> dict:
+    """Tái sử dụng phiên đang mở để không reset đồng hồ qua nhiều lần start."""
+    conn = _connect()
+    try:
+        conn.execute('BEGIN IMMEDIATE')
+        q = _get_question(conn.cursor(), question_id)
+        qid = q['id']
+        now = time.time()
+        row = conn.execute('SELECT session_id,expires_at FROM question_sessions WHERE ma_nguoi_dung=? AND ma_cau_hoi=? AND response_json IS NULL AND expires_at>? ORDER BY started_at LIMIT 1', (user_id,qid,now)).fetchone()
+        if row:
+            conn.commit()
+            return row
+        count = conn.execute('SELECT COUNT(*) AS n FROM question_sessions WHERE ma_nguoi_dung=? AND response_json IS NULL AND expires_at>?',(user_id,now)).fetchone()['n']
+        if count >= 12:
+            raise RepositoryError('Quá nhiều phiên câu hỏi đang mở.')
+        session_id = secrets.token_urlsafe(32)
+        conn.execute('INSERT INTO question_sessions(session_id,ma_nguoi_dung,ma_cau_hoi,started_at,expires_at) VALUES(?,?,?,?,?)', (session_id,user_id,qid,now,now+3600))
+        conn.commit()
+        return {'session_id':session_id,'expires_at':now+3600}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def submit_answer(user_id: int, question_id: str, choice: int, seconds: float, session_id: str | None = None):
     conn = _connect()
     try:
         conn.execute("BEGIN IMMEDIATE")
@@ -294,6 +322,27 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
         q = _get_question(c, question_id)
         # Chuẩn hóa ID từ nguồn server, ngăn nhận thưởng qua ID có số 0 đầu.
         question_id = str(q.get("id", question_id))
+        if session_id is not None:
+            session = c.execute('SELECT * FROM question_sessions WHERE session_id=? AND ma_nguoi_dung=? AND ma_cau_hoi=?', (session_id,user_id,question_id)).fetchone()
+            if not session:
+                raise RepositoryError('Phiên câu hỏi không hợp lệ.')
+            if session['response_json'] is not None:
+                if session['submitted_choice'] != choice:
+                    raise RepositoryError('Phiên đã sử dụng cho đáp án khác.')
+                response = json.loads(session['response_json'])
+                # Replay sau mất response không được đưa tổng điểm cũ đè điểm mới.
+                response['total_score'] = int(progress.get('diem_tri_thuc') or 0)
+                response['points_awarded'] = 0
+                response['duplicate'] = True
+                rank = ScoringEngine.calculate_rank(response['total_score'])
+                response['rank'] = rank
+                response['rank_title'] = ScoringEngine.TITLES[rank]
+                conn.commit()
+                return response
+            now = time.time()
+            if now > session['expires_at'] or now < session['started_at']:
+                raise RepositoryError('Phiên câu hỏi đã hết hạn hoặc đồng hồ server không hợp lệ.')
+            seconds = max(0.25, now-session['started_at'])
         if not 0 <= choice < len(q["options"]): raise RepositoryError("Đáp án chọn không hợp lệ.")
         correct = choice == q["answer"]
         c.execute("SELECT dung_sai FROM answer_log WHERE ma_nguoi_dung=? AND ma_cau_hoi=?", (user_id, question_id))
@@ -308,8 +357,12 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
                 if not correct:
                     state['_task5'] = {'correct_streak': 0}
                     c.execute('UPDATE tien_do_choi SET du_lieu_nhiem_vu=? WHERE ma_nguoi_dung=?', (json.dumps(state,ensure_ascii=False),user_id))
-                rank = engine.calculate_rank(score); conn.commit()
-                return {"correct": correct, "duplicate": True, "points_awarded": 0, "total_score": score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
+                rank = engine.calculate_rank(score)
+                response = {"correct": correct, "duplicate": True, "points_awarded": 0, "total_score": score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
+                if session_id:
+                    c.execute('UPDATE question_sessions SET response_json=?,submitted_choice=? WHERE session_id=?',(json.dumps(response),choice,session_id))
+                conn.commit()
+                return response
             # Đáp án sai trước đó đã bị phạt một lần; đúng lại nhận điểm đúng.
             delta = engine.record_answer(True, seconds)
             c.execute("UPDATE answer_log SET dung_sai=1,diem=?,thoi_gian=? WHERE ma_nguoi_dung=? AND ma_cau_hoi=?", (delta, seconds, user_id, question_id))
@@ -320,9 +373,12 @@ def submit_answer(user_id: int, question_id: str, choice: int, seconds: float):
                 c.execute("INSERT INTO review_items (ma_nguoi_dung,ma_cau_hoi,location_name,question_text,options_json,correct_index,user_choice,explanation,source_title,source_citation) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(ma_nguoi_dung,ma_cau_hoi) DO UPDATE SET user_choice=excluded.user_choice,retry_count=retry_count+1,status='PENDING'", (user_id, question_id, q["location"], q["text"], json.dumps(q["options"], ensure_ascii=False), q["answer"], choice, q["explanation"], q["source"], q["source"]))
         state["_task5"] = {"correct_streak": engine.correct_streak}
         c.execute("UPDATE tien_do_choi SET diem_tri_thuc=?,du_lieu_nhiem_vu=? WHERE ma_nguoi_dung=?", (engine.total_score, json.dumps(state, ensure_ascii=False), user_id))
-        conn.commit()
         rank = engine.calculate_rank(engine.total_score)
-        return {"correct": correct, "duplicate": False, "points_awarded": delta, "total_score": engine.total_score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
+        response = {"correct": correct, "duplicate": False, "points_awarded": delta, "total_score": engine.total_score, "rank": rank, "rank_title": engine.TITLES[rank], "explanation": q["explanation"], "source": q["source"]}
+        if session_id:
+            c.execute('UPDATE question_sessions SET response_json=?,submitted_choice=? WHERE session_id=?',(json.dumps(response),choice,session_id))
+        conn.commit()
+        return response
     except Exception as exc:
         conn.rollback()
         if isinstance(exc, RepositoryError): raise

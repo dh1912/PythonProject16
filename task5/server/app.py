@@ -71,7 +71,8 @@ class Login(BaseModel):
 class Quiz(BaseModel):
     ma_cau_hoi: str = Field(min_length=1, max_length=100)
     dap_an_chon: int = Field(ge=0, le=3)
-    so_giay: float = Field(ge=0.25, le=3600, allow_inf_nan=False)
+    so_giay: float = Field(default=30, ge=0.25, le=3600, allow_inf_nan=False)
+    session_id: str | None = Field(default=None, min_length=20, max_length=100)
 
     @field_validator("so_giay")
     @classmethod
@@ -237,8 +238,22 @@ def login(request: Request, body: Login):
 @app.post("/quiz/submit")
 @limiter.limit("30/minute")
 def quiz_submit(request: Request, body: Quiz, user=Depends(get_current_user)):
-    try: return repository.submit_answer(user["ma_nguoi_dung"], body.ma_cau_hoi, body.dap_an_chon, body.so_giay)
+    # Legacy được chấm không thưởng tốc độ; không tin so_giay client.
+    try: return repository.submit_answer(user["ma_nguoi_dung"], body.ma_cau_hoi, body.dap_an_chon, 30, body.session_id)
     except repository.RepositoryError as exc: raise HTTPException(404 if "Không tìm thấy" in str(exc) else 400, str(exc)) from exc
+
+
+class QuestionStart(BaseModel):
+    ma_cau_hoi: str = Field(min_length=1, max_length=100)
+
+
+@app.post('/quiz/start')
+@limiter.limit('60/minute')
+def quiz_start(request: Request, body: QuestionStart, user=Depends(get_current_user)):
+    try:
+        return repository.start_question(user['ma_nguoi_dung'],body.ma_cau_hoi)
+    except repository.RepositoryError as exc:
+        raise HTTPException(400,str(exc)) from exc
 
 
 @app.get("/progress/me")
