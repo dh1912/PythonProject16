@@ -453,7 +453,7 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
 
         nv = npcs_by_loc.get(loc_id, {})
         ev_id = ev.get("ma_su_kien")
-        clues_list = clues_by_event.get(ev_id, [])
+        clues_list = [clue for event in loc_events for clue in clues_by_event.get(event.get("ma_su_kien"), [])]
 
         investigation_dict[key_name] = {
             "event": ev.get("ten_su_kien", "Sự kiện lịch sử"),
@@ -645,11 +645,11 @@ class GameDataService:
 
     def load_game_data(self):
         """
-        Nạp dữ liệu từ SQLite game.db.
+        Nạp dữ liệu từ MySQL game.db.
         Nếu thành công -> áp dụng thuật toán chuyển đổi và đổ dữ liệu vào.
         Nếu thất bại -> dùng Fallback Cache an toàn và ghi nhận trạng thái.
         """
-        print("\n[GameDataService] Đang tải dữ liệu từ CSDL SQLite (game.db)...")
+        print("\n[GameDataService] Đang tải dữ liệu từ CSDL MySQL (game.db)...")
         raw_dia_diem, status_dd = fetch_raw_dia_diem()
         raw_su_kien, _ = fetch_raw_su_kien()
         raw_nhan_vat, _ = fetch_raw_nhan_vat()
@@ -674,14 +674,14 @@ class GameDataService:
                         self.questions[k] = v
 
                 self.is_connected = True
-                self.status_message = f"CSDL: SQLite Connected ({len(self.locations)} địa điểm)"
+                self.status_message = f"CSDL: MySQL Connected ({len(self.locations)} địa điểm)"
                 print(f"[GameDataService] THÀNH CÔNG: Đã nạp {len(self.locations)} địa điểm, "
-                      f"{len(self.investigation_data)} dữ liệu điều tra, {len(self.questions)} bộ câu hỏi từ SQLite!")
+                      f"{len(self.investigation_data)} dữ liệu điều tra, {len(self.questions)} bộ câu hỏi từ MySQL!")
             except Exception as e:
                 print(f"[GameDataService] Lỗi khi chuyển đổi dữ liệu SQL: {e}")
                 self.use_fallback(f"Lỗi mapping CSDL: {e}")
         else:
-            self.use_fallback(f"Không thể kết nối SQLite ({status_dd})")
+            self.use_fallback(f"Không thể kết nối MySQL ({status_dd})")
 
         return {
             "locations": self.locations,
