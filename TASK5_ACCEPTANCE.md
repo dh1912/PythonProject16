@@ -1,5 +1,32 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## P1 phiên câu hỏi và HUD — cập nhật mới nhất
+- Nền 9aa003c, đầu lượt Git sạch. Không sửa ScoringEngine/ID lịch sử/quest.
+- Migration 007 tạo question_sessions, backup trước upgrade; BEGIN IMMEDIATE khóa chấm,
+  lưu response + điểm + used choice trong một transaction. Token ngẫu nhiên 32 byte,
+  chủ sở hữu/câu hỏi/expiry 1 giờ, tối đa 12 phiên mở; start lặp dùng lại đồng hồ cũ.
+- POST /quiz/start không trả đáp án. POST /quiz/submit có session_id dùng thời gian server,
+  bỏ qua so_giay giả; legacy không session chỉ có điểm cơ bản/chuỗi, không thưởng tốc độ.
+  Replay cùng lựa chọn không thưởng thêm và trả tổng điểm hiện tại; khác lựa chọn bị từ chối.
+- Game chuẩn bị session khi câu xuất hiện, không phải khi bấm nộp. Browser/desktop online
+  có điểm nối; lỗi start có thể dùng legacy an toàn không tốc độ. Review vẫn +15 một lần.
+- HUD có queued/pending/confirmed/failed/reconciling tiếng Việt. Quiz/clue/review/quest lỗi
+  transport đọc progress, không blind retry. Response khác generation không áp dụng cache.
+- 96 pytest PASS, 0 FAIL, 0 SKIP; 7 subtest PASS; compile đạt.
+  SQLite thật test expiry/owner/question/token giả, hai submit đồng thời, server timestamp,
+  restart bằng process mới, mất response sau commit/replay, rollback trigger, backup v7.
+- Build/Edge thật đạt tại 497c0c0; run Linux 44919986180 SUCCESS tất cả Python/Pygbag/
+  Chromium/Docker/persistence. Run mới a351f5e siết assert quiz UI đầu có session_id:
+  https://github.com/dh1912/PythonProject16/actions/runs/44920390975 .
+- Kết quả cuối a351f5e: completed/success. Chromium có start/session_id thật, không mock;
+  pytest/compile/Pygbag/Docker/container persistence đều SUCCESS. Artifact lỗi SKIPPED
+  vì không có lỗi, không phải vô hiệu hóa test.
+- Chưa nghiệm thu đầy đủ: UI timeline timed session; tất cả browser fault 400/401/503,
+  refresh/logout giữa từng write; expiry chưa có auto-renew UI; session cũ chưa có cleanup.
+  Thời gian đo từ start request không chứng minh người chơi đọc câu; người chơi biết trước
+  câu có thể start muộn. Đồng hồ UTC server cần ổn định. Không tuyên bố chống gian lận tuyệt đối.
+  P1 chưa đủ để kết luận staging không giới hạn; chỉ chuẩn bị staging có kiểm soát sau review.
+
 ## Release readiness P0/P1 — 2886252
 - Nền origin/main 142976c, nhánh mới improve/task5-release-readiness. Không merge/deploy.
 - Lỗi xác minh: public API có đáp án; clue state bỏ _task5; form strip password;

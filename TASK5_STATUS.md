@@ -1,5 +1,13 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## P1 mới: phiên giờ server và trạng thái lưu
+Migration 007 + /quiz/start, session bound user/question, 1h expiry, giới hạn 12 mở,
+atomic score/session, replay không thưởng lại. Client timing không còn quyết định tốc độ
+tại HTTP; legacy vẫn chấm nhưng không thưởng tốc độ. ScoringEngine giữ nguyên.
+HUD trạng thái lưu và reconciling; transport ghi lỗi đọc lại progress, không tự thưởng.
+96 test + 7 subtest PASS. Xem đầu TASK5_ACCEPTANCE.md cho run CI và các phạm vi chưa đạt.
+Chưa hoàn tất toàn bộ browser fault matrix/timeline UI/session cleanup; không tự public.
+
 ## Release readiness — nhánh improve/task5-release-readiness
 - Nền origin/main 142976c, working tree sạch trước sửa; không sửa main.
 - P0: HTTP content/questions/catalog không trả answer/dap_an_dung/correct_index hoặc

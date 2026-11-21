@@ -1,5 +1,15 @@
 # Deploy FastAPI + Pygbag + SQLite
 
+## Giao thức timed quiz P1 (migration 007)
+Khi hiển thị câu, POST /quiz/start {ma_cau_hoi}; giữ session_id rồi POST /quiz/submit
+{ma_cau_hoi,session_id,dap_an_chon}. Server tính elapsed từ timestamp SQLite; token có
+hạn 1 giờ và gắn user/question. Start trùng không reset đồng hồ, tối đa 12 phiên mở.
+Không session: tương thích cũ chỉ base/streak, không thưởng tốc độ từ so_giay client.
+Mất response: GET /progress/me để đối soát; replay cùng token/lựa chọn không thưởng lặp.
+Backup trước migration 007 được tạo tự động; giữ một worker/replica và đồng hồ host UTC
+ổn định. Phiên hết hạn cần thử mở lại; chưa có cleanup định kỳ session đã hoàn tất.
+Chưa nghiệm thu browser fault matrix toàn bộ/timeline UI mới; không dùng cho kỳ thi có giá trị.
+
 ## Release-readiness và giới hạn staging
 Nhánh improve/task5-release-readiness lọc đáp án ở HTTP và gói WASM; online chấm server.
 Không dùng build trước bản sửa này để nghiệm thu bảo mật. Save chỉ confirmed sau khi đọc
