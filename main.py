@@ -6,6 +6,7 @@ import threading
 import queue
 import json
 import uuid
+import time
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
@@ -74,6 +75,9 @@ class Game:
         self.window_size = parse_window_size()
         self.fullscreen = False
         self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
+        if sys.platform == "emscripten":
+            # SDL browser có thể ép kích thước khác yêu cầu; scale theo Surface thật.
+            self.window_size = self.display.get_size()
         # Keep a fixed logical canvas so existing scene coordinates/layout remain valid.
         self.screen = pygame.Surface((WIDTH, HEIGHT)).convert()
         pygame.display.set_caption("Game Lịch Sử Việt Nam")
@@ -134,11 +138,11 @@ class Game:
         # Khởi tạo Hệ thống Tính điểm & Ôn tập tư liệu (Task 5)
         self.scoring_engine = ScoringEngine()
         self.guest_session_id = uuid.uuid4().hex
-        self.review_manager = ReviewManager(guest_id=self.guest_session_id)
+        self.review_manager = ReviewManager(guest_id=self.guest_session_id, persistent=not self.task5_server_enabled)
         self.review_scene = ReviewScene(
             review_manager=self.review_manager,
             scoring_engine=self.scoring_engine,
-            retry_submitter=self.data_service.retry_review if self.task5_server_enabled else None,
+            retry_submitter=(self.data_service.retry_review_async if getattr(self.data_service, "async_auth_enabled", False) else self.data_service.retry_review) if self.task5_server_enabled else None,
         )
         self.settings_scene = DisplaySettingsScene(self.window_size, self.fullscreen)
         self.leaderboard_scene = LeaderboardScene(self.data_service)
@@ -184,10 +188,10 @@ class Game:
         self.current_user = user
         self.score = progress.get("score", 0)
         self.scoring_engine = ScoringEngine(self.score)
-        self.review_manager = ReviewManager(user_id=user.get("ma_nguoi_dung", 0))
+        self.review_manager = ReviewManager(user_id=user.get("ma_nguoi_dung", 0), persistent=not self.task5_server_enabled)
         self.review_scene.review_manager = self.review_manager
         self.review_scene.scoring_engine = self.scoring_engine
-        self.review_scene.retry_submitter = self.data_service.retry_review if self.task5_server_enabled else None
+        self.review_scene.retry_submitter = (self.data_service.retry_review_async if getattr(self.data_service, "async_auth_enabled", False) else self.data_service.retry_review) if self.task5_server_enabled else None
         if self.task5_server_enabled and user.get("ma_nguoi_dung", 0) > 0:
             try:
                 remote_items = self.data_service.get_review_items()
@@ -389,6 +393,74 @@ class Game:
         elif result == "back":
             self.scene = self.scene_before_quit
 
+    def handle_deduction_event(self, event):
+        """Điểm nối Task 5: xác minh đáp án trước khi scene tiến sang câu tiếp."""
+        scene = self.deduction_scene
+        choice = None
+        if not scene.finished:
+            if event.type == pygame.KEYDOWN and pygame.K_1 <= event.key <= pygame.K_4:
+                choice = event.key-pygame.K_1
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for index in range(len(scene.questions[scene.question_index]["options"])):
+                    if pygame.Rect(150, 300+index*65, 700, 49).collidepoint(event.pos):
+                        choice = index
+                        break
+        if choice is None:
+            self.handle_deduction_result(scene.handle_event(event))
+            return
+        if getattr(self, "_deduction_task", None) is not None:
+            return
+        question = scene.questions[scene.question_index]
+        scene.last_answer_choice = choice
+        elapsed = max(0.25, time.monotonic()-getattr(self, "_answer_started_at", time.monotonic()))
+        user_id = self.current_user.get("ma_nguoi_dung", 0) if self.current_user else 0
+        if self.task5_server_enabled and user_id > 0:
+            question_id = question.get("id")
+            if question_id is None:
+                self.notify("Câu hỏi cache chưa có mã server; cần tải bộ câu hỏi từ API trước khi chấm.")
+                return
+            if getattr(self.data_service, "async_auth_enabled", False):
+                import asyncio
+                self._deduction_context = (scene.question_index, choice, user_id)
+                self._deduction_task = asyncio.create_task(self.data_service.submit_answer_async(str(question_id), choice, elapsed))
+                return
+            try:
+                response = self.data_service.submit_answer(str(question_id), choice, elapsed)
+            except Exception as exc:
+                self.notify(f"Chưa chấm được đáp án: {exc}")
+                return
+            self.apply_deduction_response(response, choice)
+        else:
+            correct = choice == question["answer"]
+            if correct:
+                self.award_answer(True, elapsed)
+            self._deduction_answer_scored = True
+            self.handle_deduction_result(scene.choose(choice))
+            self._deduction_answer_scored = False
+
+    def apply_deduction_response(self, response, choice):
+        """Chỉ tổng điểm server mới được áp dụng trong phiên API."""
+        self.scoring_engine.total_score = int(response["total_score"])
+        self.last_score_delta = int(response.get("points_awarded", 0))
+        self._sync_score_views()
+        if not response["correct"]:
+            self.deduction_scene.last_answer_correct = False
+            self.deduction_scene.feedback = response.get("explanation", "Chưa chính xác.")
+            if getattr(self.data_service, "async_auth_enabled", False) is True and getattr(self, "_review_refresh_task", None) is None:
+                import asyncio
+                self._review_refresh_task = asyncio.create_task(self.data_service.refresh_reviews_async())
+            return
+        # Không để đáp án cache khác DB quyết định kết quả sau khi server đã chấm.
+        question = self.deduction_scene.questions[self.deduction_scene.question_index]
+        previous = question["answer"]
+        question["answer"] = choice
+        try:
+            self._deduction_answer_scored = True
+            self.handle_deduction_result(self.deduction_scene.choose(choice))
+        finally:
+            question["answer"] = previous
+            self._deduction_answer_scored = False
+
     def handle_deduction_result(self, result):
         if result == "completed":
             location = self.deduction_scene.location
@@ -458,7 +530,8 @@ class Game:
         elif result == "correct_question":
             location = self.deduction_scene.location
             if location and location["name"] not in self.completed:
-                self.award_fixed_points(30)
+                if not getattr(self, "_deduction_answer_scored", False):
+                    self.award_answer(True, 30)
                 self.deduction_scene.score = self.score
                 self.deduction_scene.last_score_delta = 30
                 self.map_scene.score = self.score
@@ -478,12 +551,12 @@ class Game:
                         question_text=curr_q["question"],
                         options=curr_q["options"],
                         correct_index=curr_q["answer"],
-                        user_choice=getattr(self.deduction_scene, "last_answer_choice", -1),
+                        user_choice=self.deduction_scene.last_answer_choice,
                         explanation=curr_q.get("explanation", "Kiểm chứng tư liệu lịch sử."),
-                        source_title="Đại cương Lịch sử Việt Nam (Tập 2)",
-                        source_author="Viện Sử học / Bộ GD&ĐT",
-                        source_publisher="NXB Giáo dục",
-                        source_citation=loc.get("event_time", "Giai đoạn 1914 - 1954")
+                        source_title=curr_q.get("source_title", "Nguồn chung: dữ liệu trò chơi"),
+                        source_author=curr_q.get("source_author", "Chưa có thông tin"),
+                        source_publisher=curr_q.get("source_publisher", "Chưa có thông tin"),
+                        source_citation=curr_q.get("source_citation", "Nguồn chung: chưa có trích dẫn riêng")
                     )
             self.quest_manager.record_quiz_answer(
                 self.deduction_scene.location,
@@ -504,6 +577,20 @@ class Game:
         """Apply one answer and finish/save the integrated timeline quest."""
         if self.scene != "task4_quiz" or self.task4_quiz_index >= 3:
             return
+        browser = self.task5_server_enabled and getattr(self.data_service, "async_auth_enabled", False)
+        remote = getattr(self, "_browser_quiz_result", None)
+        if browser and remote is None and self.current_user and self.current_user.get("ma_nguoi_dung", 0) > 0:
+            if getattr(self, "_browser_quiz_task", None) is None:
+                import asyncio
+                question = self.task4_questions.questions[self.task4_quiz_index]
+                elapsed = max(0.25, time.monotonic()-getattr(self, "_answer_started_at", time.monotonic()))
+                self._browser_quiz_choice = option_index
+                self._browser_quiz_task = asyncio.create_task(self.data_service.submit_answer_async("task4:"+str(question["id"]), option_index, elapsed))
+                self.notify("Đang gửi đáp án…")
+            return
+        self._browser_quiz_result = None
+        timer_key = ("task4", self.task4_quiz_index)
+        elapsed = max(0.25, time.monotonic() - getattr(self, "_answer_started_at", time.monotonic()))
         result = self.task4_questions.answer(self.task4_quiz_index, option_index)
         location = getattr(self, "current_timeline_location", None) or self.deduction_scene.location or self.investigation_scene.location
         if not location:
@@ -514,7 +601,7 @@ class Game:
         user_id = self.current_user.get("ma_nguoi_dung", 0) if self.current_user else 0
         if self.task5_server_enabled and user_id > 0:
             try:
-                remote = self.data_service.submit_answer(f"task4:{task4_question_id}", option_index, 1.0)
+                remote = remote if browser else self.data_service.submit_answer(f"task4:{task4_question_id}", option_index, elapsed)
                 result["correct"] = bool(remote["correct"])
                 result["explanation"] = remote.get("explanation", result.get("explanation", ""))
                 result["source"] = remote.get("source", result.get("source", ""))
@@ -526,7 +613,7 @@ class Game:
 
         already_done = location["name"] in self.completed
         if not self.task5_server_enabled and not already_done and result["correct"]:
-            self.award_answer(True, elapsed_seconds=0.0, base_points=result["points"])
+            self.award_answer(True, elapsed_seconds=elapsed, base_points=30)
         elif not (self.task5_server_enabled and result["correct"]):
             self.last_score_delta = 0
 
@@ -731,9 +818,10 @@ class Game:
                 self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
             return
         if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION):
-            scale = min(self.window_size[0] / WIDTH, self.window_size[1] / HEIGHT)
-            offset_x = (self.window_size[0] - WIDTH * scale) / 2
-            offset_y = (self.window_size[1] - HEIGHT * scale) / 2
+            display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
+            scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
+            offset_x = (display_size[0] - WIDTH * scale) / 2
+            offset_y = (display_size[1] - HEIGHT * scale) / 2
             logical_pos = (
                 max(0, min(WIDTH - 1, int((event.pos[0] - offset_x) / scale))),
                 max(0, min(HEIGHT - 1, int((event.pos[1] - offset_y) / scale))),
@@ -765,18 +853,27 @@ class Game:
 
         if self.scene == "review":
             if self.task5_server_enabled and event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                try:
-                    self.review_manager.questions = {
-                        str(item["id"]): self.review_manager._to_question(str(item["id"]), item)
-                        for item in self.data_service.get_review_items()
-                    }
-                except Exception as exc:
-                    self.notify(f"Không tải được câu ôn tập: {exc}")
+                if getattr(self.data_service, "async_auth_enabled", False):
+                    if getattr(self, "_review_refresh_task", None) is None:
+                        import asyncio
+                        self._review_refresh_task = asyncio.create_task(self.data_service.refresh_reviews_async())
+                else:
+                    try:
+                        self.review_manager.questions = {
+                            str(item["id"]): self.review_manager._to_question(str(item["id"]), item)
+                            for item in self.data_service.get_review_items()
+                        }
+                    except Exception as exc:
+                        self.notify(f"Không tải được câu ôn tập: {exc}")
             result = self.review_scene.handle_event(event)
-            if self.task5_server_enabled:
-                # ReviewScene nhận tổng điểm authoritative từ API retry.
-                self.score = int(self.scoring_engine.total_score)
-                self._sync_score_views()
+            previous_score = self.score
+            self._sync_score_views()
+            if not self.task5_server_enabled and self.current_user and self.current_user.get("ma_nguoi_dung", 0) > 0 and previous_score != self.score:
+                ok, message = self.data_service.sync_user_progress(
+                    self.current_user["ma_nguoi_dung"], self.current_user.get("current_loc_id", 1),
+                    self.current_user.get("max_year", 1914), self.score, self.completed)
+                if not ok:
+                    self.notify(f"Chưa lưu được điểm ôn tập: {message}")
             if result == "map":
                 self.scene = "map"
             return
@@ -826,15 +923,28 @@ class Game:
 
             # Đăng xuất tài khoản
             if key_is(event, "l") and self.scene == "map":
+                deduction = getattr(self, "_deduction_task", None)
+                if deduction is not None:
+                    deduction.cancel()
+                    self._deduction_task = None
+                task = getattr(self, "_browser_quiz_task", None)
+                if task is not None:
+                    task.cancel()
+                    self._browser_quiz_task = None
+                self._browser_quiz_result = None
+                if self.review_scene.pending is not None:
+                    self.review_scene.pending[0].cancel()
+                    self.review_scene.pending = None
                 if self.task5_server_enabled:
                     self.data_service.logout()
                 self.current_user = None
                 self.scoring_engine = ScoringEngine()
                 self.score = 0
                 self.guest_session_id = uuid.uuid4().hex
-                self.review_manager = ReviewManager(guest_id=self.guest_session_id)
+                self.review_manager = ReviewManager(guest_id=self.guest_session_id, persistent=not self.task5_server_enabled)
                 self.review_scene.review_manager = self.review_manager
                 self.review_scene.scoring_engine = self.scoring_engine
+                self.review_scene.retry_submitter = None
                 self._sync_score_views()
                 self.scene = "login"
                 self.login_scene.switch_mode("login")
@@ -863,7 +973,7 @@ class Game:
                 self.investigation_scene.handle_event(event)
                 self.sync_task4_clues()
             elif self.scene == "deduction":
-                self.handle_deduction_result(self.deduction_scene.handle_event(event))
+                self.handle_deduction_event(event)
             return
 
         # Du phong: TEXTINPUT
@@ -892,7 +1002,7 @@ class Game:
                 self.investigation_scene.handle_event(event)
                 self.sync_task4_clues()
             elif self.scene == "deduction":
-                self.handle_deduction_result(self.deduction_scene.handle_event(event))
+                self.handle_deduction_event(event)
             elif self.scene == "task4_timeline":
                 self.task4_scene.handle_event(event)
                 if self.task4_board.verified:
@@ -1040,12 +1150,13 @@ class Game:
             )
 
         # Preserve the scene's aspect ratio; letterbox instead of stretching text.
-        scale = min(self.window_size[0] / WIDTH, self.window_size[1] / HEIGHT)
+        display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
+        scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
         scaled_size = (max(1, round(WIDTH * scale)), max(1, round(HEIGHT * scale)))
         scaled = pygame.transform.smoothscale(self.screen, scaled_size)
         self.display.fill((20, 18, 16))
-        offset = ((self.window_size[0] - scaled_size[0]) // 2,
-                  (self.window_size[1] - scaled_size[1]) // 2)
+        offset = ((display_size[0] - scaled_size[0]) // 2,
+                  (display_size[1] - scaled_size[1]) // 2)
         self.display.blit(scaled, offset)
         pygame.display.flip()
 
@@ -1053,6 +1164,57 @@ class Game:
     # VONG LAP CHINH
     # =================================================================
     def step(self):
+        deduction_task = getattr(self, "_deduction_task", None)
+        if deduction_task is not None and deduction_task.done():
+            self._deduction_task = None
+            index, choice, user_id = self._deduction_context
+            try:
+                response = deduction_task.result()
+                if self.scene == "deduction" and self.current_user and self.current_user.get("ma_nguoi_dung") == user_id and self.deduction_scene.question_index == index:
+                    self.apply_deduction_response(response, choice)
+            except Exception as exc:
+                self.notify(f"Chưa chấm được đáp án, hãy thử lại: {exc}")
+        refresh = getattr(self, "_review_refresh_task", None)
+        if refresh is not None and refresh.done():
+            self._review_refresh_task = None
+            try:
+                items = refresh.result()
+                self.review_manager.questions = {str(item["id"]): self.review_manager._to_question(str(item["id"]), item) for item in items}
+            except Exception as exc:
+                self.notify(f"Không tải được kho ôn tập: {exc}")
+        quiz_task = getattr(self, "_browser_quiz_task", None)
+        if quiz_task is not None and quiz_task.done():
+            self._browser_quiz_task = None
+            try:
+                self._browser_quiz_result = quiz_task.result()
+                if self.scene == "task4_quiz":
+                    self.handle_task4_quiz_answer(self._browser_quiz_choice)
+                else:
+                    self._browser_quiz_result = None
+            except Exception as exc:
+                self.notify(f"Chưa gửi được đáp án, hãy thử lại: {exc}")
+        self.review_scene.poll_pending()
+        self.leaderboard_scene.poll_pending()
+        if self.task5_server_enabled and getattr(self.data_service, "async_auth_enabled", False):
+            if self.data_service.network_errors:
+                self.notify(self.data_service.network_errors.pop(0))
+            if self.current_user and not self.data_service.pending_operations:
+                self.scoring_engine.total_score = self.data_service._progress["score"]
+                self._sync_score_views()
+        if self.scene == "login":
+            authentication = self.login_scene.poll_auth_result()
+            if authentication:
+                self.apply_user_session(authentication["user"], authentication["progress"])
+        # Đồng hồ bắt đầu lại khi chuyển câu, không gán thời gian cố định cho đáp án.
+        if self.scene == "task4_quiz":
+            key = (self.scene, self.task4_quiz_index)
+        elif self.scene == "deduction":
+            key = (self.scene, self.deduction_scene.question_index)
+        else:
+            key = (self.scene, None)
+        if getattr(self, "_answer_timer_key", None) != key:
+            self._answer_timer_key = key
+            self._answer_started_at = time.monotonic()
         try:
             succeeded, result = self._data_queue.get_nowait()
         except queue.Empty:

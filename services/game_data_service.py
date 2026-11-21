@@ -497,6 +497,8 @@ def transform_deduction_questions(su_kien_rows, cau_hoi_rows):
         answer_idx = char_to_index.get(dap_an_char, 0)
 
         questions_by_event[ev_id].append({
+            "id": str(q["ma_cau_hoi"]),
+            "source_citation": next((ev.get("nguon_trich_dan") for ev in su_kien_rows if ev.get("ma_su_kien") == ev_id), None) or "Nguồn chung: dữ liệu lịch sử trò chơi",
             "question": q.get("noi_dung_cau_hoi", ""),
             "options": [
                 q.get("dap_an_a", ""),

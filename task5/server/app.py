@@ -37,16 +37,31 @@ class Register(BaseModel):
     password: str = Field(min_length=8, max_length=72)
     fullname: str = Field(min_length=1, max_length=100)
 
+    @field_validator("password")
+    @classmethod
+    def bcrypt_byte_limit(cls, value: str) -> str:
+        # bcrypt giới hạn byte UTF-8, không phải số ký tự Unicode.
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("Mật khẩu vượt quá 72 byte UTF-8.")
+        return value
+
 
 class Login(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     password: str = Field(min_length=1, max_length=72)
 
+    @field_validator("password")
+    @classmethod
+    def bcrypt_byte_limit(cls, value: str) -> str:
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("Mật khẩu vượt quá 72 byte UTF-8.")
+        return value
+
 
 class Quiz(BaseModel):
     ma_cau_hoi: str = Field(min_length=1, max_length=100)
     dap_an_chon: int = Field(ge=0, le=3)
-    so_giay: float = Field(ge=0, le=3600)
+    so_giay: float = Field(ge=0.25, le=3600, allow_inf_nan=False)
 
     @field_validator("so_giay")
     @classmethod
@@ -81,6 +96,18 @@ def _public(user: dict[str, Any]):
 
 @app.get("/api/health")
 def health(): return {"status": "healthy", "service": "task5"}
+
+
+@app.get("/game/questions")
+def game_questions():
+    """Cấp bộ câu hỏi hiện hành có ID; chấm điểm vẫn luôn truy vấn DB server."""
+    from data import db_queries
+    from services.game_data_service import transform_deduction_questions
+    events, event_message = db_queries.fetch_raw_su_kien()
+    questions, question_message = db_queries.fetch_raw_cau_hoi()
+    if events is None or questions is None:
+        raise HTTPException(503, "Chưa tải được bộ câu hỏi từ CSDL.")
+    return {"questions": transform_deduction_questions(events, questions)}
 
 
 @app.get("/", include_in_schema=False)
@@ -183,6 +210,35 @@ def leaderboard():
 @app.get("/teacher", response_class=HTMLResponse)
 def teacher_page(user=Depends(require_role("giao_vien", "quan_tri"))):
     return """<!doctype html><html lang='vi'><meta charset='utf-8'><h1>Báo cáo học sinh</h1><pre id='r'>Đang tải…</pre><script>fetch('/teacher/report',{headers:{Authorization:'Bearer '+sessionStorage.getItem('task5_token')}}).then(r=>r.json()).then(x=>document.querySelector('#r').textContent=JSON.stringify(x,null,2)).catch(e=>document.querySelector('#r').textContent=e)</script></html>"""
+
+
+@app.get("/teacher/login", response_class=HTMLResponse)
+def teacher_login_page():
+    """Trang công khai chỉ chứa form; báo cáo thật vẫn yêu cầu JWT và vai trò."""
+    return """<!doctype html><html lang="vi"><meta charset="utf-8">
+    <title>Đăng nhập giáo viên</title><h1>Báo cáo giáo viên</h1>
+    <form id="login"><label>Tài khoản <input id="username" autocomplete="username" required></label>
+    <label>Mật khẩu <input id="password" type="password" autocomplete="current-password" required></label>
+    <button>Đăng nhập</button></form><p id="error"></p><pre id="report"></pre>
+    <button id="logout" hidden>Đăng xuất</button><script>
+    let token = null;
+    document.querySelector('#login').onsubmit = async e => {
+      e.preventDefault(); document.querySelector('#error').textContent = '';
+      try {
+        const response = await fetch('/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({username:document.querySelector('#username').value,password:document.querySelector('#password').value})});
+        document.querySelector('#password').value = '';
+        const auth = await response.json(); if(!response.ok) throw Error(auth.detail || 'Đăng nhập thất bại');
+        token = auth.access_token;
+        const report = await fetch('/teacher/report', {headers:{Authorization:'Bearer '+token}});
+        const data = await report.json(); if(!report.ok) throw Error(data.detail || 'Không đủ quyền');
+        document.querySelector('#report').textContent = JSON.stringify(data,null,2);
+        document.querySelector('#login').hidden = true; document.querySelector('#logout').hidden = false;
+      } catch(error) { token=null; document.querySelector('#error').textContent=error.message; }
+    };
+    document.querySelector('#logout').onclick=()=>{token=null;document.querySelector('#report').textContent='';
+      document.querySelector('#login').hidden=false;document.querySelector('#logout').hidden=true;};
+    </script></html>"""
 
 
 @app.get("/teacher/report")
