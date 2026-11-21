@@ -1,5 +1,13 @@
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
+## P1 final bổ sung mới nhất
+101 test + 7 subtest local PASS. Edge canvas cả bốn timeline có session_id/confirmed
+quest PASS. Network harness commit-thật/mất-response, offline, abort, 400/401/503,
+timeout và relogin restore PASS (phạm vi fetch, không phải toàn bộ HUD UI fault matrix).
+Cleanup bounded retention 7 ngày, expiry renewal/TTL monotonic, stale queued write guard.
+Không đổi ScoringEngine/history/IDs; sửa current_loc_id và pin chồng được chứng minh bởi UI.
+Xem đầu TASK5_ACCEPTANCE.md cho ma trận chưa thử; không coi toàn bộ P1 đã hoàn thành.
+
 ## P1 mới: phiên giờ server và trạng thái lưu
 Migration 007 + /quiz/start, session bound user/question, 1h expiry, giới hạn 12 mở,
 atomic score/session, replay không thưởng lại. Client timing không còn quyết định tốc độ

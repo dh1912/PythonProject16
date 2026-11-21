@@ -1,5 +1,42 @@
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
+## Final P1 bổ sung (nền 2679b3f)
+- Local: 101 pytest PASS, 0 FAIL, 0 SKIP; 7 subtest PASS. Compile/build và Edge UI đạt.
+- Cleanup lazy tối đa 100/lần, expiry hơn 7 ngày; không xóa phiên live/replay còn retention,
+  không xóa answer_log. Test lặp 100/5/0, integrity/foreign_keys sạch. TTL dùng monotonic
+  client theo remaining_seconds server; hết hạn thông báo mở mới, không auto nộp.
+- Lỗi thật đã sửa: vào địa điểm chưa lưu current_loc_id nên collect trả 400; lưu địa điểm
+  trước clue. Pin/label chồng làm Dinh Độc Lập vào Bến Nhà Rồng; ưu tiên pin gần nhất.
+- Edge UI canvas: kéo bốn thẻ, Enter, ba câu/session_id và confirmed quest tại cả Pác Bó,
+  Ba Đình, Điện Biên Phủ, Dinh Độc Lập. Fixture DB mở khóa các quest trước để cô lập test;
+  không dùng fixture chứng minh đã chơi toàn hành trình. Không gọi Game để nhảy scene.
+- Browser network-matrix với FastAPI/SQLite thật (không fulfill kết quả nghiệp vụ giả):
+
+| Case | Thao tác/phạm vi | Kết quả local |
+|---|---|---|
+| A offline | save | PASS |
+| B abort trước server | save, tiến độ không đổi | PASS |
+| C commit rồi abort response | start/quiz/review/clue/save/quest, replay không thưởng lặp | PASS |
+| D 400 | quiz token không hợp lệ | PASS |
+| E 401 | save không token | PASS |
+| F 503 | save với writer SQLite thật giữ khóa | PASS |
+| G timeout sau commit | save, đọc lại progress | PASS |
+| H double click | UI cũ + concurrency SQLite; chưa mọi endpoint trên browser | MỘT PHẦN |
+| I logout pending/account switch | unit queued-generation; chưa canvas browser | CHƯA ĐỦ |
+| J refresh pending | refresh sau ghi/lost response restore; chưa refresh đang xử lý mọi write | MỘT PHẦN |
+
+- Matrix dùng fetch trong browser, không chứng minh HUD/game scene fault response đồng thời.
+  HUD states được test service coroutine, có ảnh confirmed; resize/failure HUD mọi scene chưa đủ.
+- CI c701bfd run 44924084646: Chromium bốn timeline và network step SUCCESS;
+  run a0c6624 mới nhất 44924401030 cần kết quả cuối trước khi ghi Docker PASS.
+- Kết quả cuối a0c6624: https://github.com/dh1912/PythonProject16/actions/runs/44924401030
+  completed/success; pytest/compile/Pygbag, Chromium bốn timeline, browser network matrix,
+  Docker build, container health và persistence restart đều SUCCESS. Artifact lỗi SKIPPED
+  do không có lỗi, không có assertion/test bị tắt. Commit tài liệu sau đó không đổi code.
+- Rủi ro còn: chưa đầy đủ A–J cho auth/register/leaderboard, logout/refresh canvas giữa write;
+  expiry desktop online chưa có UX tự gia hạn như browser; thời gian không chứng minh người đọc.
+  Chỉ phù hợp staging nội bộ có kiểm soát sau review, không tuyên bố P1 hoàn tất tuyệt đối.
+
 ## P1 phiên câu hỏi và HUD — cập nhật mới nhất
 - Nền 9aa003c, đầu lượt Git sạch. Không sửa ScoringEngine/ID lịch sử/quest.
 - Migration 007 tạo question_sessions, backup trước upgrade; BEGIN IMMEDIATE khóa chấm,

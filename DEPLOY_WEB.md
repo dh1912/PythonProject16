@@ -1,5 +1,20 @@
 # Deploy FastAPI + Pygbag + SQLite
 
+## Checklist staging HTTPS và rollback
+Không phát hành trong lượt nghiệm thu. Hosting phải có TLS proxy, persistent disk local
+mount `/data`, một replica và một worker. Đặt SQLITE_DB_PATH=/data/game.db,
+JWT_SECRET cố định trong secret store, PORT do hosting cấp, ALLOWED_ORIGINS đúng URL HTTPS.
+Không đặt DB/backup dưới WEB_BUILD_DIR; không dùng disk NFS với WAL.
+1. Ghi lại image digest/commit đang chạy; backup bằng SQLite Backup API trước upgrade.
+2. Kiểm backup bằng `sqlite3.connect(path).execute('PRAGMA integrity_check')` và foreign_key_check.
+3. Khởi động image mới, kiểm /api/health, login thử, điểm/clue/review và restart volume.
+4. Nếu migration thất bại: dừng container, giữ DB lỗi cùng WAL/SHM để phân tích, phục hồi
+   backup vào volume riêng sạch; chạy image cũ khớp schema backup. Không downgrade schema
+   bằng cách sửa user_version hoặc ghi backup đè khi backend còn hoạt động.
+5. Xác minh login/điểm/completed sau restore rồi mới cho người dùng staging truy cập.
+Session cleanup lazy chạy khi start: tối đa 100 hàng/lần, chỉ expiry quá 7 ngày;
+answer_log/review/progress vẫn giữ. Không coi session table là audit mọi lần thử vĩnh viễn.
+
 ## Giao thức timed quiz P1 (migration 007)
 Khi hiển thị câu, POST /quiz/start {ma_cau_hoi}; giữ session_id rồi POST /quiz/submit
 {ma_cau_hoi,session_id,dap_an_chon}. Server tính elapsed từ timestamp SQLite; token có
