@@ -1,0 +1,13 @@
+{
+  "register": true,
+  "review_once": true,
+  "quiz": true,
+  "clues": true,
+  "quest_once": true,
+  "relogin_restore": true,
+  "leaderboard": true,
+  "score": 75,
+  "ui_quest_sqlite": true,
+  "ui_login_notebook_leaderboard": true,
+  "page_errors": []
+}

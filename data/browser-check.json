@@ -20,7 +20,7 @@
     },
     {
       "type": "log",
-      "text": "AUTOSTART https://pygame-web.github.io/cdn/0.9.3/pythons.js http://127.0.0.1:50731/web/ undefined"
+      "text": "AUTOSTART https://pygame-web.github.io/cdn/0.9.3/pythons.js http://127.0.0.1:63195/web/ undefined"
     },
     {
       "type": "log",
@@ -144,7 +144,7 @@
     },
     {
       "type": "log",
-      "text": "docurl= http://127.0.0.1:50731/web/"
+      "text": "docurl= http://127.0.0.1:63195/web/"
     },
     {
       "type": "log",
@@ -260,7 +260,7 @@
     },
     {
       "type": "log",
-      "text": "End.cross_file.fetch /tmp/tmp-14-1 r/w= 800522"
+      "text": "End.cross_file.fetch /tmp/tmp-52-1 r/w= 1438297"
     },
     {
       "type": "log",
@@ -272,7 +272,7 @@
     },
     {
       "type": "log",
-      "text": "End.cross_file.fetch /tmp/tmp-21-2 r/w= 1527290"
+      "text": "End.cross_file.fetch /tmp/tmp-59-2 r/w= 1527290"
     },
     {
       "type": "warning",
