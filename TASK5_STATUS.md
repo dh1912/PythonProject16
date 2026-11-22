@@ -1,3 +1,12 @@
+# Cập nhật Final P1 trên nền 6ee4351
+
+- Bốn ca canvas A/B pending quiz/clue/quest/review: PASS Edge, backend commit thật.
+- Bốn ca canvas refresh sau commit tương ứng: PASS Edge, login khôi phục đúng dữ liệu.
+- 109 pytest + 7 subtest PASS; compile PASS. Không sửa gameplay/schema/công thức.
+- CI đã thêm tám lượt, chưa chạy Linux cho code mới; chưa xác minh run 44991691041.
+- HUD ngoài ba ô Map/confirmed cũ, refresh trước/trong commit và load 8/16 chưa thử.
+- Chưa FINAL P1 ACCEPTED hoặc READY FOR CONTROLLED STAGING. Không deploy.
+
 # Nghiệm thu UI bổ sung trên nền 472673b
 
 Đã chạy Edge canvas A/B pending progress/save và refresh sau commit progress/save:

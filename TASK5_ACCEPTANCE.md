@@ -1,3 +1,44 @@
+# Final P1: bổ sung canvas trên nền 6ee4351
+
+Working tree sạch khi bắt đầu; local và origin cùng `6ee4351`.
+Không sửa gameplay, ScoringEngine, schema hoặc dữ liệu lịch sử trong lượt này.
+
+| Endpoint | Canvas A logout/B login, giữ response sau commit | Canvas refresh sau commit |
+|---|---|---|
+| /quiz/submit | PASS Edge | PASS Edge |
+| /clues/collect | PASS Edge | PASS Edge |
+| /quest/complete | PASS Edge | PASS Edge |
+| /review/retry | PASS Edge | PASS Edge |
+| /progress/save | Giữ kết quả lượt trước | Giữ kết quả lượt trước |
+
+Tám lượt mới dùng FastAPI/SQLite tạm, request UI thật qua canvas; `route.fetch()`
+đã hoàn tất backend trước khi giữ response. Không mock nghiệp vụ. A quay map bằng
+ESC rồi L logout, B nhập qua bàn phím/click. B score/completed/clue/review vẫn trống;
+API A giữ đúng snapshot sau commit; không pageerror. Refresh login lại bằng canvas
+khôi phục đúng snapshot tiến độ/review, không tự nộp lại thưởng.
+
+Lỗi harness mới: connection kiểm tra integrity không đóng khi dùng `with conn`.
+Đã dùng closing và chạy lại cả bốn ca A/B mã thoát 0. Không phải lỗi transaction game.
+
+Ma trận HUD (mỗi ô áp dụng cho cả 1280×900 / 1366×768 / 1920×1080):
+
+| Scene | queued | pending | confirmed | failed | reconciling |
+|---|---|---|---|---|---|
+| Map | NOT TESTED | NOT TESTED | PASS lượt trước | NOT TESTED | NOT TESTED |
+| Investigation | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| Deduction | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| Timeline | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| Review | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+
+Refresh trước/trong commit của bốn endpoint: NOT TESTED canvas. Không suy ra từ ca
+sau commit. Load 8/16 tài khoản: NOT TESTED; không bypass quota 5 login/phút cùng IP.
+Pytest cuối: 109 PASS / 0 FAIL / 0 SKIP, 7 subtest PASS; compile PASS.
+Harness chạy trên build hiện có đã nghiệm thu của nền, không sửa nguồn game đóng gói.
+Workflow bổ sung tám lượt trên Linux, nhưng chưa chạy cho code mới. Run 44991691041
+chưa xác minh vì công cụ GitHub chưa có kết nối ACTIVE. Không ghi CI/Docker PASS.
+Kết luận: chưa FINAL P1 ACCEPTED, chưa READY FOR CONTROLLED STAGING do HUD và
+refresh trước/trong commit, CI Linux mới còn thiếu bằng chứng.
+
 # Bổ sung nghiệm thu canvas trên nền 472673b
 
 - Đầu lượt HEAD local/remote cùng `472673b`, working tree sạch. Commit này chỉ

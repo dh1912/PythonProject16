@@ -12,6 +12,7 @@ import tempfile
 import time
 import urllib.request
 import sqlite3
+from contextlib import closing
 from urllib.parse import urlsplit
 
 
@@ -97,6 +98,17 @@ def main() -> int:
                                 assert 'answer' not in q and 'explanation' not in q
                                 q['answer'] = answers[q['question']]
                         loc = next(item for item in content['locations'] if item['id'] == 1)
+                        isolation_endpoint = os.getenv('TASK5_ISOLATION_ENDPOINT', '')
+                        allowed_isolation = ('/quiz/submit','/clues/collect','/quest/complete','/review/retry')
+                        if isolation_endpoint and isolation_endpoint not in allowed_isolation:
+                            raise ValueError('Endpoint nghiệm thu không hợp lệ')
+                        isolation_held = []
+                        if isolation_endpoint:
+                            def hold_isolation(route):
+                                response = route.fetch()
+                                assert response.ok, f'Backend từ chối {isolation_endpoint}'
+                                isolation_held.append((route,response))
+                            page.route('**'+isolation_endpoint,hold_isolation,times=1)
                         page.goto(url + '/web/?acceptance=1', wait_until='domcontentloaded')
                         page.wait_for_function('window.task5GameReady === true', timeout=120000)
                         page.wait_for_timeout(1500)
@@ -131,6 +143,87 @@ def main() -> int:
                                 else:
                                     page.keyboard.type(char, delay=40)
                                 page.wait_for_timeout(40)
+
+                        def finish_isolation() -> int:
+                            """Logout/login bằng canvas; chỉ fixture tài khoản được tạo qua HTTP."""
+                            for _ in range(100):
+                                if isolation_held: break
+                                page.wait_for_timeout(100)
+                            assert isolation_held, 'Chưa có request UI thật được commit'
+                            # Snapshot đầy đủ giúp phát hiện cập nhật nhầm cả review và clue.
+                            before_a = progress()
+                            reviews_a = page.request.get(url+'/review/me',headers=headers).json()
+                            if os.getenv('TASK5_REFRESH_AFTER_COMMIT') == '1':
+                                page.reload(wait_until='domcontentloaded')
+                                page.wait_for_function('window.task5GameReady === true',timeout=120000)
+                                for route,response in isolation_held:
+                                    try: route.fulfill(response=response)
+                                    except Exception: pass
+                                page.wait_for_timeout(1200)
+                                click(500,280)
+                                type_credentials(username)
+                                click(500,355)
+                                type_credentials(password)
+                                with page.expect_response(lambda r:r.url.endswith('/auth/login')) as relogged:
+                                    click(500,432)
+                                assert relogged.value.status == 200
+                                page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                                page.wait_for_timeout(800)
+                                assert progress() == before_a
+                                assert page.request.get(url+'/review/me',headers=headers).json() == reviews_a
+                                assert json.loads(page.evaluate('window.task5UiState'))['score'] == before_a['score']
+                                assert not errors,errors
+                                result={'endpoint':isolation_endpoint,'canvas_refresh_after_commit':True,
+                                        'progress_and_reviews_restored':True,'page_errors':errors}
+                                name=isolation_endpoint.rsplit('/',1)[-1]
+                                (root/f'data/refresh-{name}.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+                                print(json.dumps(result))
+                                return 0
+                            for _ in range(4):
+                                current = json.loads(page.evaluate('window.task5UiState'))['scene']
+                                if current == 'map': break
+                                page.keyboard.press('Escape')
+                                page.wait_for_timeout(400)
+                            assert json.loads(page.evaluate('window.task5UiState'))['scene'] == 'map'
+                            page.keyboard.press('l')
+                            page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'login'")
+                            b = {'username':'ab_'+secrets.token_hex(5),'password':'Bb_'+secrets.token_hex(7)}
+                            registered = page.request.post(url+'/auth/register',data={**b,'fullname':'Isolation B'})
+                            assert registered.status == 201
+                            bh = {'Authorization':'Bearer '+registered.json()['access_token']}
+                            click(500,280)
+                            for _ in range(60): page.keyboard.press('Backspace')
+                            type_credentials(b['username'])
+                            click(500,355)
+                            for _ in range(72): page.keyboard.press('Backspace')
+                            type_credentials(b['password'])
+                            with page.expect_response(lambda r:r.url.endswith('/auth/login')) as logged:
+                                click(500,432)
+                            assert logged.value.status == 200
+                            page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                            for route,response in isolation_held:
+                                try: route.fulfill(response=response)
+                                except Exception: pass  # Fetch A có thể đã bị logout hủy.
+                            page.wait_for_timeout(1200)
+                            ui = json.loads(page.evaluate('window.task5UiState'))
+                            assert ui['score'] == 0 and ui['completed_count'] == 0
+                            assert ui['save_state'] == 'confirmed'
+                            bp = page.request.get(url+'/progress/me',headers=bh).json()['data']
+                            assert bp['score'] == 0 and not bp['completed'] and not bp['task4']
+                            assert not page.request.get(url+'/review/me',headers=bh).json()['items']
+                            assert progress() == before_a
+                            assert page.request.get(url+'/review/me',headers=headers).json() == reviews_a
+                            with closing(sqlite3.connect(Path(directory)/'ui.db')) as verify:
+                                assert verify.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
+                                assert not verify.execute('PRAGMA foreign_key_check').fetchall()
+                            assert not errors, errors
+                            name=isolation_endpoint.rsplit('/',1)[-1]
+                            page.screenshot(path=str(root/f'data/isolation-{name}.png'))
+                            result={'endpoint':isolation_endpoint,'canvas_account_isolation':True,
+                                    'backend_committed_for_A':True,'B_unchanged':True,'page_errors':errors}
+                            (root/f'data/isolation-{name}.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+                            print(json.dumps(result))
+                            return 0
 
                         # Chỉ tạo fixture bằng HTTP; toàn bộ hành động chơi dưới đây qua UI.
                         click(500, 280)
@@ -170,11 +263,16 @@ def main() -> int:
                             for choice in ('1', '2', '3'):
                                 page.keyboard.press(choice)
                                 page.wait_for_timeout(500)
+                                if isolation_endpoint == '/clues/collect' and isolation_held:
+                                    return finish_isolation()
                         page.keyboard.press('d')
                         page.wait_for_timeout(800)
                         questions = content['questions'][loc['name']]
                         page.wait_for_timeout(500)
                         q = questions[0]
+                        if isolation_endpoint == '/quiz/submit':
+                            page.keyboard.press(str((q['answer'] + 1) % 4 + 1))
+                            return finish_isolation()
                         with page.expect_response(lambda r: r.url.endswith('/quiz/submit') and r.ok):
                             page.keyboard.press(str((q['answer'] + 1) % 4 + 1))
                         page.wait_for_timeout(700)
@@ -184,6 +282,8 @@ def main() -> int:
                             with page.expect_response(lambda r: r.url.endswith('/quiz/submit') and r.ok):
                                 page.keyboard.press(str(q['answer'] + 1))
                             page.wait_for_timeout(700)
+                        if isolation_endpoint == '/quest/complete':
+                            return finish_isolation()
                         for _ in range(60):
                             if loc['name'] in progress()['completed']:
                                 break
@@ -194,6 +294,9 @@ def main() -> int:
                         page.wait_for_timeout(500)
                         page.keyboard.press('r')
                         page.wait_for_timeout(800)
+                        if isolation_endpoint == '/review/retry':
+                            page.keyboard.press(str(questions[0]['answer'] + 1))
+                            return finish_isolation()
                         with page.expect_response(lambda r: r.url.endswith('/review/retry') and r.ok):
                             page.keyboard.press(str(questions[0]['answer'] + 1))
                         page.wait_for_timeout(800)

@@ -1,3 +1,17 @@
+# Chạy lại nghiệm thu canvas có điều khiển
+
+Sau build sạch, chạy từng endpoint với biến môi trường:
+`TASK5_ISOLATION_ENDPOINT=/quiz/submit python -m task5.check_sqlite_ui`.
+Lặp với `/clues/collect`, `/quest/complete`, `/review/retry`.
+Thêm `TASK5_REFRESH_AFTER_COMMIT=1` để kiểm thử reload sau COMMIT thực.
+PowerShell dùng `$env:TASK5_ISOLATION_ENDPOINT='/quiz/submit'` trước lệnh Python.
+Harness tạo tài khoản/SQLite tạm; không trỏ vào DB staging/người chơi.
+
+Tám ca đã đạt Edge, chưa có kết quả Chromium Linux cho code mới. Không dùng kết quả
+này để bỏ qua ma trận HUD hoặc refresh trước/trong commit. Staging còn bị chặn bởi
+các bằng chứng này và CI mới; không tự deploy, không thay đổi yêu cầu HTTPS,
+volume /data/game.db, một worker/replica và secret ổn định đã nêu dưới đây.
+
 # Phạm vi nghiệm thu UI bổ sung
 
 Edge canvas đã kiểm tra logout A/login B trong lúc giữ response save đã commit,

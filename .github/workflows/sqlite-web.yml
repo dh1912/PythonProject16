@@ -31,6 +31,12 @@ jobs:
           python -m task5.check_sqlite_ui 2>&1 | tee "$RUNNER_TEMP/ui-diagnostic.txt"
       - name: Browser network faults with real SQLite
         run: python -m task5.check_network_matrix
+      - name: Canvas account isolation and refresh after commit
+        run: |
+          for endpoint in /quiz/submit /clues/collect /quest/complete /review/retry; do
+            TASK5_ISOLATION_ENDPOINT="$endpoint" python -m task5.check_sqlite_ui
+            TASK5_ISOLATION_ENDPOINT="$endpoint" TASK5_REFRESH_AFTER_COMMIT=1 python -m task5.check_sqlite_ui
+          done
       - name: Concurrent HTTP writes with isolated SQLite
         run: python -m task5.check_sqlite_load
       - name: UI diagnostic (no credentials)
