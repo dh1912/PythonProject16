@@ -1,3 +1,31 @@
+# Refresh transaction: bổ sung trên nền 3f8cd0f
+
+Local/origin cùng 3f8cd0f, working tree sạch lúc bắt đầu. Trang GitHub run
+44995369143 còn In progress khi được đọc; không coi là SUCCESS.
+
+| Endpoint | Pre-backend | In-transaction commit | In-transaction rollback | Post-commit |
+|---|---|---|---|---|
+| Progress | PASS Edge mới | PASS Edge mới | PASS Edge mới | PASS trước |
+| Quiz | PASS trước | PASS Edge mới | PASS Edge mới | PASS trước |
+| Clue | PASS trước | PASS Edge mới | PASS Edge mới | PASS trước |
+| Quest | PASS trước | PASS Edge mới | PASS Edge mới | PASS trước |
+| Review | PASS trước | PASS Edge mới | PASS Edge mới | PASS trước |
+
+Mười ca transaction mới chạy process test riêng: wrapper commit xác nhận
+connection.in_transaction, phát tín hiệu file entered; browser reload trước khi
+cha phát release. Commit/rollback thực trên SQLite; login lại bằng canvas so điểm
+và tiến độ server; rollback giữ snapshot tiến độ/review trước commit. Không pageerror.
+Không thêm endpoint điều khiển và không đổi repository production. Barrier tự hết
+hạn 45 giây. Entry point test bị loại khỏi WASM. Test hồi quy xác nhận server
+production không tham chiếu biến barrier. Không dùng DB người chơi.
+
+Pytest 110 PASS / 0 FAIL / 0 SKIP, 7 subtest PASS; compile và build sạch PASS.
+Chưa chạy workflow mới; Chromium/Linux và Docker cho code mới chưa nghiệm thu.
+Ma trận HUD giữ nguyên giới hạn trước: chỉ Map/confirmed ba viewport đã đạt;
+các ô còn lại NOT TESTED, không có cơ sở chuyển sang N/A.
+FINAL P1 ACCEPTED: NO. READY FOR CONTROLLED STAGING: NO.
+STAGING DEPLOYED: NO – HOSTING NOT PROVIDED.
+
 # Bổ sung trên nền 5ceb43b: CI và refresh trước backend
 
 Thông tin này thay thế nhận định "chưa biết run 44992851127": trang GitHub công

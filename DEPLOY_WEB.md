@@ -1,3 +1,14 @@
+# Nghiệm thu refresh trong transaction (chỉ process test)
+
+Đặt `TASK5_ISOLATION_ENDPOINT=/quiz/submit` và `TASK5_TRANSACTION_MODE=commit`
+hoặc `rollback`, chạy `python -m task5.check_sqlite_ui`. Lặp với progress/save,
+clues/collect, quest/complete và review/retry. Harness tự tạo thư mục tín hiệu và
+DB tạm; entry point `task5.test_transaction_server` không dùng khi chạy production.
+Không khởi động entry point này trên hosting. Production tiếp tục chạy Uvicorn
+app chuẩn, một worker và persistent disk như hướng dẫn bên dưới.
+Không có endpoint HTTP điều khiển barrier. Build web loại file test khỏi WASM.
+Chưa đủ bằng chứng HUD và CI mới để chốt staging-ready; chưa triển khai HTTPS.
+
 # Lệnh nghiệm thu bổ sung
 
 `python -m task5.check_sqlite_load --accounts 8` hoặc `--accounts 16`.

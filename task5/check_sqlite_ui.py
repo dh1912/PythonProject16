@@ -27,10 +27,20 @@ def main() -> int:
         env = dict(os.environ, SQLITE_DB_PATH=str(Path(directory) / 'ui.db'),
                    JWT_SECRET=secrets.token_urlsafe(48), PYTHONUTF8='1',
                    WEB_BUILD_DIR=str(root / 'build/web-source/build/web'))
+        transaction_mode = os.getenv('TASK5_TRANSACTION_MODE', '')
+        if transaction_mode:
+            mapping = {'/progress/save':'save_progress','/quiz/submit':'submit_answer',
+                       '/clues/collect':'collect_clue','/quest/complete':'complete_quest',
+                       '/review/retry':'retry_review'}
+            env.update(TASK5_TRANSACTION_BARRIER=directory,
+                       TASK5_TRANSACTION_FUNCTION=mapping[os.environ['TASK5_ISOLATION_ENDPOINT']],
+                       TASK5_TEST_PORT=str(port),
+                       TASK5_TRANSACTION_ROLLBACK='1' if transaction_mode == 'rollback' else '0')
         # Log nằm ngoài DB tạm: Windows/antivirus có thể giữ handle sau terminate.
         with (root / 'data/sqlite-ui-server.log').open('w', encoding='utf-8') as log:
-            server = subprocess.Popen([sys.executable, '-m', 'uvicorn', 'task5.server.app:app',
-                                       '--host', '127.0.0.1', '--port', str(port)],
+            command = [sys.executable, '-m', 'task5.test_transaction_server'] if transaction_mode else [sys.executable, '-m', 'uvicorn', 'task5.server.app:app',
+                                       '--host', '127.0.0.1', '--port', str(port)]
+            server = subprocess.Popen(command,
                                       cwd=root, env=env, stdout=log, stderr=log)
             try:
                 for _ in range(80):
@@ -99,12 +109,16 @@ def main() -> int:
                                 q['answer'] = answers[q['question']]
                         loc = next(item for item in content['locations'] if item['id'] == 1)
                         isolation_endpoint = os.getenv('TASK5_ISOLATION_ENDPOINT', '')
-                        allowed_isolation = ('/quiz/submit','/clues/collect','/quest/complete','/review/retry')
+                        allowed_isolation = ('/quiz/submit','/clues/collect','/quest/complete','/review/retry','/progress/save')
                         if isolation_endpoint and isolation_endpoint not in allowed_isolation:
                             raise ValueError('Endpoint nghiệm thu không hợp lệ')
                         isolation_held = []
                         if isolation_endpoint:
                             def hold_isolation(route):
+                                if transaction_mode:
+                                    isolation_held.append((route,None))
+                                    route.continue_()
+                                    return
                                 if os.getenv('TASK5_REFRESH_BEFORE_BACKEND') == '1':
                                     isolation_held.append((route,None))
                                     return
@@ -153,6 +167,41 @@ def main() -> int:
                                 if isolation_held: break
                                 page.wait_for_timeout(100)
                             assert isolation_held, 'Chưa có request UI thật được commit'
+                            if transaction_mode:
+                                for _ in range(300):
+                                    if (Path(directory)/'entered').exists(): break
+                                    page.wait_for_timeout(50)
+                                assert (Path(directory)/'entered').exists(), 'Chưa vào transaction'
+                                # WAL reader độc lập thấy dữ liệu trước commit.
+                                baseline = progress()
+                                baseline_reviews = page.request.get(url+'/review/me',headers=headers).json()
+                                page.reload(wait_until='domcontentloaded')
+                                (Path(directory)/'release').write_text('release',encoding='ascii')
+                                for _ in range(300):
+                                    if (Path(directory)/'finished').exists(): break
+                                    page.wait_for_timeout(50)
+                                assert (Path(directory)/'finished').read_text() == transaction_mode
+                                committed = progress()
+                                if transaction_mode == 'rollback':
+                                    assert committed == baseline
+                                    assert page.request.get(url+'/review/me',headers=headers).json() == baseline_reviews
+                                page.wait_for_function('window.task5GameReady === true',timeout=120000)
+                                page.wait_for_timeout(1000)
+                                click(500,280); type_credentials(username)
+                                click(500,355); type_credentials(password)
+                                with page.expect_response(lambda r:r.url.endswith('/auth/login')) as logged:
+                                    click(500,432)
+                                assert logged.value.status == 200
+                                page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                                assert progress() == committed
+                                assert json.loads(page.evaluate('window.task5UiState'))['score'] == committed['score']
+                                assert not errors,errors
+                                result={'endpoint':isolation_endpoint,'in_transaction':transaction_mode,
+                                        'canvas_relogin':True,'page_errors':errors}
+                                (root/f"data/transaction-{transaction_mode}-{isolation_endpoint.rsplit('/',1)[-1]}.json").write_text(
+                                    json.dumps(result,indent=2),encoding='utf-8')
+                                print(json.dumps(result))
+                                return 0
                             # Snapshot đầy đủ giúp phát hiện cập nhật nhầm cả review và clue.
                             before_a = progress()
                             reviews_a = page.request.get(url+'/review/me',headers=headers).json()
@@ -263,6 +312,8 @@ def main() -> int:
                         page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
                         click(loc['x'], loc['y'])
                         page.keyboard.press('Enter')
+                        if isolation_endpoint == '/progress/save':
+                            return finish_isolation()
                         page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'investigation'")
                         for index in range(len(content['investigation_data'][loc['name']]['clues'])):
                             page.keyboard.press(str(index + 1))

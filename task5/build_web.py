@@ -47,7 +47,7 @@ def stage_project(root: Path, destination: Path) -> Path:
     marker.write_text("Task 5 staging sinh tự động", encoding="utf-8")
     for folder in ("scenes", "services", "task3", "task4", "task5"):
         for source in (root / folder).glob("*.py"):
-            if folder == 'task5' and source.name.startswith(('check_', 'ci_', 'build_', 'patch_')):
+            if folder == 'task5' and source.name.startswith(('check_', 'ci_', 'build_', 'patch_', 'test_')):
                 continue
             target = destination / folder / source.name
             target.parent.mkdir(parents=True, exist_ok=True)

@@ -40,6 +40,14 @@ jobs:
           done
       - name: Concurrent HTTP writes with isolated SQLite
         run: python -m task5.check_sqlite_load
+      - name: Canvas refresh inside SQLite transaction
+        run: |
+          TASK5_ISOLATION_ENDPOINT=/progress/save TASK5_REFRESH_BEFORE_BACKEND=1 python -m task5.check_sqlite_ui
+          for endpoint in /progress/save /quiz/submit /clues/collect /quest/complete /review/retry; do
+            for mode in commit rollback; do
+              TASK5_ISOLATION_ENDPOINT="$endpoint" TASK5_TRANSACTION_MODE="$mode" python -m task5.check_sqlite_ui
+            done
+          done
       - name: UI diagnostic (no credentials)
         if: failure()
         uses: actions/upload-artifact@v4

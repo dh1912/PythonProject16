@@ -1,3 +1,12 @@
+# Bổ sung refresh transaction trên nền 3f8cd0f
+
+Edge canvas: progress/save trước backend và mười ca refresh trong transaction
+commit/rollback của progress/quiz/clue/quest/review đều PASS, không pageerror.
+Barrier chỉ có ở entry point test riêng, không endpoint production, bị loại khỏi
+WASM. 110 pytest + 7 subtest PASS; compile/build PASS. HUD đầy đủ chưa nghiệm thu.
+Run 44995369143 đang In progress lúc kiểm tra; không có chứng nhận CI cho code mới.
+FINAL P1 ACCEPTED NO; READY FOR CONTROLLED STAGING NO; chưa deploy.
+
 # Cập nhật nền 5ceb43b
 
 Run 44992851127 SUCCESS được xác minh qua trang GitHub công khai; không dùng để
