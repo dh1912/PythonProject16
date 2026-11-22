@@ -56,6 +56,8 @@ async def main():
                         'password_focus': login.input_login_pass.active,
                         'loading': login.auth_task is not None,
                         'save_state': getattr(game.data_service, 'save_state', ''),
+                        'score': game.score,
+                        'completed_count': len(game.completed),
                         'quiz_index': getattr(game, 'task4_quiz_index', None),
                     })
                     await asyncio.sleep(.1)

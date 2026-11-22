@@ -1,3 +1,12 @@
+# Phạm vi nghiệm thu UI bổ sung
+
+Edge canvas đã kiểm tra logout A/login B trong lúc giữ response save đã commit,
+và refresh sau commit save. Map/confirmed rõ ở 1280×900, 1366×768, 1920×1080.
+Không dùng các kết quả này thay cho pending quiz/clue/review/quest hoặc toàn ma trận
+HUD. Chưa đủ tiêu chí Final P1 để gán READY FOR CONTROLLED STAGING.
+Run GitHub 44989309207 và CI/Docker cho code mới chưa xác minh trong lượt này.
+Không deploy staging trước khi người dùng cấp cấu hình hosting/quyền hợp lệ.
+
 # Bổ sung hardening: staging giới hạn truy cập
 
 Chưa triển khai HTTPS trong lượt nghiệm thu này. Trước khi cấp quyền staging:

@@ -1,3 +1,24 @@
+# Bổ sung nghiệm thu canvas trên nền 472673b
+
+- Đầu lượt HEAD local/remote cùng `472673b`, working tree sạch. Commit này chỉ
+  bổ sung artifact, không thay code so với `dd0bbb6`.
+- Edge thật, FastAPI/SQLite tạm: UI A gửi `/progress/save`, backend commit thật qua
+  `route.fetch()`, giữ response; A quay map bằng ESC, logout L, B đăng nhập bằng
+  click/phím. Thả response A: B vẫn score=0, completed=0, HUD confirmed; đọc API
+  độc lập xác nhận A giữ dữ liệu đã commit, B không nhận dữ liệu A. PASS.
+- UI refresh sau commit `/progress/save` nhưng trước response: reload rồi login B
+  bằng canvas, đọc lại tiến độ bằng API và đối chiếu điểm UI. PASS.
+- Map/confirmed: chụp và xem ảnh 1280×900, 1366×768, 1920×1080. Nhãn tiếng Việt
+  đọc được, không che nội dung/nút. PASS cho đúng ba ô này, không suy rộng ma trận.
+- UI regression hiện có: đăng nhập, Notebook, quest đầu, review, Bảng Vàng và bốn
+  timeline đều PASS; `page_errors=[]`. Build sạch và compile PASS.
+- Pytest cuối: 109 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS. Còn cảnh báo TestClient.
+- Chưa thử canvas A/B cho quiz/clue/quest/review; refresh trước/trong commit từng
+  write; HUD các scene/trạng thái còn lại. Không gọi các ca service/fetch là UI E2E.
+- Run 44989309207 chưa được xác minh bằng công cụ GitHub trong lượt này vì kết nối
+  chưa ACTIVE; CI/Docker cho thay đổi mới CHƯA CHẠY, không dùng SUCCESS lịch sử.
+- Chưa READY FOR CONTROLLED STAGING theo tiêu chí Final P1 đầy đủ của yêu cầu.
+
 # Nghiệm thu bổ sung: response muộn và tải SQLite
 
 Nền `63990ad`, nhánh `improve/task5-release-readiness`. Đây là kết quả mới, không

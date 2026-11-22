@@ -268,6 +268,100 @@ def main() -> int:
                             else:raise AssertionError('Timeline quest chưa confirmed '+target['name'])
                             assert diagnostic['session_submissions'][submissions_before:]==[True,True,True]
                             timeline_results.append(target['name'])
+                        # Response save của A đã commit, giữ lại trước khi chuyển tài khoản bằng UI.
+                        page.keyboard.press('Escape')
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'investigation'")
+                        page.keyboard.press('Escape')
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                        account_b = {'username': 'isolation_'+secrets.token_hex(5),
+                                     'password': 'Bb_'+secrets.token_hex(8)}
+                        registered_b = page.request.post(url+'/auth/register', data={
+                            **account_b, 'fullname': 'Tài khoản cách ly B'})
+                        assert registered_b.status == 201
+                        held = []
+                        def hold_save(route):
+                            response = route.fetch()
+                            assert response.ok
+                            held.append((route, response))
+                        page.route('**/progress/save', hold_save, times=1)
+                        click(next_loc['x'], next_loc['y'])
+                        page.keyboard.press('Enter')
+                        for _ in range(100):
+                            if held: break
+                            page.wait_for_timeout(100)
+                        assert held, 'UI phải thực sự gửi save trước khi đổi tài khoản'
+                        a_after_commit = progress()
+                        page.keyboard.press('Escape')
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                        page.keyboard.press('l')
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'login'")
+                        click(500, 280)
+                        page.keyboard.press('Control+a')
+                        # InputBox không hỗ trợ chọn tất cả: xóa bằng Backspace thật.
+                        for _ in range(60): page.keyboard.press('Backspace')
+                        type_credentials(account_b['username'])
+                        click(500, 355)
+                        for _ in range(72): page.keyboard.press('Backspace')
+                        type_credentials(account_b['password'])
+                        with page.expect_response(lambda r:r.url.endswith('/auth/login')) as login_b:
+                            click(500, 432)
+                        assert login_b.value.status == 200
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                        for route, response in held:
+                            try:
+                                route.fulfill(response=response)
+                            except Exception:
+                                # Logout đã hủy fetch phía client; commit của A vẫn hợp lệ.
+                                pass
+                        page.wait_for_timeout(1000)
+                        state_b = json.loads(page.evaluate('window.task5UiState'))
+                        assert state_b['score'] == 0 and state_b['completed_count'] == 0
+                        assert state_b['save_state'] == 'confirmed'
+                        logged_b = page.request.post(url+'/auth/login', data=account_b)
+                        assert logged_b.status == 200
+                        b_headers = {'Authorization':'Bearer '+logged_b.json()['access_token']}
+                        b_progress = page.request.get(url+'/progress/me', headers=b_headers).json()['data']
+                        assert b_progress['score'] == 0 and not b_progress['completed']
+                        assert progress() == a_after_commit
+                        page.screenshot(path=str(root/'data/sqlite-ui-isolation.png'))
+                        hud_evidence = []
+                        for width, height in ((1280,900),(1366,768),(1920,1080)):
+                            page.set_viewport_size({'width':width,'height':height})
+                            page.wait_for_timeout(600)
+                            assert json.loads(page.evaluate('window.task5UiState'))['save_state'] == 'confirmed'
+                            image = f'data/hud-map-confirmed-{width}x{height}.png'
+                            page.screenshot(path=str(root/image))
+                            hud_evidence.append({'scene':'map','state':'confirmed',
+                                'viewport':[width,height],'screenshot':image,
+                                'result':'CAPTURED_REQUIRES_VISUAL_REVIEW'})
+                        page.set_viewport_size({'width':1280,'height':900})
+                        # Refresh sau commit thật nhưng trước response; không phát lại save tự động.
+                        held.clear()
+                        page.route('**/progress/save', hold_save, times=1)
+                        click(loc['x'],loc['y'])
+                        page.keyboard.press('Enter')
+                        for _ in range(100):
+                            if held: break
+                            page.wait_for_timeout(100)
+                        assert held
+                        before_refresh = page.request.get(url+'/progress/me',headers=b_headers).json()['data']
+                        page.reload(wait_until='domcontentloaded')
+                        page.wait_for_function('window.task5GameReady === true',timeout=120000)
+                        for route, response in held:
+                            try: route.fulfill(response=response)
+                            except Exception: pass
+                        page.wait_for_timeout(1200)
+                        click(500,280)
+                        type_credentials(account_b['username'])
+                        click(500,355)
+                        type_credentials(account_b['password'])
+                        with page.expect_response(lambda r:r.url.endswith('/auth/login')) as relogin_b:
+                            click(500,432)
+                        assert relogin_b.value.status == 200
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
+                        after_refresh = page.request.get(url+'/progress/me',headers=b_headers).json()['data']
+                        assert after_refresh == before_refresh
+                        assert json.loads(page.evaluate('window.task5UiState'))['score'] == before_refresh['score']
                         assert not errors, errors
                         assert '/quiz/start' in [item['path'] for item in diagnostic['network']]
                         assert diagnostic.get('session_submissions', [False])[0], 'Quiz đầu phải dùng phiên server'
@@ -276,6 +370,12 @@ def main() -> int:
                                   'ui_review': True, 'ui_quest_confirmed': True,
                                   'ui_leaderboard': True, 'next_location_input_sent': True,
                                   'timeline_canvas':timeline_results,
+                                  'canvas_account_isolation_progress_save': True,
+                                  'canvas_refresh_progress_save_after_commit': True,
+                                  'hud_evidence': hud_evidence,
+                                  'not_tested': ['canvas A/B quiz, clue, quest, review pending',
+                                      'refresh before commit for each write',
+                                      'HUD other scenes and queued/pending/failed/reconciling'],
                                   'page_errors': errors, 'http_mock': False,
                                   'scope': 'Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật.'}
                         (root / 'data/sqlite-ui-result.json').write_text(

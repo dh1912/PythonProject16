@@ -1,3 +1,12 @@
+# Nghiệm thu UI bổ sung trên nền 472673b
+
+Đã chạy Edge canvas A/B pending progress/save và refresh sau commit progress/save:
+PASS với API/SQLite thật, không HTTP mock. Cả bốn timeline regression PASS.
+Map/confirmed đã chụp và xem đủ 3 viewport, không che UI. Các ô HUD khác chưa thử.
+109 pytest + 7 subtest PASS; compile/build PASS. CI cho thay đổi mới chưa chạy;
+run 44989309207 chưa được xác minh do thiếu kết nối GitHub ACTIVE.
+Chưa tuyên bố toàn bộ Final P1 hoặc READY FOR CONTROLLED STAGING.
+
 # Kết quả bổ sung hardening hiện tại
 
 - Nền Git: `63990ad`, nhánh `improve/task5-release-readiness`; working tree sạch khi bắt đầu.
