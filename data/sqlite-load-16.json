@@ -1,0 +1,1137 @@
+{
+  "accounts": 16,
+  "concurrent_players": 8,
+  "peak_workers": 16,
+  "requests": 224,
+  "success": 224,
+  "failed": 0,
+  "sqlite_busy_http_503": 0,
+  "elapsed_seconds": 64.459,
+  "median_ms": 170.7,
+  "p95_ms": 287.97,
+  "max_ms": 376.5,
+  "all_scores_nonnegative": true,
+  "scope": "HTTP thật; login theo quota, gameplay tối đa 8 người/đợt; không phải production benchmark",
+  "measurements": [
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 268.58
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 245.87
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 271.41
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 245.57
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 243.2
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 247.76
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 261.16
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 247.07
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 255.03
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 245.49
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 312.26
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 243.47
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 236.59
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 244.42
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 240.66
+    },
+    {
+      "path": "/auth/login",
+      "status": 200,
+      "ms": 281.12
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 124.96
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 131.82
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 166.65
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 184.04
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 188.38
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 200.41
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 214.76
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 240.51
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 116.99
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 133.46
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 95.97
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 118.84
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 99.83
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 90.62
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 126.52
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 177.81
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 175.32
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 196.66
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 197.19
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 203.85
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 229.1
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 206.42
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 243.0
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 222.97
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 220.04
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 233.48
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 240.76
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 242.92
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 264.66
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 253.57
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 173.69
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 181.42
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 159.68
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 170.78
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 203.33
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 250.37
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 139.3
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 178.12
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 168.27
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 168.8
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 156.25
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 146.46
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 161.06
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 167.97
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 190.16
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 170.62
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 183.92
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 174.72
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 183.25
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 216.13
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 217.71
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 190.05
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 205.05
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 176.85
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 237.49
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 210.27
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 171.02
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 183.91
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 202.49
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 129.95
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 163.0
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 179.57
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 124.68
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 99.83
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 91.31
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 188.32
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 86.69
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 99.04
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 157.68
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 154.97
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 152.26
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 152.61
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 110.18
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 134.36
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 162.66
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 178.22
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 81.23
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 84.42
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 131.76
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 72.33
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 86.46
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 95.43
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 110.5
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 54.75
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 49.22
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 91.29
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 48.1
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 76.59
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 70.44
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 72.22
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 55.05
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 68.96
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 75.45
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 43.62
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 53.56
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 29.43
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 27.71
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 27.91
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 26.28
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 25.62
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 97.02
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 23.47
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 36.14
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 32.79
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 98.13
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 135.91
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 147.75
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 164.93
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 173.84
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 201.35
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 208.11
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 223.16
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 191.98
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 186.92
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 185.59
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 228.02
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 176.79
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 231.24
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 216.51
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 189.02
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 279.2
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 228.65
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 231.02
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 238.48
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 232.32
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 239.01
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 232.06
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 250.9
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 251.18
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 241.15
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 266.3
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 252.79
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 254.2
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 197.46
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 206.04
+    },
+    {
+      "path": "/review/retry",
+      "status": 200,
+      "ms": 296.56
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 163.97
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 154.8
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 107.56
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 159.9
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 160.72
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 128.5
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 150.75
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 143.14
+    },
+    {
+      "path": "/quiz/start",
+      "status": 200,
+      "ms": 376.5
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 177.87
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 185.02
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 198.82
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 227.35
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 251.74
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 287.97
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 301.05
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 278.03
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 308.73
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 322.48
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 267.52
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 297.12
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 308.96
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 367.72
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 263.54
+    },
+    {
+      "path": "/quiz/submit",
+      "status": 200,
+      "ms": 299.82
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 201.27
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 291.5
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 169.81
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 97.72
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 103.77
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 115.42
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 129.05
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 131.88
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 154.4
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 146.9
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 167.03
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 135.52
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 175.2
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 181.82
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 169.23
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 187.76
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 174.48
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 147.94
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 148.83
+    },
+    {
+      "path": "/clues/collect",
+      "status": 200,
+      "ms": 231.49
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 177.65
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 134.33
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 135.37
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 107.69
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 145.09
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 118.25
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 116.4
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 142.69
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 135.96
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 90.93
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 109.34
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 80.06
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 111.6
+    },
+    {
+      "path": "/quest/complete",
+      "status": 200,
+      "ms": 85.36
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 86.8
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 84.98
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 89.74
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 108.23
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 145.62
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 112.9
+    },
+    {
+      "path": "/progress/save",
+      "status": 200,
+      "ms": 107.54
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 93.88
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 107.67
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 140.28
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 79.32
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 17.78
+    },
+    {
+      "path": "/progress/me",
+      "status": 200,
+      "ms": 129.77
+    }
+  ]
+}

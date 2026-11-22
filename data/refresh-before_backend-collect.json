@@ -1,0 +1,6 @@
+{
+  "endpoint": "/clues/collect",
+  "canvas_refresh_phase": "before_backend",
+  "progress_and_reviews_restored": true,
+  "page_errors": []
+}

@@ -48,6 +48,11 @@
       "result": "CAPTURED_REQUIRES_VISUAL_REVIEW"
     }
   ],
+  "not_tested": [
+    "canvas A/B quiz, clue, quest, review pending",
+    "refresh before commit for each write",
+    "HUD other scenes and queued/pending/failed/reconciling"
+  ],
   "page_errors": [],
   "http_mock": false,
   "scope": "Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật."
