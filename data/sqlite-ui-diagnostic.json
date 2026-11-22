@@ -5,1316 +5,1498 @@
       "path": "/web/",
       "method": "GET",
       "status": null,
-      "seconds": 0.891
+      "seconds": 0.312
     },
     {
       "event": "response",
       "path": "/web/",
       "method": "GET",
       "status": 200,
-      "seconds": 1.031
+      "seconds": 0.359
     },
     {
       "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 1.281
+      "seconds": 9.969
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 1.281
+      "seconds": 9.969
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 6.688
+      "seconds": 14.328
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 6.688
+      "seconds": 14.328
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 7.828
+      "seconds": 15.265
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 7.828
+      "seconds": 15.265
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 16.453
+      "seconds": 23.328
     },
     {
       "event": "response",
       "path": "/auth/login",
       "method": "POST",
       "status": 200,
-      "seconds": 16.75
+      "seconds": 23.562
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 16.828
+      "seconds": 23.64
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 16.844
+      "seconds": 23.64
     },
     {
       "event": "request",
       "path": "/notebook/clues",
       "method": "GET",
       "status": null,
-      "seconds": 18.656
+      "seconds": 25.422
     },
     {
       "event": "response",
       "path": "/notebook/clues",
       "method": "GET",
       "status": 200,
-      "seconds": 18.656
+      "seconds": 25.422
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 20.781
+      "seconds": 27.437
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 20.781
+      "seconds": 27.437
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 20.984
+      "seconds": 27.594
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 20.984
+      "seconds": 27.594
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 21.734
+      "seconds": 28.25
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 21.781
+      "seconds": 28.25
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 22.5
+      "seconds": 29.031
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 22.5
+      "seconds": 29.031
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 25.578
+      "seconds": 32.062
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 25.578
+      "seconds": 32.062
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 26.844
+      "seconds": 33.328
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 26.859
+      "seconds": 33.344
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 33.453
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 26.984
+      "seconds": 33.453
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 26.984
+      "seconds": 33.5
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 33.515
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 27.672
+      "seconds": 34.125
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 27.688
+      "seconds": 34.14
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 27.828
+      "seconds": 34.25
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 27.828
+      "seconds": 34.25
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 27.938
+      "seconds": 34.344
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 27.938
+      "seconds": 34.344
     },
     {
       "event": "request",
       "path": "/quest/complete",
       "method": "POST",
       "status": null,
-      "seconds": 28.141
+      "seconds": 34.469
     },
     {
       "event": "response",
       "path": "/quest/complete",
       "method": "POST",
       "status": 200,
-      "seconds": 28.172
+      "seconds": 34.484
     },
     {
       "event": "request",
       "path": "/review/retry",
       "method": "POST",
       "status": null,
-      "seconds": 30.172
+      "seconds": 36.422
     },
     {
       "event": "response",
       "path": "/review/retry",
       "method": "POST",
       "status": 200,
-      "seconds": 30.172
+      "seconds": 36.422
     },
     {
       "event": "request",
       "path": "/leaderboard",
       "method": "GET",
       "status": null,
-      "seconds": 31.625
+      "seconds": 37.89
     },
     {
       "event": "response",
       "path": "/leaderboard",
       "method": "GET",
       "status": 200,
-      "seconds": 31.625
+      "seconds": 37.89
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 33.844
+      "seconds": 39.844
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 33.844
+      "seconds": 39.844
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 34.063
+      "seconds": 40.031
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 34.063
+      "seconds": 40.031
     },
     {
       "event": "request",
       "path": "/web/",
       "method": "GET",
       "status": null,
-      "seconds": 35.234
+      "seconds": 41.031
     },
     {
       "event": "response",
       "path": "/web/",
       "method": "GET",
       "status": 200,
-      "seconds": 35.25
+      "seconds": 41.031
     },
     {
       "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 35.391
+      "seconds": 43.109
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 35.422
+      "seconds": 43.125
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 38.594
+      "seconds": 45.328
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 38.594
+      "seconds": 45.344
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 39.625
+      "seconds": 46.094
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 39.625
+      "seconds": 46.094
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 48.875
+      "seconds": 54.906
     },
     {
       "event": "response",
       "path": "/auth/login",
       "method": "POST",
       "status": 200,
-      "seconds": 49.141
+      "seconds": 55.125
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 49.234
+      "seconds": 55.203
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 49.25
+      "seconds": 55.203
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 51.359
+      "seconds": 57.219
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 51.375
+      "seconds": 57.219
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 51.625
+      "seconds": 57.422
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 51.625
+      "seconds": 57.422
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 52.344
+      "seconds": 58.203
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 52.344
+      "seconds": 58.203
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 53.109
+      "seconds": 58.906
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 53.109
+      "seconds": 58.906
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 53.594
+      "seconds": 59.406
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 53.594
+      "seconds": 59.406
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 57.719
+      "seconds": 63.344
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 57.719
+      "seconds": 63.344
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 65.563
+      "seconds": 70.359
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 65.563
+      "seconds": 70.359
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 66.406
+      "seconds": 71.203
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 66.406
-    },
-    {
-      "event": "request",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": null,
-      "seconds": 66.609
-    },
-    {
-      "event": "response",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": 200,
-      "seconds": 66.609
-    },
-    {
-      "event": "request",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": null,
-      "seconds": 67.516
-    },
-    {
-      "event": "response",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": 200,
-      "seconds": 67.516
+      "seconds": 71.203
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 67.719
+      "seconds": 71.344
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 67.719
+      "seconds": 71.359
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 68.672
+      "seconds": 72.203
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 68.672
+      "seconds": 72.203
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 72.344
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 72.344
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 73.187
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 73.187
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 68.953
+      "seconds": 73.344
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 68.953
+      "seconds": 73.344
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 69.172
+      "seconds": 73.484
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 69.172
+      "seconds": 73.484
     },
     {
       "event": "request",
       "path": "/quest/complete",
       "method": "POST",
       "status": null,
-      "seconds": 69.469
+      "seconds": 73.672
     },
     {
       "event": "response",
       "path": "/quest/complete",
       "method": "POST",
       "status": 200,
-      "seconds": 69.469
+      "seconds": 73.672
     },
     {
       "event": "request",
       "path": "/web/",
       "method": "GET",
       "status": null,
-      "seconds": 69.625
+      "seconds": 73.781
     },
     {
       "event": "response",
       "path": "/web/",
       "method": "GET",
       "status": 200,
-      "seconds": 69.641
+      "seconds": 73.797
     },
     {
       "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 69.75
+      "seconds": 73.875
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 69.781
+      "seconds": 73.906
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 72.5
+      "seconds": 76.047
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 72.5
+      "seconds": 76.047
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 73.453
+      "seconds": 76.812
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 73.453
+      "seconds": 76.812
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 82.391
+      "seconds": 85.594
     },
     {
       "event": "response",
       "path": "/auth/login",
       "method": "POST",
       "status": 200,
-      "seconds": 82.656
+      "seconds": 85.828
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 82.75
+      "seconds": 85.906
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 82.766
+      "seconds": 85.906
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 84.922
+      "seconds": 87.922
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 84.922
+      "seconds": 87.922
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 85.25
+      "seconds": 88.125
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 85.25
+      "seconds": 88.125
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 85.922
+      "seconds": 88.89
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 85.922
+      "seconds": 88.89
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 86.672
+      "seconds": 89.609
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 86.672
+      "seconds": 89.609
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 87.156
+      "seconds": 90.109
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 87.156
+      "seconds": 90.109
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 91.203
+      "seconds": 94.078
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 91.203
+      "seconds": 94.078
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 99.219
+      "seconds": 101.047
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 99.219
+      "seconds": 101.047
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 100.172
+      "seconds": 101.953
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 100.172
-    },
-    {
-      "event": "request",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": null,
-      "seconds": 100.406
-    },
-    {
-      "event": "response",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": 200,
-      "seconds": 100.453
-    },
-    {
-      "event": "request",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": null,
-      "seconds": 101.297
-    },
-    {
-      "event": "response",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": 200,
-      "seconds": 101.297
+      "seconds": 101.953
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 101.609
+      "seconds": 102.109
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 101.656
+      "seconds": 102.109
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 102.453
+      "seconds": 102.859
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 102.453
+      "seconds": 102.859
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 103.015
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 103.015
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 103.859
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 103.859
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 102.688
+      "seconds": 104.015
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 102.688
+      "seconds": 104.015
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 102.875
+      "seconds": 104.156
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 102.875
+      "seconds": 104.187
     },
     {
       "event": "request",
       "path": "/quest/complete",
       "method": "POST",
       "status": null,
-      "seconds": 103.141
+      "seconds": 104.39
     },
     {
       "event": "response",
       "path": "/quest/complete",
       "method": "POST",
       "status": 200,
-      "seconds": 103.141
+      "seconds": 104.39
     },
     {
       "event": "request",
       "path": "/web/",
       "method": "GET",
       "status": null,
-      "seconds": 103.391
+      "seconds": 104.484
     },
     {
       "event": "response",
       "path": "/web/",
       "method": "GET",
       "status": 200,
-      "seconds": 103.406
+      "seconds": 104.5
     },
     {
       "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 103.563
+      "seconds": 104.578
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 103.594
+      "seconds": 104.578
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 107.219
+      "seconds": 107.047
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 107.219
+      "seconds": 107.047
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 108.531
+      "seconds": 107.765
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 108.531
+      "seconds": 107.765
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 117.922
+      "seconds": 116.594
     },
     {
       "event": "response",
       "path": "/auth/login",
       "method": "POST",
       "status": 200,
-      "seconds": 118.188
+      "seconds": 116.828
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 118.266
+      "seconds": 116.906
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 118.297
+      "seconds": 116.906
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 120.578
+      "seconds": 118.937
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 120.578
+      "seconds": 118.937
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 120.875
+      "seconds": 119.109
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 120.875
+      "seconds": 119.109
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 121.531
+      "seconds": 119.859
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 121.531
+      "seconds": 119.859
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 122.313
+      "seconds": 120.594
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 122.313
+      "seconds": 120.594
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 122.844
+      "seconds": 121.109
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 122.844
+      "seconds": 121.109
     },
     {
       "event": "request",
       "path": "/clues/collect",
       "method": "POST",
       "status": null,
-      "seconds": 126.922
+      "seconds": 124.969
     },
     {
       "event": "response",
       "path": "/clues/collect",
       "method": "POST",
       "status": 200,
-      "seconds": 126.922
+      "seconds": 124.969
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 134.266
+      "seconds": 131.937
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 134.266
+      "seconds": 131.937
     },
     {
       "event": "request",
       "path": "/quiz/submit",
       "method": "POST",
       "status": null,
-      "seconds": 135.141
+      "seconds": 132.75
     },
     {
       "event": "response",
       "path": "/quiz/submit",
       "method": "POST",
       "status": 200,
-      "seconds": 135.141
+      "seconds": 132.75
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 135.313
+      "seconds": 132.89
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
+      "status": 200,
+      "seconds": 132.89
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 133.765
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 133.765
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 133.922
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 133.953
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 134.75
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 134.75
+    },
+    {
+      "event": "request",
+      "path": "/progress/save",
+      "method": "POST",
+      "status": null,
+      "seconds": 134.906
+    },
+    {
+      "event": "response",
+      "path": "/progress/save",
+      "method": "POST",
+      "status": 200,
+      "seconds": 134.906
+    },
+    {
+      "event": "request",
+      "path": "/progress/me",
+      "method": "GET",
+      "status": null,
+      "seconds": 135.047
+    },
+    {
+      "event": "response",
+      "path": "/progress/me",
+      "method": "GET",
+      "status": 200,
+      "seconds": 135.047
+    },
+    {
+      "event": "request",
+      "path": "/quest/complete",
+      "method": "POST",
+      "status": null,
+      "seconds": 135.219
+    },
+    {
+      "event": "response",
+      "path": "/quest/complete",
+      "method": "POST",
+      "status": 200,
+      "seconds": 135.219
+    },
+    {
+      "event": "request",
+      "path": "/web/",
+      "method": "GET",
+      "status": null,
+      "seconds": 135.344
+    },
+    {
+      "event": "response",
+      "path": "/web/",
+      "method": "GET",
       "status": 200,
       "seconds": 135.359
     },
     {
       "event": "request",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": null,
-      "seconds": 136.266
-    },
-    {
-      "event": "response",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": 200,
-      "seconds": 136.266
-    },
-    {
-      "event": "request",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": null,
-      "seconds": 136.469
-    },
-    {
-      "event": "response",
-      "path": "/quiz/start",
-      "method": "POST",
-      "status": 200,
-      "seconds": 136.469
-    },
-    {
-      "event": "request",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": null,
-      "seconds": 137.344
-    },
-    {
-      "event": "response",
-      "path": "/quiz/submit",
-      "method": "POST",
-      "status": 200,
-      "seconds": 137.344
-    },
-    {
-      "event": "request",
-      "path": "/progress/save",
-      "method": "POST",
-      "status": null,
-      "seconds": 137.547
-    },
-    {
-      "event": "response",
-      "path": "/progress/save",
-      "method": "POST",
-      "status": 200,
-      "seconds": 137.547
-    },
-    {
-      "event": "request",
-      "path": "/progress/me",
-      "method": "GET",
-      "status": null,
-      "seconds": 137.719
-    },
-    {
-      "event": "response",
-      "path": "/progress/me",
-      "method": "GET",
-      "status": 200,
-      "seconds": 137.719
-    },
-    {
-      "event": "request",
-      "path": "/quest/complete",
-      "method": "POST",
-      "status": null,
-      "seconds": 137.953
-    },
-    {
-      "event": "response",
-      "path": "/quest/complete",
-      "method": "POST",
-      "status": 200,
-      "seconds": 137.953
-    },
-    {
-      "event": "request",
-      "path": "/web/",
-      "method": "GET",
-      "status": null,
-      "seconds": 138.0
-    },
-    {
-      "event": "response",
-      "path": "/web/",
-      "method": "GET",
-      "status": 200,
-      "seconds": 138.0
-    },
-    {
-      "event": "request",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": null,
-      "seconds": 138.109
+      "seconds": 135.437
     },
     {
       "event": "response",
       "path": "/web/favicon.png",
       "method": "GET",
       "status": 200,
-      "seconds": 138.141
+      "seconds": 135.469
     },
     {
       "event": "request",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": null,
-      "seconds": 140.375
+      "seconds": 137.109
     },
     {
       "event": "response",
       "path": "/web/web-source.tar.gz",
       "method": "GET",
       "status": 200,
-      "seconds": 140.375
+      "seconds": 137.109
     },
     {
       "event": "request",
       "path": "/game/content",
       "method": "GET",
       "status": null,
-      "seconds": 141.297
+      "seconds": 137.844
     },
     {
       "event": "response",
       "path": "/game/content",
       "method": "GET",
       "status": 200,
-      "seconds": 141.297
+      "seconds": 137.844
     },
     {
       "event": "request",
       "path": "/auth/login",
       "method": "POST",
       "status": null,
-      "seconds": 150.188
+      "seconds": 146.672
     },
     {
       "event": "response",
       "path": "/auth/login",
       "method": "POST",
       "status": 200,
-      "seconds": 150.453
+      "seconds": 146.906
     },
     {
       "event": "request",
       "path": "/review/me",
       "method": "GET",
       "status": null,
-      "seconds": 150.547
+      "seconds": 146.984
     },
     {
       "event": "response",
       "path": "/review/me",
       "method": "GET",
       "status": 200,
-      "seconds": 150.563
+      "seconds": 146.984
     },
     {
       "event": "request",
       "path": "/progress/save",
       "method": "POST",
       "status": null,
-      "seconds": 152.703
+      "seconds": 149.0
     },
     {
       "event": "response",
       "path": "/progress/save",
       "method": "POST",
       "status": 200,
-      "seconds": 152.703
+      "seconds": 149.0
     },
     {
       "event": "request",
       "path": "/progress/me",
       "method": "GET",
       "status": null,
-      "seconds": 152.891
+      "seconds": 149.172
     },
     {
       "event": "response",
       "path": "/progress/me",
       "method": "GET",
       "status": 200,
-      "seconds": 152.891
+      "seconds": 149.172
+    },
+    {
+      "event": "request",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": null,
+      "seconds": 149.922
+    },
+    {
+      "event": "response",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": 200,
+      "seconds": 149.922
+    },
+    {
+      "event": "request",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": null,
+      "seconds": 150.625
+    },
+    {
+      "event": "response",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": 200,
+      "seconds": 150.64
+    },
+    {
+      "event": "request",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": null,
+      "seconds": 151.14
+    },
+    {
+      "event": "response",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": 200,
+      "seconds": 151.14
+    },
+    {
+      "event": "request",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": null,
+      "seconds": 155.0
+    },
+    {
+      "event": "response",
+      "path": "/clues/collect",
+      "method": "POST",
+      "status": 200,
+      "seconds": 155.0
     },
     {
       "event": "request",
       "path": "/quiz/start",
       "method": "POST",
       "status": null,
-      "seconds": 160.516
+      "seconds": 162.0
     },
     {
       "event": "response",
       "path": "/quiz/start",
       "method": "POST",
       "status": 200,
-      "seconds": 160.516
+      "seconds": 162.0
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 162.859
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 162.875
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 163.015
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 163.047
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 163.844
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 163.844
+    },
+    {
+      "event": "request",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": null,
+      "seconds": 163.984
+    },
+    {
+      "event": "response",
+      "path": "/quiz/start",
+      "method": "POST",
+      "status": 200,
+      "seconds": 164.015
+    },
+    {
+      "event": "request",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": null,
+      "seconds": 164.797
+    },
+    {
+      "event": "response",
+      "path": "/quiz/submit",
+      "method": "POST",
+      "status": 200,
+      "seconds": 164.797
+    },
+    {
+      "event": "request",
+      "path": "/progress/save",
+      "method": "POST",
+      "status": null,
+      "seconds": 164.953
+    },
+    {
+      "event": "response",
+      "path": "/progress/save",
+      "method": "POST",
+      "status": 200,
+      "seconds": 164.953
+    },
+    {
+      "event": "request",
+      "path": "/progress/me",
+      "method": "GET",
+      "status": null,
+      "seconds": 165.078
+    },
+    {
+      "event": "response",
+      "path": "/progress/me",
+      "method": "GET",
+      "status": 200,
+      "seconds": 165.078
+    },
+    {
+      "event": "request",
+      "path": "/quest/complete",
+      "method": "POST",
+      "status": null,
+      "seconds": 165.281
+    },
+    {
+      "event": "response",
+      "path": "/quest/complete",
+      "method": "POST",
+      "status": 200,
+      "seconds": 165.281
     }
   ],
   "clicks": [
@@ -1663,7 +1845,10 @@
   },
   "session_submissions": [
     true,
-    false,
+    true,
+    true,
+    true,
+    true,
     true,
     true,
     true,
@@ -1674,6 +1859,6 @@
     true,
     true
   ],
-  "ui_state": "{\"scene\": \"deduction\", \"username_length\": 16, \"password_length\": 32, \"username_focus\": false, \"password_focus\": true, \"loading\": false, \"save_state\": \"confirmed\", \"quiz_index\": null}",
+  "ui_state": "{\"scene\": \"investigation\", \"username_length\": 16, \"password_length\": 32, \"username_focus\": false, \"password_focus\": true, \"loading\": false, \"save_state\": \"confirmed\", \"score\": 1126, \"completed_count\": 9, \"quiz_index\": 3}",
   "focus": "CANVAS"
 }

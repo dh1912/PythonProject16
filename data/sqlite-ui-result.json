@@ -14,6 +14,40 @@
     "Dien Bien Phu",
     "Dinh Doc Lap"
   ],
+  "canvas_account_isolation_progress_save": true,
+  "canvas_refresh_progress_save_after_commit": true,
+  "hud_evidence": [
+    {
+      "scene": "map",
+      "state": "confirmed",
+      "viewport": [
+        1280,
+        900
+      ],
+      "screenshot": "data/hud-map-confirmed-1280x900.png",
+      "result": "CAPTURED_REQUIRES_VISUAL_REVIEW"
+    },
+    {
+      "scene": "map",
+      "state": "confirmed",
+      "viewport": [
+        1366,
+        768
+      ],
+      "screenshot": "data/hud-map-confirmed-1366x768.png",
+      "result": "CAPTURED_REQUIRES_VISUAL_REVIEW"
+    },
+    {
+      "scene": "map",
+      "state": "confirmed",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "data/hud-map-confirmed-1920x1080.png",
+      "result": "CAPTURED_REQUIRES_VISUAL_REVIEW"
+    }
+  ],
   "page_errors": [],
   "http_mock": false,
   "scope": "Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật."
