@@ -31,6 +31,8 @@ jobs:
           python -m task5.check_sqlite_ui 2>&1 | tee "$RUNNER_TEMP/ui-diagnostic.txt"
       - name: Browser network faults with real SQLite
         run: python -m task5.check_network_matrix
+      - name: Concurrent HTTP writes with isolated SQLite
+        run: python -m task5.check_sqlite_load
       - name: UI diagnostic (no credentials)
         if: failure()
         uses: actions/upload-artifact@v4

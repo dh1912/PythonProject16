@@ -1,3 +1,17 @@
+# Kết quả bổ sung hardening hiện tại
+
+- Nền Git: `63990ad`, nhánh `improve/task5-release-readiness`; working tree sạch khi bắt đầu.
+- Guard generation được kiểm tra ngay sau response GET/POST, không chỉ trước khóa ghi.
+- Callback task cũ không đẩy lỗi vào tài khoản mới; logout xóa hàng đợi lỗi cũ.
+- Pytest: 109 PASS, 0 FAIL, 0 SKIP, 7 subtest PASS; compile và build sạch đạt.
+- Edge + FastAPI/SQLite thật: harness UI hiện có đạt, gồm bốn timeline, không pageerror.
+- Network harness hiện có đạt; không dùng fetch để khẳng định đã test canvas account switch.
+- Tải HTTP thật: 4 tài khoản, 52/52 request thành công; retry review/quiz đồng thời,
+  quest lặp không thưởng thêm; integrity/foreign keys đạt.
+- CI bổ sung bước tải SQLite; chưa chạy GitHub Actions cho các thay đổi của lượt này.
+- Còn thiếu canvas A/B pending, refresh giữa từng write, HUD mọi scene/trạng thái/viewport.
+  HTTPS staging chưa triển khai. Không tuyên bố hoàn tất toàn bộ final P1.
+
 # Kết quả sửa và giới hạn nghiệm thu Task 5
 
 ## P1 final bổ sung mới nhất

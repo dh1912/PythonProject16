@@ -69,17 +69,24 @@ class ApiGameDataService:
             async with self._write_lock:
                 if generation != self._session_generation:
                     raise ApiClientError('Phiên đăng nhập đã thay đổi.')
-                return await self.browser_client.request(method, path, payload, authenticated)
-        return await self.browser_client.request(method, path, payload, authenticated)
+                result = await self.browser_client.request(method, path, payload, authenticated)
+                if generation != self._session_generation:
+                    raise ApiClientError('Phiên đăng nhập đã thay đổi.')
+                return result
+        result = await self.browser_client.request(method, path, payload, authenticated)
+        if generation != self._session_generation:
+            raise ApiClientError('Phiên đăng nhập đã thay đổi.')
+        return result
 
     def _schedule(self, coroutine):
+        generation = self._session_generation
         task = asyncio.create_task(coroutine)
         self.pending_operations.add(task)
         def finished(completed):
             self.pending_operations.discard(completed)
             if not completed.cancelled():
                 error = completed.exception()
-                if error:
+                if error and generation == self._session_generation:
                     self.network_errors.append(str(error))
         task.add_done_callback(finished)
         return task
@@ -312,6 +319,7 @@ class ApiGameDataService:
         self._question_expiry.clear()
         self.save_state = 'confirmed'
         self.save_error = None
+        self.network_errors.clear()
         for task in tuple(self.pending_operations):
             task.cancel()
         self.client.token = None

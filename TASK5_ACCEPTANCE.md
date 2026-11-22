@@ -1,3 +1,31 @@
+# Nghiệm thu bổ sung: response muộn và tải SQLite
+
+Nền `63990ad`, nhánh `improve/task5-release-readiness`. Đây là kết quả mới, không
+thay thế giới hạn được ghi ở các lần nghiệm thu trước.
+
+| Kiểm tra đã chạy | Kết quả |
+|---|---|
+| Pytest | 109 PASS, 0 FAIL, 0 SKIP; 7 subtest PASS |
+| Compile / build Pygbag sạch | PASS |
+| Edge UI + FastAPI/SQLite tạm, gồm bốn timeline | PASS, không pageerror |
+| Network harness hiện có | PASS, 14 dòng kết quả, bao gồm hai clue |
+| Tải HTTP thật | 4 tài khoản, 52/52 request, 0 HTTP 503 |
+| Thời gian tải local | median 78.605 ms, p95 313.56 ms, max 360.58 ms |
+| SQLite integrity/foreign keys sau tải | PASS |
+| A/B response muộn cho 5 POST và GET tiến độ/review | PASS mức coroutine/service |
+| Canvas A/B logout pending | CHƯA NGHIỆM THU |
+| Refresh đang ghi từng quiz/review/quest | CHƯA NGHIỆM THU UI |
+| HUD 5 scene × 5 trạng thái × 3 viewport | CHƯA NGHIỆM THU |
+| Docker/Linux CI của commit mới | CHƯA CHẠY |
+| Staging HTTPS | CHƯA TRIỂN KHAI |
+
+Đã sửa guard sau transport và cách ly lỗi callback task cũ. Harness tải ban đầu
+thành công nghiệp vụ nhưng lỗi cleanup Windows do context manager SQLite không
+đóng connection. Đã dùng `contextlib.closing`, chạy lại hoàn tất mã thoát 0.
+Không thay đổi ScoringEngine, schema, nội dung lịch sử hoặc dữ liệu người chơi.
+Artifact `data/sqlite-load-result.json` chỉ chứa endpoint/status/timing, không token,
+tên tài khoản, mật khẩu hoặc nội dung trả lời. Không commit ảnh/log tài khoản thử.
+
 # Biên bản nghiệm thu Task 5 trên workspace hiện tại
 
 ## Final P1 bổ sung (nền 2679b3f)

@@ -1,3 +1,28 @@
+# Bổ sung hardening: staging giới hạn truy cập
+
+Chưa triển khai HTTPS trong lượt nghiệm thu này. Trước khi cấp quyền staging:
+
+1. Đặt reverse proxy HTTPS có SSO/VPN hoặc danh sách IP được phép ở trước **toàn bộ**
+   web và API; không chỉ bảo vệ trang gốc. Không mở trực tiếp cổng Uvicorn ra Internet.
+2. Một replica, một worker; mount `/data`, đặt `SQLITE_DB_PATH=/data/game.db`.
+   Giữ `JWT_SECRET` ổn định bằng secret của hosting, không ghi vào Docker image.
+3. Kiểm tra `/api/health`, dung lượng volume và log lỗi `SQLITE_BUSY`, `disk full`,
+   lỗi I/O hằng ngày. Cảnh báo khi dung lượng trống thấp; không xóa WAL thủ công.
+4. Backup bằng `sqlite3.Connection.backup()` sang file ngoài static. Mở bản backup
+   bằng connection riêng, chạy `PRAGMA integrity_check` và `PRAGMA foreign_key_check`.
+   Sao lưu trước mỗi migration; kiểm tra phục hồi trên đường dẫn DB tạm trước.
+5. Restore/rollback: chặn ghi và dừng backend trước, giữ bản DB lỗi để điều tra,
+   phục hồi backup đã kiểm tra cùng image tương ứng; không ghép DB cũ với WAL mới.
+   Sau khởi động kiểm tra health, đăng nhập thử và đối chiếu điểm/tiến độ đã ghi nhận.
+6. Không dùng kết quả tải bốn tài khoản dưới đây làm cam kết năng lực production.
+
+Lệnh đo tải độc lập (DB tạm, không thay cấu hình dữ liệu người chơi):
+`python -m task5.check_sqlite_load`.
+
+Kiểm thử logout/đổi tài khoản khi request đang pending bằng **canvas thật** và HUD
+25 tổ hợp scene/trạng thái ở ba viewport vẫn chưa nghiệm thu; chưa cấp staging
+không giới hạn chỉ dựa vào unit test generation guard.
+
 # Deploy FastAPI + Pygbag + SQLite
 
 ## Checklist staging HTTPS và rollback
