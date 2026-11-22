@@ -1,0 +1,7 @@
+{
+  "endpoint": "/quiz/submit",
+  "canvas_account_isolation": true,
+  "backend_committed_for_A": true,
+  "B_unchanged": true,
+  "page_errors": []
+}

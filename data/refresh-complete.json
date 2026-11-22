@@ -1,0 +1,6 @@
+{
+  "endpoint": "/quest/complete",
+  "canvas_refresh_after_commit": true,
+  "progress_and_reviews_restored": true,
+  "page_errors": []
+}
