@@ -4,6 +4,7 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 import json
+import argparse
 import os
 from pathlib import Path
 import secrets
@@ -19,6 +20,9 @@ from urllib.request import Request, urlopen
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--accounts', type=int, choices=(4,8,16), default=4)
+    count = parser.parse_args().accounts
     root = Path(__file__).resolve().parents[1]
     with tempfile.TemporaryDirectory(prefix='task5-load-') as directory:
         db = Path(directory) / 'load.db'
@@ -70,14 +74,21 @@ def main() -> int:
                 with closing(sqlite3.connect(db)) as conn:
                     qid, answer = conn.execute('SELECT ma_cau_hoi,dap_an_dung FROM cau_hoi_on_tap ORDER BY ma_cau_hoi LIMIT 1').fetchone()
                 answer = ord(answer)-65
-                # Bốn login/cùng IP nằm trong quota 5/phút; không bypass limiter.
+                # Đăng nhập theo quota cùng IP; tải gameplay sau đó chạy đồng thời.
+                # Không tắt limiter, không giả IP hay sửa cấu hình bảo mật server.
                 credentials = [{'username': 'load_'+secrets.token_hex(6),
-                                'password': secrets.token_urlsafe(18)} for _ in range(4)]
+                                'password': secrets.token_urlsafe(18)} for _ in range(count)]
                 for account in credentials:
                     call('/auth/register', {**account, 'fullname': 'Tài khoản tải tạm'}, measured=False)
 
-                def player(account):
-                    token = call('/auth/login', account)['access_token']
+                tokens = []
+                for index, account in enumerate(credentials):
+                    if index and index % 5 == 0:
+                        time.sleep(61)
+                    tokens.append(call('/auth/login', account)['access_token'])
+                # Quota quiz 30/phút/IP: 16 người * 3 submits cần chia hai đợt.
+                # Đo contention từng đợt, không giả định 16 submits đồng thời được phép.
+                def player(token):
                     session = call('/quiz/start', {'ma_cau_hoi': str(qid)}, token)['session_id']
                     wrong = {'ma_cau_hoi': str(qid), 'session_id': session, 'dap_an_chon': (answer+1)%4}
                     assert not call('/quiz/submit', wrong, token)['correct']
@@ -97,26 +108,33 @@ def main() -> int:
                     quest = {'ma_dia_diem': loc['id'], 'ten_dia_diem': loc['name'], 'nam_mo_khoa': 1914}
                     assert call('/quest/complete', quest, token)['bonus'] == 30
                     assert call('/quest/complete', quest, token)['bonus'] == 0
+                    call('/progress/save', {'current_loc_id':loc['id'],'max_year':1914,
+                                           'completed':[],'task4':{}}, token)
                     progress = call('/progress/me', token=token)['data']
                     assert loc['name'] in progress['completed']
                     return progress['score']
 
                 started = time.perf_counter()
-                with ThreadPoolExecutor(max_workers=4) as pool:
-                    scores = list(pool.map(player, credentials))
+                scores = []
+                for offset in range(0,count,8):
+                    if offset:
+                        time.sleep(61)
+                    with ThreadPoolExecutor(max_workers=min(count,8)) as pool:
+                        scores.extend(pool.map(player, tokens[offset:offset+8]))
                 with closing(sqlite3.connect(db)) as conn:
                     assert conn.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
                     assert not conn.execute('PRAGMA foreign_key_check').fetchall()
                 times = sorted(row['ms'] for row in measurements)
-                result = {'accounts': 4, 'peak_workers': 8, 'requests': len(times),
+                result = {'accounts': count, 'concurrent_players':min(count,8),
+                          'peak_workers': min(count,8)*2, 'requests': len(times),
                           'success': len(times), 'failed': 0, 'sqlite_busy_http_503': 0,
                           'elapsed_seconds': round(time.perf_counter()-started, 3),
                           'median_ms': statistics.median(times),
                           'p95_ms': times[min(len(times)-1, int(len(times)*.95))],
                           'max_ms': max(times), 'all_scores_nonnegative': all(s >= 0 for s in scores),
-                          'scope': 'HTTP thật; bốn tài khoản, không phải benchmark tải production',
+                          'scope': 'HTTP thật; login theo quota, gameplay tối đa 8 người/đợt; không phải production benchmark',
                           'measurements': measurements}
-                (root/'data/sqlite-load-result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+                (root/f'data/sqlite-load-{count}.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
                 print(json.dumps({k: v for k, v in result.items() if k != 'measurements'}, ensure_ascii=True))
                 return 0
             finally:

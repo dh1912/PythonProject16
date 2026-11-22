@@ -36,6 +36,7 @@ jobs:
           for endpoint in /quiz/submit /clues/collect /quest/complete /review/retry; do
             TASK5_ISOLATION_ENDPOINT="$endpoint" python -m task5.check_sqlite_ui
             TASK5_ISOLATION_ENDPOINT="$endpoint" TASK5_REFRESH_AFTER_COMMIT=1 python -m task5.check_sqlite_ui
+            TASK5_ISOLATION_ENDPOINT="$endpoint" TASK5_REFRESH_BEFORE_BACKEND=1 python -m task5.check_sqlite_ui
           done
       - name: Concurrent HTTP writes with isolated SQLite
         run: python -m task5.check_sqlite_load

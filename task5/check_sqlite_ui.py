@@ -105,6 +105,9 @@ def main() -> int:
                         isolation_held = []
                         if isolation_endpoint:
                             def hold_isolation(route):
+                                if os.getenv('TASK5_REFRESH_BEFORE_BACKEND') == '1':
+                                    isolation_held.append((route,None))
+                                    return
                                 response = route.fetch()
                                 assert response.ok, f'Backend từ chối {isolation_endpoint}'
                                 isolation_held.append((route,response))
@@ -153,11 +156,13 @@ def main() -> int:
                             # Snapshot đầy đủ giúp phát hiện cập nhật nhầm cả review và clue.
                             before_a = progress()
                             reviews_a = page.request.get(url+'/review/me',headers=headers).json()
-                            if os.getenv('TASK5_REFRESH_AFTER_COMMIT') == '1':
+                            if os.getenv('TASK5_REFRESH_AFTER_COMMIT') == '1' or os.getenv('TASK5_REFRESH_BEFORE_BACKEND') == '1':
                                 page.reload(wait_until='domcontentloaded')
                                 page.wait_for_function('window.task5GameReady === true',timeout=120000)
                                 for route,response in isolation_held:
-                                    try: route.fulfill(response=response)
+                                    try:
+                                        if response is None: route.abort('connectionfailed')
+                                        else: route.fulfill(response=response)
                                     except Exception: pass
                                 page.wait_for_timeout(1200)
                                 click(500,280)
@@ -173,10 +178,11 @@ def main() -> int:
                                 assert page.request.get(url+'/review/me',headers=headers).json() == reviews_a
                                 assert json.loads(page.evaluate('window.task5UiState'))['score'] == before_a['score']
                                 assert not errors,errors
-                                result={'endpoint':isolation_endpoint,'canvas_refresh_after_commit':True,
+                                phase = 'before_backend' if os.getenv('TASK5_REFRESH_BEFORE_BACKEND') == '1' else 'after_commit'
+                                result={'endpoint':isolation_endpoint,'canvas_refresh_phase':phase,
                                         'progress_and_reviews_restored':True,'page_errors':errors}
                                 name=isolation_endpoint.rsplit('/',1)[-1]
-                                (root/f'data/refresh-{name}.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+                                (root/f'data/refresh-{phase}-{name}.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
                                 print(json.dumps(result))
                                 return 0
                             for _ in range(4):
@@ -254,9 +260,10 @@ def main() -> int:
                         page.screenshot(path=str(root / 'data/sqlite-ui-notebook.png'))
                         assert progress() == before, 'Mở Notebook không được tăng tiến độ/điểm.'
                         page.keyboard.press('Escape')
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'map'")
                         click(loc['x'], loc['y'])
                         page.keyboard.press('Enter')
-                        page.wait_for_timeout(800)
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'investigation'")
                         for index in range(len(content['investigation_data'][loc['name']]['clues'])):
                             page.keyboard.press(str(index + 1))
                             page.wait_for_timeout(200)
@@ -266,7 +273,8 @@ def main() -> int:
                                 if isolation_endpoint == '/clues/collect' and isolation_held:
                                     return finish_isolation()
                         page.keyboard.press('d')
-                        page.wait_for_timeout(800)
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').scene === 'deduction'")
+                        page.wait_for_function("JSON.parse(window.task5UiState || '{}').question_ready === true")
                         questions = content['questions'][loc['name']]
                         page.wait_for_timeout(500)
                         q = questions[0]
@@ -476,8 +484,8 @@ def main() -> int:
                                   'canvas_account_isolation_progress_save': True,
                                   'canvas_refresh_progress_save_after_commit': True,
                                   'hud_evidence': hud_evidence,
-                                  'not_tested': ['canvas A/B quiz, clue, quest, review pending',
-                                      'refresh before commit for each write',
+                                  'not_tested': ['account isolation executed separately via TASK5_ISOLATION_ENDPOINT',
+                                      'refresh inside backend transaction',
                                       'HUD other scenes and queued/pending/failed/reconciling'],
                                   'page_errors': errors, 'http_mock': False,
                                   'scope': 'Quest đầu; nhập chuyển địa điểm thứ hai; API/SQLite thật.'}

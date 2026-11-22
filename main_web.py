@@ -59,6 +59,7 @@ async def main():
                         'score': game.score,
                         'completed_count': len(game.completed),
                         'quiz_index': getattr(game, 'task4_quiz_index', None),
+                        'question_ready': bool(getattr(game.data_service, '_question_sessions', {})),
                     })
                     await asyncio.sleep(.1)
             asyncio.create_task(publish_input_diagnostic())

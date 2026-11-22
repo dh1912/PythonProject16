@@ -1,3 +1,33 @@
+# Bổ sung trên nền 5ceb43b: CI và refresh trước backend
+
+Thông tin này thay thế nhận định "chưa biết run 44992851127": trang GitHub công
+khai xác nhận SUCCESS tại `5ceb43b`, 8m32s. Run 44991691041 FAIL tại 6ee4351:
+diagnostic cho thấy scene map, canvas focus, login/review 200, không có request
+quiz/start hoặc submit. Không có bằng chứng backend quiz trả lỗi trong run đó.
+Đây là race thao tác scene; bổ sung chờ map sau ESC Notebook, investigation sau
+Enter, deduction và question_ready trước chọn đáp án. Không tăng timeout chung.
+
+Edge với build sạch mới: UI regression và bốn timeline PASS, không pageerror.
+Bốn ca refresh trước backend (quiz/clue/quest/review) PASS qua canvas: giữ route
+không route.fetch, reload rồi login UI, tiến độ/review không đổi. Không tuyên bố
+đây là refresh giữa transaction. Snapshot baseline được đọc trước reload và
+đối chiếu sau login. Progress/save trước backend chưa thêm ca canvas tương ứng.
+
+Tải mở rộng HTTP thật (không tắt rate limit):
+
+| Tài khoản | Người gameplay đồng thời | Request | Lỗi | median/p95/max ms |
+|---|---|---|---|---|
+| 8 | 8 | 112/112 | 0 | 168.43 / 277.65 / 352.27 |
+| 16 | 8 mỗi đợt, hai đợt | 224/224 | 0 | 170.70 / 287.97 / 376.50 |
+
+Login theo quota 5/phút/IP. Không gọi đây là 16 người gameplay đồng thời.
+Đã thêm progress/save vào bài tải. Integrity và foreign keys PASS, không 503.
+Pytest 109 PASS, 0 FAIL, 0 SKIP, 7 subtest PASS. Compile/build PASS.
+HUD còn giữ ma trận NOT TESTED trước đó; không thêm PASS từ service state.
+Refresh trong transaction, HUD đầy đủ và CI cho commit mới vẫn là blocker.
+FINAL P1 ACCEPTED: NO. READY FOR CONTROLLED STAGING: NO.
+DEPLOYMENT NOT PERFORMED – HOSTING NOT PROVIDED.
+
 # Final P1: bổ sung canvas trên nền 6ee4351
 
 Working tree sạch khi bắt đầu; local và origin cùng `6ee4351`.

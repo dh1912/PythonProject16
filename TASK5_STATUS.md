@@ -1,3 +1,13 @@
+# Cập nhật nền 5ceb43b
+
+Run 44992851127 SUCCESS được xác minh qua trang GitHub công khai; không dùng để
+chứng nhận code mới. Thêm chờ scene/session sẵn sàng trong harness để tránh race
+Notebook/map. Edge regression gồm bốn timeline PASS trên build sạch.
+Refresh trước backend quiz/clue/quest/review PASS canvas; trong transaction chưa thử.
+Tải 8 tài khoản 112/112; 16 tài khoản hai đợt tối đa 8 người: 224/224, không lỗi.
+109 pytest + 7 subtest PASS. HUD đầy đủ và CI commit mới chưa nghiệm thu.
+FINAL P1 ACCEPTED: NO; READY FOR CONTROLLED STAGING: NO. Không deploy.
+
 # Cập nhật Final P1 trên nền 6ee4351
 
 - Bốn ca canvas A/B pending quiz/clue/quest/review: PASS Edge, backend commit thật.

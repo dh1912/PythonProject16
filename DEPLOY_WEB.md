@@ -1,3 +1,13 @@
+# Lệnh nghiệm thu bổ sung
+
+`python -m task5.check_sqlite_load --accounts 8` hoặc `--accounts 16`.
+Harness không tắt rate limit: login theo quota, tối đa 8 người gameplay đồng thời
+mỗi đợt. Không diễn giải kết quả thành khả năng phục vụ production.
+Để reload trước backend: đặt `TASK5_REFRESH_BEFORE_BACKEND=1` cùng
+`TASK5_ISOLATION_ENDPOINT` khi chạy harness UI. Không bật đồng thời cờ after_commit.
+Chưa nghiệm thu refresh giữa transaction và HUD đầy đủ; không phát hành staging
+chỉ từ run SUCCESS cũ. DEPLOYMENT NOT PERFORMED – HOSTING NOT PROVIDED.
+
 # Chạy lại nghiệm thu canvas có điều khiển
 
 Sau build sạch, chạy từng endpoint với biến môi trường:
