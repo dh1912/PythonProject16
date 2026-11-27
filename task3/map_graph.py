@@ -1,6 +1,7 @@
 """Bản đồ đồ thị có hướng (DAG) và thuật toán Dijkstra tìm đường ngắn nhất giữa các cứ điểm lịch sử."""
 import heapq
-from typing import Dict, List, Optional, Tuple
+import math
+from typing import Dict, List, Tuple
 
 
 class HistoryMapGraph:
@@ -9,7 +10,13 @@ class HistoryMapGraph:
         self._init_default_graph()
 
     def add_edge(self, u: str, v: str, weight: float = 1.0):
-        self.adj.setdefault(u, []).append((v, weight))
+        if not isinstance(u, str) or not u.strip() or not isinstance(v, str) or not v.strip():
+            raise ValueError("Graph nodes must be non-empty strings")
+        if isinstance(weight, bool) or not isinstance(weight, (int, float)):
+            raise TypeError("Edge weight must be a positive finite number")
+        if not math.isfinite(float(weight)) or weight <= 0:
+            raise ValueError("Edge weight must be a positive finite number")
+        self.adj.setdefault(u, []).append((v, float(weight)))
         self.adj.setdefault(v, [])
 
     def _init_default_graph(self):
@@ -28,10 +35,11 @@ class HistoryMapGraph:
             self.add_edge(u, v, w)
 
     def find_path(self, start: str, end: str) -> List[str]:
-        """Thuật toán Dijkstra tìm đường ngắn nhất giữa hai địa điểm lịch sử."""
+        """Return the shortest directed path, or an empty list when unreachable."""
         if start not in self.adj or end not in self.adj:
-            # Fallback đơn giản nếu nút chưa có trong đồ thị
-            return [start, end]
+            return []
+        if start == end:
+            return [start]
 
         distances = {node: float("inf") for node in self.adj}
         distances[start] = 0.0
@@ -62,4 +70,4 @@ class HistoryMapGraph:
             curr = previous[curr]
         path.reverse()
 
-        return path if path and path[0] == start else [start, end]
+        return path if path and path[0] == start else []

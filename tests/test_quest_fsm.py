@@ -29,6 +29,7 @@ from task4.quest_system import (
     QuestState,
     QuestStateMachine,
     QuizSystem,
+    QuestManager,
 )
 from task4.timeline_data import TIMELINE_QUEST_CONFIGS
 
@@ -285,6 +286,41 @@ class TestQuestFSMAndTimeline(unittest.TestCase):
         self.assertIn("timeline_verified", payload)
         self.assertIn("collected_clue_ids", payload)
         self.assertEqual(len(payload["collected_clue_ids"]), 4)
+
+    def test_quest_manager_rejects_locked_location_and_unknown_clue(self):
+        locations = [
+            {"id": 1, "name": "First", "start": 1911},
+            {"id": 2, "name": "Second", "start": 1945},
+        ]
+        manager = QuestManager(locations)
+
+        self.assertEqual(manager.state(locations[0]), "open")
+        self.assertEqual(manager.state(locations[1]), "locked")
+        self.assertFalse(manager.start(locations[1]))
+        self.assertFalse(manager.collect_clue(locations[1], "second-clue", ["second-clue"]))
+        self.assertFalse(manager.complete(locations[1]))
+
+        self.assertTrue(manager.start(locations[0]))
+        self.assertFalse(manager.collect_clue(locations[0], "not-required", ["first-a", "first-b"]))
+        self.assertEqual(manager.collected_clues["First"], set())
+
+    def test_quest_manager_requires_all_clues_and_a_quiz(self):
+        location = {"id": 1, "name": "First", "start": 1911}
+        manager = QuestManager([location])
+        required = ["first-a", "first-b"]
+
+        self.assertTrue(manager.start(location))
+        self.assertTrue(manager.collect_clue(location, "first-a", required))
+        self.assertFalse(manager.clues_complete(location))
+        self.assertFalse(manager.complete(location))
+
+        self.assertTrue(manager.collect_clue(location, "first-b", required))
+        self.assertTrue(manager.clues_complete(location))
+        self.assertFalse(manager.complete(location))
+
+        manager.record_quiz_answer(location, True)
+        self.assertTrue(manager.complete(location))
+        self.assertEqual(manager.state(location), "completed")
 
 
 if __name__ == "__main__":

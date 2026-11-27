@@ -12,7 +12,7 @@ class DisplaySettingsScene:
     GREEN = (45, 125, 80)
     BORDER = (210, 205, 195)
 
-    def __init__(self, resolution=(1080, 720), fullscreen=False):
+    def __init__(self, resolution=(1280, 720), fullscreen=False):
         self.resolution = tuple(resolution)
         if self.resolution not in self.RESOLUTIONS:
             self.resolution = min(self.RESOLUTIONS, key=lambda item: abs(item[0] - resolution[0]) + abs(item[1] - resolution[1]))

@@ -97,28 +97,28 @@ class LoginScene:
         self.message_color = RED
         self.auth_task = None
 
-        # Card chứa Form ở trung tâm (1100 x 700)
-        self.card_rect = pygame.Rect(310, 110, 480, 500)
+        # Card chứa Form ở trung tâm (520 x 500) trên canvas 1280x720.
+        self.card_rect = pygame.Rect(380, 110, 520, 500)
 
         # Tabs chuyển chế độ
-        self.tab_login_rect = pygame.Rect(340, 180, 200, 40)
-        self.tab_register_rect = pygame.Rect(560, 180, 200, 40)
+        self.tab_login_rect = pygame.Rect(410, 180, 220, 40)
+        self.tab_register_rect = pygame.Rect(650, 180, 220, 40)
 
         # Input fields cho Đăng nhập
-        self.input_login_user = InputBox(350, 260, 400, 42, "Nhập tên đăng nhập (vd: hocsinh01)")
-        self.input_login_pass = InputBox(350, 335, 400, 42, "Nhập mật khẩu (vd: 123456)", is_password=True)
+        self.input_login_user = InputBox(410, 260, 460, 42, "Nhập tên đăng nhập (vd: hocsinh01)")
+        self.input_login_pass = InputBox(410, 335, 460, 42, "Nhập mật khẩu (vd: 123456)", is_password=True)
 
         # Input fields cho Đăng ký
-        self.input_reg_user = InputBox(350, 240, 400, 40, "Tên đăng nhập mới (viết liền, không dấu)")
-        self.input_reg_pass = InputBox(350, 305, 400, 40, "Mật khẩu bảo mật", is_password=True)
-        self.input_reg_name = InputBox(350, 370, 400, 40, "Họ và tên người chơi (vd: Nguyễn Văn A)")
+        self.input_reg_user = InputBox(410, 240, 460, 40, "Tên đăng nhập mới (viết liền, không dấu)")
+        self.input_reg_pass = InputBox(410, 305, 460, 40, "Mật khẩu bảo mật", is_password=True)
+        self.input_reg_name = InputBox(410, 370, 460, 40, "Họ và tên người chơi (vd: Nguyễn Văn A)")
 
         # Focus mặc định
         self.input_login_user.active = True
 
         # Nút hành động
-        self.btn_submit = pygame.Rect(350, 410, 400, 46)
-        self.btn_guest = pygame.Rect(350, 470, 400, 40)
+        self.btn_submit = pygame.Rect(410, 410, 460, 46)
+        self.btn_guest = pygame.Rect(410, 470, 460, 40)
 
     def poll_auth_result(self):
         """Nhận kết quả async trong game loop, không chặn frame đang vẽ."""
@@ -345,11 +345,11 @@ class LoginScene:
         if self.mode == "login":
             # Nhãn
             lbl_u = self.small_font.render("Tên đăng nhập:", True, DARK)
-            screen.blit(lbl_u, (350, 238))
+            screen.blit(lbl_u, (410, 238))
             self.input_login_user.draw(screen, self.font, self.small_font)
 
             lbl_p = self.small_font.render("Mật khẩu:", True, DARK)
-            screen.blit(lbl_p, (350, 313))
+            screen.blit(lbl_p, (410, 313))
             self.input_login_pass.draw(screen, self.font, self.small_font)
 
             # Nút Đăng nhập
@@ -372,15 +372,15 @@ class LoginScene:
         else:
             # Form Đăng ký
             lbl_u = self.small_font.render("Tên tài khoản:", True, DARK)
-            screen.blit(lbl_u, (350, 220))
+            screen.blit(lbl_u, (410, 220))
             self.input_reg_user.draw(screen, self.font, self.small_font)
 
             lbl_p = self.small_font.render("Mật khẩu:", True, DARK)
-            screen.blit(lbl_p, (350, 285))
+            screen.blit(lbl_p, (410, 285))
             self.input_reg_pass.draw(screen, self.font, self.small_font)
 
             lbl_n = self.small_font.render("Họ và tên người chơi:", True, DARK)
-            screen.blit(lbl_n, (350, 350))
+            screen.blit(lbl_n, (410, 350))
             self.input_reg_name.draw(screen, self.font, self.small_font)
 
             # Nút Đăng ký

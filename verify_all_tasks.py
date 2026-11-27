@@ -22,7 +22,7 @@ if PROJECT_DIR not in sys.path:
 def test_task1():
     print("[1/5] Kiểm thử Task 1: Khung kiến trúc, Game Loop & FastAPI...")
     import config
-    assert config.SCREEN_WIDTH == 1080
+    assert config.SCREEN_WIDTH == 1280
     assert config.SCREEN_HEIGHT == 720
     assert config.TARGET_FPS == 60
 

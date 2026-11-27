@@ -462,6 +462,9 @@ def transform_investigation_data(dia_diem_rows, su_kien_rows, nhan_vat_rows, man
         investigation_dict[key_name] = {
             "event": ev.get("ten_su_kien", "Sự kiện lịch sử"),
             "year": str(ev.get("nam_dien_ra", "")),
+            "date": ev.get("ngay_thang_chi_tiet", ""),
+            "summary": ev.get("tom_tat_dien_bien", ""),
+            "source": ev.get("nguon_trich_dan", ""),
             "witness": nv.get("ten_nhan_vat", "Nhân chứng lịch sử"),
             "dialogue": nv.get("loi_thoai", "Hãy tìm thêm manh mối để sáng tỏ sự kiện này."),
             "clues": clues_list if clues_list else [

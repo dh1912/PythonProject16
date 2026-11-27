@@ -16,3 +16,30 @@ def test_nearest_pin_beats_earlier_label():
     scene.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN,button=1,pos=(380,505)))
     assert scene.selected_location['name']=='Dinh'
     assert scene.selected_year==1975
+
+
+def test_timeline_major_year_is_clickable():
+    scene = MapScene.__new__(MapScene)
+    scene.settings_button = pygame.Rect(1190, 28, 46, 46)
+    scene.explore_button = pygame.Rect(804, 486, 424, 50)
+    scene.timeline_years = (1911, 1930, 1941, 1945, 1954, 1975)
+    scene.locations = []
+    scene.selected_location = None
+    scene.selected_year = 1914
+    scene.message = ""
+    # With slider_x = 190 and width = 900, 1930 maps to 190 + (1930-1914)/61 * 900 ≈ 426
+    event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(426, 640))
+    scene.handle_event(event)
+    assert scene.selected_year == 1930
+
+
+
+def test_explore_button_returns_explore_action():
+    scene = MapScene.__new__(MapScene)
+    scene.settings_button = pygame.Rect(1010, 34, 46, 46)
+    scene.explore_button = pygame.Rect(790, 485, 250, 42)
+    scene.timeline_years = (1911, 1930, 1941, 1945, 1954, 1975)
+    scene.locations = []
+    scene.selected_location = {"name": "A"}
+    event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(800, 500))
+    assert scene.handle_event(event) == "explore"

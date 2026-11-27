@@ -2,26 +2,58 @@ import os
 import math
 import pygame
 
-# Mau sac
-BACKGROUND = (245, 239, 220)
-RED = (180, 35, 45)
-DARK = (50, 45, 40)
-WHITE = (255, 255, 255)
-GREEN = (45, 125, 80)
-GRAY = (190, 185, 175)
-BLUE = (60, 110, 160)
-GOLD = (224, 168, 50)
-SEA = (216, 246, 255)
-LAND = (234, 214, 170)
-LAND_EDGE = (140, 100, 60)
+# Bảng màu giả cổ: giấy da, đồng, gỗ và ánh nến ấm.
+BACKGROUND = (235, 222, 191)
+RED = (139, 43, 39)
+DARK = (56, 43, 32)
+WHITE = (255, 249, 229)
+GREEN = (57, 103, 70)
+GRAY = (166, 139, 101)
+BLUE = (76, 91, 112)
+GOLD = (184, 128, 48)
+SEA = (188, 193, 170)
+LAND = (208, 184, 132)
+LAND_EDGE = (108, 76, 46)
+PARCHMENT = (247, 236, 207)
+PARCHMENT_DARK = (224, 204, 165)
+WOOD = (91, 58, 38)
+COPPER = (161, 105, 59)
 
 # Mau theo trang thai dia diem
 COLOR_LOCKED = (140, 140, 140)   # chua mo khoa
 COLOR_OPEN = GOLD                # co the kham pha
 COLOR_DONE = GREEN               # da hoan thanh
 
-# Khung ban do tren man hinh (x, y, rong, cao)
-MAP_RECT = (40, 145, 700, 430)
+# Bố cục chuẩn HD 1280x720 theo đặc tả màn hình bản đồ.
+MAP_RECT = (24, 104, 548, 466)
+LEGEND_RECT = pygame.Rect(586, 104, 180, 252)
+INFO_RECT = pygame.Rect(780, 104, 476, 466)
+TIMELINE_RECT = pygame.Rect(24, 584, 1232, 118)
+MAP_CONTENT_RECT = pygame.Rect(48, 120, 500, 432)
+# bando.jpg là ảnh dọc 736x1030; giữ đúng tỉ lệ khi fit vào vùng bản đồ.
+MAP_IMAGE_SIZE = (736, 1030)
+MAP_IMAGE_SCALE = min(MAP_CONTENT_RECT.width / MAP_IMAGE_SIZE[0], MAP_CONTENT_RECT.height / MAP_IMAGE_SIZE[1])
+MAP_IMAGE_RECT = pygame.Rect(
+    MAP_CONTENT_RECT.centerx - round(MAP_IMAGE_SIZE[0] * MAP_IMAGE_SCALE / 2),
+    MAP_CONTENT_RECT.centery - round(MAP_IMAGE_SIZE[1] * MAP_IMAGE_SCALE / 2),
+    round(MAP_IMAGE_SIZE[0] * MAP_IMAGE_SCALE),
+    round(MAP_IMAGE_SIZE[1] * MAP_IMAGE_SCALE),
+)
+
+# Tọa độ gốc trong dữ liệu lịch sử; MapScene ánh xạ tỷ lệ vào toàn bộ bando.jpg.
+# Bảng này là fallback cho các bản ghi DB cũ chưa có tọa độ chuẩn.
+CANONICAL_LOCATION_COORDS = {
+    1: (412.0, 490.0), 2: (525.0, 203.0), 3: (376.0, 286.0),
+    4: (391.0, 183.0), 5: (367.0, 201.0), 6: (387.0, 224.0),
+    7: (389.0, 207.0), 8: (299.0, 217.0), 9: (415.0, 505.0),
+    10: (370.0, 320.0), 11: (387.0, 218.0),
+}
+# Tọa độ dia_diem là pixel trên ảnh gốc 736x1030, không phải tọa độ canvas.
+LABEL_OFFSETS = {
+    1: (14, 8), 2: (-142, -4), 3: (14, 8), 4: (-148, -18),
+    5: (14, -22), 6: (16, 8), 7: (14, 22), 8: (-150, 8),
+    9: (14, 28), 10: (14, 8), 11: (-175, -22),
+}
 
 # Duong vien Viet Nam don gian hoa (kinh do, vi do), theo chieu kim dong ho.
 # Day la hinh minh hoa chu S, khong phai ban do dia ly chinh xac.
@@ -45,10 +77,18 @@ VIETNAM_OUTLINE = [
 
 
 def project(lon, lat):
-    """Doi (kinh do, vi do) sang toa do (x, y) tren man hinh."""
-    x = 250 + (lon - 102.0) * 24.0
-    y = 170 + (23.6 - lat) * 26.0
+    """Đổi kinh/vĩ độ sang tọa độ trong khung bản đồ HD."""
+    x = MAP_CONTENT_RECT.x + (float(lon) - 102.0) / 7.6 * MAP_CONTENT_RECT.width
+    y = MAP_CONTENT_RECT.y + (23.6 - float(lat)) / 15.2 * MAP_CONTENT_RECT.height
     return int(x), int(y)
+
+
+def project_source(x, y):
+    """Đổi pixel ảnh gốc bando.jpg sang pixel màn hình sau khi fit đồng nhất."""
+    return (
+        round(MAP_IMAGE_RECT.left + float(x) * MAP_IMAGE_SCALE),
+        round(MAP_IMAGE_RECT.top + float(y) * MAP_IMAGE_SCALE),
+    )
 
 
 class MapScene:
@@ -56,7 +96,9 @@ class MapScene:
         self.font = pygame.font.SysFont("segoeui,arial,timesnewroman", 20)
         self.small_font = pygame.font.SysFont("segoeui,arial,timesnewroman", 15)
         self.small_bold = pygame.font.SysFont("segoeui,arial,timesnewroman", 15, bold=True)
-        self.settings_button = pygame.Rect(1010, 34, 46, 46)
+        self.settings_button = pygame.Rect(1190, 28, 46, 46)
+        self.explore_button = pygame.Rect(804, 486, 424, 50)
+        self.timeline_years = (1911, 1930, 1941, 1945, 1954, 1975)
         self.title_font = pygame.font.SysFont("segoeui,arial,timesnewroman", 30, bold=True)
 
         self.selected_year = 1914
@@ -72,16 +114,21 @@ class MapScene:
         self.player_name = ""
         self.score = 0
 
-        # Tai hinh anh ban do thuc te
-        self.map_img_x = 240
-        self.map_img_y = 147
-        self.map_img_w = 304
-        self.map_img_h = 426
+        # Tải bando.jpg và giữ nguyên tỉ lệ gốc của toàn bộ ảnh.
+        self.map_img_x, self.map_img_y = MAP_IMAGE_RECT.topleft
+        self.map_img_w, self.map_img_h = MAP_IMAGE_RECT.size
         self.map_image = None
+        self.map_source_size = MAP_IMAGE_SIZE
 
         map_path = os.path.join(os.path.dirname(__file__), "..", "bando.jpg")
         if os.path.exists(map_path):
             raw_img = pygame.image.load(map_path)
+            self.map_source_size = raw_img.get_size()
+            scale = min(MAP_CONTENT_RECT.width / self.map_source_size[0], MAP_CONTENT_RECT.height / self.map_source_size[1])
+            self.map_img_w = round(self.map_source_size[0] * scale)
+            self.map_img_h = round(self.map_source_size[1] * scale)
+            self.map_img_x = MAP_CONTENT_RECT.centerx - self.map_img_w // 2
+            self.map_img_y = MAP_CONTENT_RECT.centery - self.map_img_h // 2
             self.map_image = pygame.transform.smoothscale(raw_img, (self.map_img_w, self.map_img_h))
 
         # Lấy dữ liệu địa điểm trực tiếp từ database (không dùng mock fallback)
@@ -92,8 +139,15 @@ class MapScene:
             self.locations = game_data_service.get_locations_from_db()
 
         for location in self.locations:
-            if "x" not in location or "y" not in location:
+            location_id = int(location.get("id", location.get("ma_dia_diem", 0)) or 0)
+            source_xy = CANONICAL_LOCATION_COORDS.get(location_id)
+            if source_xy:
+                location["x"], location["y"] = project_source(*source_xy)
+            elif "toa_do_x" in location and "toa_do_y" in location:
+                location["x"], location["y"] = project_source(location["toa_do_x"], location["toa_do_y"])
+            elif "x" not in location or "y" not in location:
                 location["x"], location["y"] = project(location.get("lon", 105.0), location.get("lat", 21.0))
+            location.setdefault("label_offset", LABEL_OFFSETS.get(location_id, (14, 0)))
 
         self.outline = [project(lon, lat) for lon, lat in VIETNAM_OUTLINE]
 
@@ -157,12 +211,13 @@ class MapScene:
         # Try several nearby positions to prevent dense historical locations
         # from drawing their labels on top of one another.
         preferred_right = location.get("side", "r") == "r"
-        base_y = location["y"] - height // 2 + location.get("dy", 0)
+        label_dx, label_dy = location.get("label_offset", (14, location.get("dy", 0)))
+        base_y = location["y"] - height // 2 + label_dy
         offsets = [0, -24, 24, -44, 44, -62, 62, -82, 82, -104, 104, -128, 128]
         candidates = []
         for offset in offsets:
             for right in (preferred_right, not preferred_right):
-                x = location["x"] + 14 if right else location["x"] - 14 - width
+                x = location["x"] + label_dx if right else location["x"] - abs(label_dx) - width
                 y = base_y + offset
                 rect = pygame.Rect(x - 4, y - 2, width + 8, height + 4)
                 if rect.left < MAP_RECT[0] + 4 or rect.right > MAP_RECT[0] + MAP_RECT[2] - 4:
@@ -203,8 +258,16 @@ class MapScene:
         screen.blit(box, (x - 4, y - 2))
         screen.blit(image, (x, y))
 
+    def draw_panel_frame(self, screen, rect, fill=PARCHMENT, border=COPPER, radius=14):
+        """Khung giấy da dùng chung cho bản đồ, thông tin và timeline."""
+        pygame.draw.rect(screen, WOOD, rect.inflate(8, 8), border_radius=radius + 3)
+        pygame.draw.rect(screen, fill, rect, border_radius=radius)
+        pygame.draw.rect(screen, border, rect, width=2, border_radius=radius)
+        pygame.draw.rect(screen, PARCHMENT_DARK, rect.inflate(-8, -8), width=1, border_radius=max(2, radius - 4))
+
     def draw_map_panel(self, screen):
         panel = pygame.Rect(MAP_RECT)
+        self.draw_panel_frame(screen, panel, fill=(229, 218, 185), border=COPPER, radius=16)
         old_clip = screen.get_clip()
 
         # Bien
@@ -248,7 +311,9 @@ class MapScene:
             position = (location["x"], location["y"])
 
             if status == "open":
-                halo_radius = radius + 5 + int(pulse * 3)
+                mouse_pos = pygame.mouse.get_pos()
+                hovered = pygame.Rect(position[0] - radius - 6, position[1] - radius - 6, (radius + 6) * 2, (radius + 6) * 2).collidepoint(mouse_pos)
+                halo_radius = radius + 7 + int(pulse * 4) + (3 if hovered else 0)
                 halo = pygame.Surface((halo_radius * 2 + 2, halo_radius * 2 + 2), pygame.SRCALPHA)
                 pygame.draw.circle(
                     halo, (*color, max(20, 65 - int(pulse * 30))),
@@ -270,7 +335,7 @@ class MapScene:
             if location == self.selected_location:
                 pygame.draw.circle(screen, BLUE, position, 17, 3)
 
-        # Ve ten sau cung de khong bi cham tron che
+        # Ve nhan trong khung map, khong cat chu hoac tran vien.
         occupied_labels = []
         for location in sorted(self.locations, key=lambda item: item == self.selected_location):
             self.draw_label(
@@ -280,20 +345,16 @@ class MapScene:
             )
 
         screen.set_clip(old_clip)
-        pygame.draw.rect(screen, GREEN, panel, width=3, border_radius=15)
+        pygame.draw.rect(screen, COPPER, panel, width=2, border_radius=15)
 
-        self.draw_text(screen, "BẢN ĐỒ", 60, 158, self.font, GREEN)
-
-        self.draw_legend(screen)
+        self.draw_text(screen, "BẢN ĐỒ HÀNH TRÌNH", MAP_RECT[0] + 18, MAP_RECT[1] + 16, self.small_bold, RED)
 
     def draw_legend(self, screen):
         # Use the empty right side of the map panel instead of covering labels.
-        x = 555
-        y = 205
-        legend_rect = pygame.Rect(x - 12, y - 10, 165, 172)
-        pygame.draw.rect(screen, WHITE, legend_rect, border_radius=10)
-        pygame.draw.rect(screen, (180, 205, 220), legend_rect, 1, border_radius=10)
-
+        legend_rect = LEGEND_RECT.copy()
+        self.draw_panel_frame(screen, legend_rect, fill=(247, 237, 211), border=COPPER, radius=10)
+        x = legend_rect.x + 16
+        y = legend_rect.y + 18
         self.draw_text(screen, "Chú giải", x, y, self.small_bold, DARK)
 
         items = [
@@ -309,14 +370,11 @@ class MapScene:
             self.draw_text(screen, text, x + 26, cy - 8, self.small_font)
 
         done = len(self.completed)
-        self.draw_text(
-            screen, f"Tiến độ: {done}/{len(self.locations)}",
-            x, y + 125, self.small_bold, GREEN
-        )
+        self.draw_text(screen, f"Tiến độ: {done}/{len(self.locations)}", x, legend_rect.bottom - 28, self.small_bold, GREEN)
 
     def draw_timeline(self, screen):
         min_year, max_year = 1914, 1975
-        slider_x, slider_y, slider_width = 280, 605, 560
+        slider_x, slider_y, slider_width = 190, 640, 900
         axis_right = slider_x + slider_width
 
         # Use the same year-to-pixel mapping for the knob and every milestone below.
@@ -327,9 +385,23 @@ class MapScene:
         )
         knob_x = year_to_x(selected_year)
 
+        timeline_rect = TIMELINE_RECT.copy()
+        self.draw_panel_frame(screen, timeline_rect, fill=PARCHMENT, border=COPPER, radius=12)
+        self.draw_text(screen, "DÒNG THỜI GIAN LỊCH SỬ", 48, 595, self.small_bold, RED)
         pygame.draw.line(screen, GRAY, (slider_x, slider_y), (axis_right, slider_y), 8)
         pygame.draw.line(screen, RED, (slider_x, slider_y), (knob_x, slider_y), 8)
-        pygame.draw.circle(screen, RED, (knob_x, slider_y), 12)
+        pygame.draw.circle(screen, GOLD, (knob_x, slider_y), 12)
+        pygame.draw.circle(screen, WOOD, (knob_x, slider_y), 12, 2)
+        # Sáu mốc chính của hành trình, luôn hiển thị và có thể bấm chọn.
+        for year in self.timeline_years:
+            x = year_to_x(year)
+            selected = abs(selected_year - year) <= 2
+            color = RED if selected else DARK
+            pygame.draw.circle(screen, GOLD if selected else PARCHMENT, (x, slider_y), 8)
+            pygame.draw.circle(screen, COPPER, (x, slider_y), 8, 2)
+            label = self.small_bold.render(str(year), True, color)
+            screen.blit(label, (x - label.get_width() // 2, 655))
+
         if self.quest_manager:
             states = {"completed": "✓", "available": "●", "investigating": "◉", "quiz": "?", "locked": "○"}
             milestones_by_year = {}
@@ -366,7 +438,7 @@ class MapScene:
                 screen.blit(label, (text_x, label_top + row * row_gap))
 
         current_label = self.font.render(f"Năm đang chọn: {selected_year}", True, RED)
-        screen.blit(current_label, (450, 568))
+        screen.blit(current_label, (540, 595))
 
     def wrap(self, text, font, max_width):
         words = text.split()
@@ -389,25 +461,15 @@ class MapScene:
         return lines
 
     def draw_information(self, screen):
-        panel_x = 770
-        panel_y = 180
+        panel_x = INFO_RECT.x
+        panel_y = INFO_RECT.y
 
-        pygame.draw.rect(
-            screen, WHITE,
-            (panel_x, panel_y, 290, 350),
-            border_radius=12
-        )
-
-        pygame.draw.rect(
-            screen, GRAY,
-            (panel_x, panel_y, 290, 350),
-            width=2,
-            border_radius=12
-        )
+        info_rect = INFO_RECT.copy()
+        self.draw_panel_frame(screen, info_rect, fill=PARCHMENT, border=COPPER, radius=12)
 
         self.draw_text(
             screen, "THÔNG TIN ĐỊA DANH",
-            panel_x + 20, panel_y + 18,
+            panel_x + 28, panel_y + 18,
             self.small_bold, RED
         )
 
@@ -416,9 +478,9 @@ class MapScene:
 
             for line in self.wrap(
                 "Hãy bấm vào một địa điểm trên bản đồ để xem thông tin.",
-                self.small_font, 250
+                self.small_font, 420
             ):
-                self.draw_text(screen, line, panel_x + 20, y, self.small_font)
+                self.draw_text(screen, line, panel_x + 16, y, self.small_font)
                 y += 24
 
             if self.message:
@@ -432,32 +494,32 @@ class MapScene:
         status = self.status(location)
 
         display_name = location.get("display_name") or location.get("name", "")
-        name_lines = self.wrap(display_name, self.small_bold, 250)
+        name_lines = self.wrap(display_name, self.small_bold, 420)
         name_y = panel_y + 58
         for line in name_lines[:2]:
-            self.draw_text(screen, line, panel_x + 20, name_y, self.small_bold, GREEN)
+            self.draw_text(screen, line, panel_x + 28, name_y, self.small_bold, GREEN)
             name_y += 21
 
         if "event_time" in location and location["event_time"]:
             self.draw_text(
                 screen,
                 f"Thời gian: {location['event_time']}",
-                panel_x + 20, name_y + 2,
+                panel_x + 28, name_y + 2,
                 self.small_bold, RED
             )
 
         self.draw_text(
             screen,
             f"Giai đoạn: {location['start']} - {location['end']}",
-            panel_x + 20, name_y + 25,
+            panel_x + 28, name_y + 25,
             self.small_font
         )
 
         y = name_y + 51
 
-        desc_lines = self.wrap(location.get("description", ""), self.small_font, 250)
+        desc_lines = self.wrap(location.get("description", ""), self.small_font, 420)
         for line in desc_lines[:5]:
-            self.draw_text(screen, line, panel_x + 20, y, self.small_font)
+            self.draw_text(screen, line, panel_x + 28, y, self.small_font)
             y += 23
 
         status_text = {
@@ -466,24 +528,30 @@ class MapScene:
             "locked": ("Chưa mở khóa", COLOR_LOCKED),
         }[status]
 
+        # Dòng trạng thái nằm trên nút bấm, hoàn toàn tách biệt không bị che.
         self.draw_text(
             screen, status_text[0],
-            panel_x + 20, panel_y + 285,
+            panel_x + 28, panel_y + 336,
             self.small_bold, status_text[1]
         )
 
-        self.draw_text(
-            screen, "D: Suy luận (cần đủ manh mối)",
-            panel_x + 20, panel_y + 312,
-            self.small_font, DARK
-        )
+        # Nút bấm nằm gọn bên dưới dòng trạng thái và trong khung thông tin.
+        self.explore_button.topleft = (804, 486)
+        hovered = self.explore_button.collidepoint(pygame.mouse.get_pos())
+        button_color = GREEN if status != "locked" else GRAY
+        if hovered and status != "locked":
+            button_color = (75, 132, 88)
+        pygame.draw.rect(screen, button_color, self.explore_button, border_radius=8)
+        pygame.draw.rect(screen, GOLD if hovered and status != "locked" else COPPER, self.explore_button, 3 if hovered else 2, border_radius=8)
+        button_text = self.small_bold.render("DI CHUYỂN & KHÁM PHÁ", True, WHITE)
+        screen.blit(button_text, button_text.get_rect(center=self.explore_button.center))
 
     # ------------------------------------------------------------
     # SU KIEN
     # ------------------------------------------------------------
     def year_from_mouse(self, mouse_x):
-        slider_x = 280
-        slider_width = 560
+        slider_x = 190
+        slider_width = 900
 
         ratio = (mouse_x - slider_x) / slider_width
         ratio = max(0, min(1, ratio))
@@ -496,12 +564,25 @@ class MapScene:
                 return "settings"
             mouse_x, mouse_y = event.pos
 
-            # Bam vao thanh thoi gian
-            if 265 <= mouse_x <= 855 and abs(mouse_y - 605) <= 20:
+            # Bấm trực tiếp vào một trong sáu mốc chính trên timeline.
+            timeline_x = lambda year: 190 + round((max(1914, min(1975, year)) - 1914) * 900 / (1975 - 1914))
+            for year in getattr(self, "timeline_years", (1911, 1930, 1941, 1945, 1954, 1975)):
+                if pygame.Rect(timeline_x(year) - 24, 620, 48, 45).collidepoint(event.pos):
+                    self.selected_year = year
+                    self.selected_location = None
+                    self.message = f"Đã chọn mốc lịch sử năm {year}."
+                    return
+
+            # Bấm vào thanh thời gian để chọn năm liên tục.
+            if 190 <= mouse_x <= 1090 and abs(mouse_y - 640) <= 20:
                 self.dragging = True
                 self.selected_year = self.year_from_mouse(mouse_x)
                 self.selected_location = None
                 self.message = ""
+                return
+
+            if getattr(self, "selected_location", None) and getattr(self, "explore_button", pygame.Rect()).collidepoint(event.pos):
+                return "explore"
 
             # Bam vao dia diem (kiem tra ca cham tron va khung chu ten dia danh)
             # Pin chồng nhau: chọn pin gần click nhất trước, rồi mới xét nhãn.
@@ -550,26 +631,22 @@ class MapScene:
         self.animation_time += min(max(dt, 0.0), 0.05)
         screen.fill(BACKGROUND)
 
-        title = self.title_font.render("HÀNH TRÌNH LỊCH SỬ VIỆT NAM (1914 - 1975)", True, RED)
+        header = pygame.Rect(24, 14, 1232, 76)
+        self.draw_panel_frame(screen, header, fill=(83, 55, 38), border=GOLD, radius=12)
+        title = self.title_font.render("HÀNH TRÌNH LỊCH SỬ VIỆT NAM", True, WHITE)
+        screen.blit(title, (42, 22))
+        subtitle = self.small_font.render("BẢN ĐỒ KÝ ỨC · 1858 - 1975", True, (235, 211, 157))
+        screen.blit(subtitle, (44, 58))
 
-        screen.blit(
-            title,
-            (screen.get_width() // 2 - title.get_width() // 2, 45)
-        )
-
-        pygame.draw.circle(screen, WHITE, self.settings_button.center, 24)
-        pygame.draw.circle(screen, GREEN, self.settings_button.center, 24, 2)
+        score_text = self.small_bold.render(f"ĐIỂM TRI THỨC: {self.score}", True, (255, 224, 143))
+        screen.blit(score_text, (910, 26))
+        progress_text = self.small_bold.render(f"TIẾN ĐỘ: {len(self.completed)}/{len(self.locations)}", True, WHITE)
+        screen.blit(progress_text, (910, 52))
+        pygame.draw.circle(screen, PARCHMENT, self.settings_button.center, 24)
+        pygame.draw.circle(screen, GOLD, self.settings_button.center, 24, 2)
         self.draw_settings_gear(screen)
 
-        # Hiển thị trạng thái kết nối Cơ sở dữ liệu (MySQL / Offline Cache)
-        if self.db_status:
-            status_color = GREEN if "Connected" in self.db_status else (160, 130, 40)
-            self.draw_text(screen, f"[{self.db_status}]", 40, 115, self.small_bold, status_color)
-        # Hiển thị thông tin người chơi & Điểm số từ bảng tien_do_choi
-        if self.player_name:
-            player_info_str = f"Người chơi: {self.player_name}  |  Điểm: {self.score}"
-            self.draw_text(screen, player_info_str, 720, 115, self.small_bold, BLUE)
-
         self.draw_map_panel(screen)
+        self.draw_legend(screen)
         self.draw_information(screen)
         self.draw_timeline(screen)

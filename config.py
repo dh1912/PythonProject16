@@ -20,7 +20,8 @@ TASK4_DIR = PROJECT_ROOT / "task4"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- THÔNG SỐ ĐỒ HỌA & MÀN HÌNH ---
-SCREEN_WIDTH = 1080
+# Canvas HD 16:9 mặc định. Cửa sổ vẫn RESIZABLE và có thể F11 toàn màn hình.
+SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Hành Trình Lịch Sử Việt Nam - Game Giáo Dục Tương Tác"
 TARGET_FPS = 60

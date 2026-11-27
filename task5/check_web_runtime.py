@@ -84,8 +84,8 @@ def main() -> int:
                         canvas = page.locator("#canvas")
                         box = canvas.bounding_box()
                         width, height = canvas.evaluate("c=>[c.width,c.height]")
-                        scale = min(width/1080, height/720)
-                        ox, oy = (width-1080*scale)/2, (height-720*scale)/2
+                        scale = min(width/1280, height/720)
+                        ox, oy = (width-1280*scale)/2, (height-720*scale)/2
                         def click(x, y):
                             canvas.click(position={"x": (ox+x*scale)*box["width"]/width,
                                                    "y": (oy+y*scale)*box["height"]/height})

@@ -192,12 +192,17 @@ class QuestManager:
         self.completed = set(completed or ())
         self.collected_clues = {}
         self.quiz_attempts = {}
+        self.required_clues = {}
         self._progress = progress or {}
         for location in self.locations:
-            saved = self._progress.get(str(location.get("id", location.get("name", ""))), {})
+            name = location["name"]
+            saved = self._progress.get(str(location.get("id", name)), {})
             if isinstance(saved, dict):
-                self.collected_clues[location["name"]] = set(saved.get("clue_ids", []))
-                self.quiz_attempts[location["name"]] = int(saved.get("quiz_attempts", 0))
+                self.collected_clues[name] = set(saved.get("clue_ids", []))
+                self.quiz_attempts[name] = int(saved.get("quiz_attempts", 0))
+                required_ids = saved.get("required_clue_ids")
+                if required_ids is not None:
+                    self.required_clues[name] = set(required_ids)
         self._refresh_unlocks()
 
     def _refresh_unlocks(self):
@@ -216,19 +221,31 @@ class QuestManager:
 
     def start(self, location):
         name = location["name"]
+        if self.state(location) == "locked":
+            return False
         self.collected_clues.setdefault(name, set())
         self.quiz_attempts.setdefault(name, 0)
-        self.unlocked.add(name)
         return True
 
     def collect_clue(self, location, clue_id, required_ids=None):
         name = location["name"]
+        if self.state(location) == "locked":
+            return False
+        if required_ids is not None:
+            self.required_clues[name] = set(required_ids)
+        required = self.required_clues.get(name)
+        if required is not None and clue_id not in required:
+            return False
         self.collected_clues.setdefault(name, set()).add(clue_id)
         return True
 
     def clues_complete(self, location):
         name = location["name"]
-        return bool(self.collected_clues.get(name))
+        required = self.required_clues.get(name)
+        collected = self.collected_clues.get(name, set())
+        if required is None:
+            return bool(collected)
+        return required.issubset(collected)
 
     def record_quiz_answer(self, location, is_correct):
         name = location["name"]
@@ -238,6 +255,8 @@ class QuestManager:
     def complete(self, location):
         name = location["name"]
         if self.state(location) == "locked":
+            return False
+        if not self.clues_complete(location) or self.quiz_attempts.get(name, 0) <= 0:
             return False
         self.completed.add(name)
         self._refresh_unlocks()

@@ -136,11 +136,11 @@ def main() -> int:
                             box = canvas.bounding_box()
                             assert box
                             w, h = canvas.evaluate('c=>[c.width,c.height]')
-                            scale = min(w / 1080, h / 720)
+                            scale = min(w / 1280, h / 720)
                             diagnostic['clicks'].append({'logical': [x, y], 'canvas': [w, h],
                                 'box': box, 'active_element': page.evaluate('document.activeElement.tagName')})
                             canvas.click(position={
-                                'x': ((w - 1080 * scale) / 2 + x * scale) * box['width'] / w,
+                                'x': ((w - 1280 * scale) / 2 + x * scale) * box['width'] / w,
                                 'y': ((h - 720 * scale) / 2 + y * scale) * box['height'] / h})
 
                         def progress() -> dict:
@@ -382,8 +382,8 @@ def main() -> int:
                             return json.loads(page.evaluate('window.task5UiState'))
                         def logical_position(x, y):
                             box=canvas.bounding_box();w,h=canvas.evaluate('c=>[c.width,c.height]')
-                            scale=min(w/1080,h/720)
-                            return (box['x']+((w-1080*scale)/2+x*scale)*box['width']/w,
+                            scale=min(w/1280,h/720)
+                            return (box['x']+((w-1280*scale)/2+x*scale)*box['width']/w,
                                     box['y']+((h-720*scale)/2+y*scale)*box['height']/h)
                         for target_id in (4,6,8,9):
                             target=next(item for item in content['locations'] if item['id']==target_id)

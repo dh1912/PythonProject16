@@ -3,7 +3,9 @@ import pygame
 from pathlib import Path
 from typing import Optional
 
-DB_PATH = Path(__file__).parent.parent / "game.db"
+from data.sqlite_store import database_path
+
+DB_PATH = database_path()
 
 class ClueNotebookScene:
     def __init__(self, sw=1080, sh=720, data_provider=None):
@@ -23,6 +25,9 @@ class ClueNotebookScene:
         self.clues_list = []
         self.current_clue = None
         self.scroll = 0
+        self.scroll_dragging = False
+        self.content_track = pygame.Rect(self.sw - 62, 180, 10, self.sh - 265)
+        self.content_max_scroll = 0
         self.bookmarked = set()
     
     def load_all_clues(self):
@@ -70,7 +75,36 @@ class ClueNotebookScene:
         except:
             return 0
     
+    def _scrollbar_value(self, y):
+        track = self.content_track
+        if self.content_max_scroll <= 0:
+            return 0
+        thumb_h = max(24, round(track.height * track.height / (track.height + self.content_max_scroll)))
+        ratio = max(0, min(1, (y - track.y - thumb_h / 2) / max(1, track.height - thumb_h)))
+        return round(ratio * self.content_max_scroll)
+
+    def _draw_scrollbar(self, screen):
+        track = self.content_track
+        pygame.draw.rect(screen, self.COLOR_BORDER, track, border_radius=5)
+        if self.content_max_scroll <= 0:
+            thumb = track.copy()
+        else:
+            thumb_h = max(24, round(track.height * track.height / (track.height + self.content_max_scroll)))
+            thumb_y = track.y + round((track.height - thumb_h) * self.scroll / self.content_max_scroll)
+            thumb = pygame.Rect(track.x, thumb_y, track.width, thumb_h)
+        pygame.draw.rect(screen, self.COLOR_ACCENT, thumb, border_radius=5)
+
     def handle_event(self, event) -> Optional[str]:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.content_track.collidepoint(event.pos):
+                self.scroll_dragging = True
+                self.scroll = self._scrollbar_value(event.pos[1])
+                return None
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            self.scroll_dragging = False
+        elif event.type == pygame.MOUSEMOTION and self.scroll_dragging:
+            self.scroll = self._scrollbar_value(event.pos[1])
+            return None
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return 'back'
@@ -98,7 +132,13 @@ class ClueNotebookScene:
             if self.sw - 200 <= x <= self.sw - 50 and by <= y <= by + 40:
                 return 'bookmark'
         elif event.type == pygame.MOUSEWHEEL:
-            self.scroll += event.y * 20
+            # Chỉ cuộn nội dung trong trang, không làm mất các nút điều hướng.
+            content_top = 180
+            content_bottom = self.sh - 85
+            line_count = len(str((self.current_clue or {}).get('noi_dung_chi_tiet') or '(Khong co noi dung)').split('. '))
+            max_scroll = max(0, line_count * 25 - (content_bottom - content_top - 20))
+            self.content_max_scroll = max_scroll
+            self.scroll = max(0, min(self.scroll - event.y * 20, max_scroll))
     
     def draw(self, screen):
         if not self.current_clue:
@@ -126,18 +166,26 @@ class ClueNotebookScene:
                 yo += 30
         
         cy = yo + 20
-        cr = pygame.Rect(px+30, cy, pw-60, ph-(cy-py)-50)
+        cr = pygame.Rect(px+30, cy, pw-75, ph-(cy-py)-50)
+        self.content_track = pygame.Rect(cr.right + 12, cr.top, 10, cr.height)
         pygame.draw.rect(screen, (255,255,255), cr)
         pygame.draw.rect(screen, self.COLOR_BORDER, cr, width=1)
         
         if self.font_content:
             content = c['noi_dung_chi_tiet'] or "(Khong co noi dung)"
             lines = content.split('. ')
+            self.content_max_scroll = max(0, len(lines) * 25 - max(0, cr.height - 20))
+            self.scroll = max(0, min(self.scroll, self.content_max_scroll))
+            line_height = 25
+            old_clip = screen.get_clip()
+            screen.set_clip(cr)
             ty = cr.y + 10 - self.scroll
-            for line in lines[:15]:
-                if cr.y <= ty <= cr.bottom:
-                    screen.blit(self.font_content.render(line+'.', True, self.COLOR_TEXT), (cr.x+10, ty))
-                ty += 25
+            for line in lines:
+                if ty + line_height >= cr.top and ty <= cr.bottom:
+                    screen.blit(self.font_content.render(line + '.', True, self.COLOR_TEXT), (cr.x + 10, ty))
+                ty += line_height
+            screen.set_clip(old_clip)
+        self._draw_scrollbar(screen)
         
         by = self.sh - 60
         self._btn(screen, 50, by, 150, 40, "QUAY LAI")

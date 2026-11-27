@@ -8,6 +8,7 @@ Hỗ trợ 2 chế độ:
 import json
 import os
 import sys
+import tempfile
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Dict, Any
 
@@ -27,9 +28,21 @@ def load_db() -> Dict[str, Any]:
 
 
 def save_db(data: Dict[str, Any]):
-    os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    directory = os.path.dirname(DATA_FILE)
+    os.makedirs(directory, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".api_progress_db.", suffix=".tmp", dir=directory)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temporary, DATA_FILE)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 class SimpleAPIServer(BaseHTTPRequestHandler):

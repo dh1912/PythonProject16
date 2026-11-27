@@ -11,11 +11,12 @@ Triển khai REST API chuẩn công nghiệp với:
 
 import json
 import os
+import tempfile
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
 try:
-    from fastapi import FastAPI, HTTPException, status
+    from fastapi import FastAPI, HTTPException, Query, status
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:
@@ -36,11 +37,11 @@ class Task4ProgressData(BaseModel):
 
 
 class ProgressSaveRequest(BaseModel):
-    user_id: str = Field(..., description="Mã định danh người chơi", example="player1")
-    user_name: Optional[str] = Field(default=None, description="Tên hiển thị người chơi", example="Nguyễn Văn A")
-    score: int = Field(default=0, ge=0, description="Điểm tri thức tích lũy", example=250)
-    completed: List[str] = Field(default_factory=list, description="Danh sách địa danh đã hoàn thành", example=["Pác Bó (Cao Bằng)"])
-    max_year: int = Field(default=1911, ge=1911, le=1975, description="Mốc năm cao nhất đã mở khóa", example=1945)
+    user_id: str = Field(..., min_length=1, max_length=100, description="Mã định danh người chơi", json_schema_extra={"example": "player1"})
+    user_name: Optional[str] = Field(default=None, max_length=100, description="Tên hiển thị người chơi", json_schema_extra={"example": "Nguyễn Văn A"})
+    score: int = Field(default=0, ge=0, description="Điểm tri thức tích lũy", json_schema_extra={"example": 250})
+    completed: List[str] = Field(default_factory=list, max_length=100, description="Danh sách địa danh đã hoàn thành", json_schema_extra={"example": ["Pác Bó (Cao Bằng)"]})
+    max_year: int = Field(default=1911, ge=1911, le=1975, description="Mốc năm cao nhất đã mở khóa", json_schema_extra={"example": 1945})
     task4: Dict[str, Any] = Field(default_factory=dict, description="Dữ liệu nhiệm vụ Task 4")
 
 
@@ -73,8 +74,19 @@ def load_db() -> Dict[str, Any]:
 
 def save_db(data: Dict[str, Any]):
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    fd, temporary = tempfile.mkstemp(prefix=f".{DATA_FILE.name}.", suffix=".tmp", dir=DATA_FILE.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temporary, DATA_FILE)
+    except Exception:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 # --- KHỞI TẠO FASTAPI APP ---
@@ -159,7 +171,7 @@ async def save_progress(payload: ProgressSaveRequest):
 
 
 @app.get("/api/leaderboard", response_model=LeaderboardResponse, tags=["Bảng vàng"])
-async def get_leaderboard(limit: int = 10):
+async def get_leaderboard(limit: int = Query(default=10, ge=1, le=100)):
     """Truy xuất danh sách Top người chơi có điểm tri thức cao nhất."""
     db = load_db()
     lb = db.get("leaderboard", [])

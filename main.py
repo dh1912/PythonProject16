@@ -21,15 +21,21 @@ from scenes.deduction_scene import DeductionScene
 from scenes.quit_scene import QuitScene
 from scenes.review_scene import ReviewScene
 from task4 import Clue, ClueInventory, DeductionTimelineBoard, QuizSystem, TimelineScene, QuestStateMachine
+from task4.inventory_review_scene import InventoryReviewScene
 from task5 import ScoringEngine, ReviewManager, DisplaySettingsScene, LeaderboardScene
 
 try:
     from config import SCREEN_WIDTH, SCREEN_HEIGHT, TARGET_FPS, SCREEN_TITLE
-    WIDTH = SCREEN_WIDTH
-    HEIGHT = SCREEN_HEIGHT
-except ImportError:
-    WIDTH = 1080
+    # Canvas logic chuẩn HD 16:9; các scene được vẽ trực tiếp ở 1280x720.
+    WIDTH = 1280
     HEIGHT = 720
+    DISPLAY_WIDTH = SCREEN_WIDTH
+    DISPLAY_HEIGHT = SCREEN_HEIGHT
+except ImportError:
+    WIDTH = 1280
+    HEIGHT = 720
+    DISPLAY_WIDTH = 1280
+    DISPLAY_HEIGHT = 720
     TARGET_FPS = 60
     SCREEN_TITLE = "Hành Trình Lịch Sử Việt Nam"
 
@@ -43,10 +49,10 @@ except ImportError:
 
 def parse_window_size():
     parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument("--width", type=int, default=WIDTH, help="Cửa sổ rộng (px)")
-    parser.add_argument("--height", type=int, default=HEIGHT, help="Cửa sổ cao (px)")
+    parser.add_argument("--width", type=int, default=DISPLAY_WIDTH, help="Cửa sổ rộng (px)")
+    parser.add_argument("--height", type=int, default=DISPLAY_HEIGHT, help="Cửa sổ cao (px)")
     args, _ = parser.parse_known_args()
-    return max(800, args.width), max(600, args.height)
+    return max(640, args.width), max(360, args.height)
 
 
 def key_is(event, letter):
@@ -169,6 +175,7 @@ class Game:
         self.notice = ""
         self.notice_until = 0
         self.notebook_scene = None
+        self.inventory_review_scene = None
 
     def open_clue_notebook(self):
         """Xem tư liệu không thu thập manh mối hoặc hoàn thành nhiệm vụ tự động."""
@@ -184,8 +191,9 @@ class Game:
             self._notebook_task=asyncio.create_task(self.data_service.load_notebook_async())
         else:
             self.notebook_scene.load_all_clues()
+        self.inventory_review_scene = InventoryReviewScene(self.notebook_scene, self.review_scene, WIDTH, HEIGHT)
         self.scene_before_notebook = self.scene
-        self.scene = 'notebook'
+        self.scene = 'inventory_review'
 
     def _load_game_data(self, service):
         """Load SQL data off the Pygame thread so the window remains responsive."""
@@ -285,7 +293,7 @@ class Game:
             self.display = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
             self.window_size = self.display.get_size()
         else:
-            self.window_size = (max(800, width), max(600, height))
+            self.window_size = (max(640, width), max(360, height))
             self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
         self.settings_scene.resolution = (width, height)
         self.settings_scene.fullscreen = self.fullscreen
@@ -401,6 +409,7 @@ class Game:
         self.deduction_scene.set_location(location)
         self.task4_questions = QuizSystem(config["questions"])
         self.task4_quiz_index = 0
+        self.task4_selected_option = None
         self.task4_feedback = "Kéo từng mảnh vào đúng ô, sau đó nhấn Enter để xác thực."
         self.scene = "task4_timeline"
 
@@ -806,6 +815,81 @@ class Game:
             quest_id, self.task4_machine, self.task4_inventory, self.task4_questions
         ))
 
+    def draw_task4_quiz_mod(self):
+        """Render the antique three-column investigation and history quiz screen."""
+        bg, paper, light = (235, 222, 191), (247, 236, 207), (255, 249, 229)
+        wood, copper, red, dark, green, gold = (91, 58, 38), (161, 105, 59), (139, 43, 39), (56, 43, 32), (57, 103, 70), (184, 128, 48)
+        title_font = pygame.font.SysFont("segoeui,arial,timesnewroman", 27, bold=True)
+        body = pygame.font.SysFont("segoeui,arial,timesnewroman", 17)
+        bold = pygame.font.SysFont("segoeui,arial,timesnewroman", 16, bold=True)
+        self.screen.fill(bg)
+
+        def wrap(value, width, font=body):
+            lines, current = [], ""
+            for word in str(value).split():
+                candidate = (current + " " + word).strip()
+                if current and font.size(candidate)[0] > width:
+                    lines.append(current); current = word
+                else: current = candidate
+            if current: lines.append(current)
+            return lines[:4]
+
+        def text(value, x, y, width, color=dark, font=body):
+            for line in wrap(value, width, font):
+                self.screen.blit(font.render(line, True, color), (x, y)); y += font.get_linesize() + 3
+
+        def panel(rect, caption):
+            pygame.draw.rect(self.screen, wood, rect.inflate(8, 8), border_radius=14)
+            pygame.draw.rect(self.screen, paper, rect, border_radius=12)
+            pygame.draw.rect(self.screen, copper, rect, 2, border_radius=12)
+            self.screen.blit(bold.render(caption, True, red), (rect.x + 15, rect.y + 13))
+
+        header = pygame.Rect(28, 18, 1024, 88)
+        pygame.draw.rect(self.screen, wood, header.inflate(8, 8), border_radius=14)
+        pygame.draw.rect(self.screen, paper, header, border_radius=12)
+        pygame.draw.rect(self.screen, copper, header, 2, border_radius=12)
+        self.screen.blit(title_font.render("NHIỆM VỤ ĐIỀU TRA & MẢNH GHÉP", True, red), (50, 34))
+        self.screen.blit(bold.render(f"ĐIỂM SỐ: {self.score}", True, green), (795, 38))
+        self.screen.blit(bold.render(f"MẢNH GHÉP: {self.task4_quiz_index}/3", True, dark), (895, 68))
+
+        panel(pygame.Rect(28, 128, 286, 500), "MỤC TIÊU ĐIỀU TRA")
+        text("Đối chiếu mảnh ghép và trả lời đủ câu hỏi để xác thực sự kiện lịch sử.", 48, 178, 245)
+        location = getattr(self, "current_timeline_location", {}) or {}
+        label = location.get("display_name", location.get("name", "Sự kiện lịch sử"))
+        text(f"Sự kiện: {label}", 48, 260, 245, green, bold)
+        text("1. Đọc tư liệu và nhận diện mốc thời gian.", 48, 315, 245)
+        text("2. Ghép đúng trình tự các mảnh chứng cứ.", 48, 375, 245)
+        text("3. Gửi đáp án để nhận mảnh ghép tiếp theo.", 48, 435, 245)
+        text("Trạng thái: đang xác thực", 48, 525, 245, red, bold)
+
+        panel(pygame.Rect(330, 128, 390, 500), "MẢNH GHÉP / VĂN KIỆN")
+        clues = list(self.task4_inventory.clues.values()) if getattr(self, "task4_inventory", None) else []
+        for i in range(4):
+            y = 205 + i * 88; rect = pygame.Rect(350, y, 350, 70)
+            pygame.draw.rect(self.screen, light, rect, border_radius=8); pygame.draw.rect(self.screen, copper, rect, 1, border_radius=8)
+            clue = clues[i] if i < len(clues) else None
+            text(f"Mảnh ghép #{i + 1}: {clue.title if clue else 'Tư liệu lịch sử'}", 363, y + 8, 320, red, bold)
+            text(clue.detail if clue else "Hiện vật / văn kiện đang chờ xác thực.", 363, y + 32, 320)
+
+        panel(pygame.Rect(736, 128, 316, 500), "CÂU HỎI TRẮC NGHIỆM")
+        if self.task4_quiz_index < 3:
+            question = self.task4_questions.questions[self.task4_quiz_index]
+            text(f"Câu {self.task4_quiz_index + 1}/3", 755, 178, 270, red, bold)
+            text(question["question"], 755, 212, 270, dark, bold)
+            for index, option in enumerate(question["options"][:4]):
+                rect = pygame.Rect(755, 305 + index * 55, 278, 42)
+                option_color = green if index == self.task4_selected_option else light
+                pygame.draw.rect(self.screen, option_color, rect, border_radius=7); pygame.draw.rect(self.screen, copper, rect, 1, border_radius=7)
+                text(f"{chr(65 + index)}. {option}", rect.x + 12, rect.y + 11, 250)
+            button = pygame.Rect(755, 540, 278, 42)
+            pygame.draw.rect(self.screen, green, button, border_radius=8)
+            self.screen.blit(bold.render("NHẬN MẢNH GHÉP", True, light), (790, 553))
+        else:
+            text(f"Quest {label} hoàn thành!", 755, 190, 270, green, bold)
+            text(f"Điểm bài quiz: {self.task4_questions.score}", 755, 245, 270)
+            text("Đã xác thực đủ câu hỏi và mở khóa vùng tiếp theo.", 755, 300, 270)
+        text(self.task4_feedback or "Chọn A-D hoặc nhấn phím 1-4 để gửi câu trả lời.", 48, 645, 980, dark, body)
+
     def draw_task4_quiz(self):
         """Render the three-question review phase within the current scene manager."""
         self.screen.fill((245, 239, 220))
@@ -876,13 +960,13 @@ class Game:
     # XU LY SU KIEN
     # =================================================================
     def handle_event(self, event):
-        if self.scene == 'notebook':
+        if self.scene == 'inventory_review':
             if event.type in (pygame.MOUSEBUTTONDOWN,pygame.MOUSEBUTTONUP,pygame.MOUSEMOTION):
                 width,height=self.display.get_size()
                 scale=min(width/WIDTH,height/HEIGHT)
                 pos=(int((event.pos[0]-(width-WIDTH*scale)/2)/scale),int((event.pos[1]-(height-HEIGHT*scale)/2)/scale))
                 event=pygame.event.Event(event.type,{**event.dict,'pos':pos})
-            result = self.notebook_scene.handle_event(event)
+            result = self.inventory_review_scene.handle_event(event)
             if result == 'back':
                 self.scene = self.scene_before_notebook
             elif result == 'bookmark' and self.notebook_scene.current_clue:
@@ -909,12 +993,14 @@ class Game:
         if self.transition_alpha > 100:
             return
         if event.type == pygame.VIDEORESIZE:
-            self.window_size = (max(800, event.w), max(600, event.h))
+            # Không ép về canvas cũ; cho phép cửa sổ HD phóng to tự do.
+            self.window_size = (max(640, event.w), max(360, event.h))
             if not self.fullscreen:
                 self.display = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
             return
         if event.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION):
             display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
+            # UI giữ đúng tỉ lệ 1080x720; phần dư chỉ dành cho nền cửa sổ.
             scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
             offset_x = (display_size[0] - WIDTH * scale) / 2
             offset_y = (display_size[1] - HEIGHT * scale) / 2
@@ -1094,8 +1180,12 @@ class Game:
                         self.settings_scene.resolution = self.window_size
                     self.settings_scene.fullscreen = self.fullscreen
                     self.scene = "settings"
+                elif result == "explore":
+                    self.open_investigation()
             elif self.scene == "investigation":
-                self.investigation_scene.handle_event(event)
+                result = self.investigation_scene.handle_event(event)
+                if result == "back":
+                    self.scene = "map"
                 self.sync_task4_clues()
             elif self.scene == "deduction":
                 self.handle_deduction_event(event)
@@ -1114,11 +1204,17 @@ class Game:
                                 self.map_scene.selected_year = loc.get("start", self.map_scene.selected_year)
                                 break
                 else:
-                    for index in range(4):
-                        option_rect = pygame.Rect(90, 220 + index * 72, 900, 54)
-                        if option_rect.collidepoint(event.pos):
-                            self.handle_task4_quiz_answer(index)
-                            break
+                    answer_button = pygame.Rect(755, 540, 278, 42)
+                    if answer_button.collidepoint(event.pos):
+                        if self.task4_selected_option is not None:
+                            self.handle_task4_quiz_answer(self.task4_selected_option)
+                            self.task4_selected_option = None
+                    else:
+                        for index in range(4):
+                            option_rect = pygame.Rect(755, 305 + index * 55, 278, 42)
+                            if option_rect.collidepoint(event.pos):
+                                self.task4_selected_option = index
+                                break
 
         elif event.type == pygame.MOUSEMOTION and self.scene == "task4_timeline":
             self.task4_scene.handle_event(event)
@@ -1216,9 +1312,8 @@ class Game:
             print(f"Không lưu được tiến trình Task 4: {message}")
 
     def draw(self):
-        if self.scene == 'notebook':
-            self.screen.fill((248,244,230))
-            self.notebook_scene.draw(self.screen)
+        if self.scene == 'inventory_review':
+            self.inventory_review_scene.draw(self.screen)
         if self.scene == "login":
             self.login_scene.draw(self.screen)
 
@@ -1251,7 +1346,7 @@ class Game:
             self.draw_hint("Kéo thả / Click: Đổi chỗ | Chuột phải / [×]: Gỡ ô | Nút 'Đặt lại': Xóa hết | ENTER: Kiểm tra | ESC: Bản đồ", 100, 680)
 
         elif self.scene == "task4_quiz":
-            self.draw_task4_quiz()
+            self.draw_task4_quiz_mod()
             self.draw_hint("Chọn A-D bằng phím 1-4 hoặc chuột | ESC: quay lại", 300, 675)
 
         elif self.scene == "quit":
@@ -1259,10 +1354,17 @@ class Game:
 
         # Thong bao ngan (hien vai giay)
         if self.notice and pygame.time.get_ticks() < self.notice_until:
-            image = self.notice_font.render(self.notice, True, (255, 255, 255))
-            box = image.get_rect(center=(WIDTH // 2, 120))
-            box.inflate_ip(24, 14)
+            # Toast nằm trong dải an toàn giữa banner và nội dung, không che map/nút.
+            notice = self.notice
+            while notice and self.notice_font.size(notice)[0] > WIDTH - 160:
+                notice = notice[:-1]
+            if notice != self.notice:
+                notice = notice.rstrip() + "…"
+            image = self.notice_font.render(notice, True, (255, 255, 255))
+            box = image.get_rect(center=(WIDTH // 2, 96))
+            box.inflate_ip(24, 10)
             pygame.draw.rect(self.screen, (180, 35, 45), box, border_radius=10)
+            pygame.draw.rect(self.screen, (212, 160, 23), box, 2, border_radius=10)
             self.screen.blit(image, image.get_rect(center=box.center))
 
         if self.transition_alpha > 0:
@@ -1273,14 +1375,23 @@ class Game:
                 0.0, self.transition_alpha - self.transition_speed * self.delta_time
             )
 
-        # Preserve the scene's aspect ratio; letterbox instead of stretching text.
+        # Nền phủ toàn bộ cửa sổ, nhưng UI/chữ/khung chỉ scale đồng nhất.
+        # Không dùng scale_x/scale_y riêng vì sẽ kéo giãn chữ khi resize.
         display_size = self.display.get_size() if sys.platform == "emscripten" else self.window_size
         scale = min(display_size[0] / WIDTH, display_size[1] / HEIGHT)
-        scaled_size = (max(1, round(WIDTH * scale)), max(1, round(HEIGHT * scale)))
+        scaled_size = (
+            max(1, round(WIDTH * scale)),
+            max(1, round(HEIGHT * scale)),
+        )
         scaled = pygame.transform.smoothscale(self.screen, scaled_size)
-        self.display.fill((20, 18, 16))
-        offset = ((display_size[0] - scaled_size[0]) // 2,
-                  (display_size[1] - scaled_size[1]) // 2)
+        # Phần dư hai bên vẫn là nền game, không dùng nền đen/letterbox.
+        # Nhờ vậy cửa sổ luôn phủ kín HD trong khi UI vẫn giữ đúng tỉ lệ.
+        background_color = self.screen.get_at((0, 0))[:3]
+        self.display.fill(background_color)
+        offset = (
+            (display_size[0] - scaled_size[0]) // 2,
+            (display_size[1] - scaled_size[1]) // 2,
+        )
         self.display.blit(scaled, offset)
         if self.task5_server_enabled and self.current_user:
             labels = {'queued':'Đang chờ lưu...', 'pending':'Đang lưu tiến độ...',

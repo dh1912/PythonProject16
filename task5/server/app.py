@@ -1,5 +1,4 @@
 """FastAPI cho đăng nhập, chấm quiz và lưu tiến độ Task 5."""
-from __future__ import annotations
 
 from typing import Any
 

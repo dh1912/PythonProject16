@@ -59,7 +59,24 @@ def test_server_correct_result_advances_without_local_score_formula():
     assert game.deduction_scene.last_answer_choice == 0
 
 
+def test_task4_quiz_mouse_click_selects_before_submit_button():
+    game = Game.__new__(Game)
+    game.scene = "task4_quiz"
+    game.task4_quiz_index = 0
+    game.task4_selected_option = None
+    game.task4_questions = SimpleNamespace(questions=[{"options": ["A", "B", "C", "D"]}], score=0)
+    game.transition_alpha = 0
+    game.display = SimpleNamespace(get_size=lambda: (1280, 720))
+    game.window_size = (1280, 720)
+    game.handle_task4_quiz_answer = Mock()
+    game.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(780, 320)))
+    assert game.task4_selected_option == 0
+    game.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(780, 550)))
+    game.handle_task4_quiz_answer.assert_called_once_with(0)
+
+
 def test_browser_repeated_click_sends_one_request_and_does_not_advance():
+
     async def scenario():
         game = game_fixture(api=True, browser=True)
         game.data_service.submit_answer_async = AsyncMock(return_value={"correct": True, "total_score": 30})
